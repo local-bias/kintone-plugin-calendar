@@ -3,13 +3,13 @@
   "version": 1,
   "type": "APP",
   "name": {
-    "en": "kintone-plugin-template",
-    "ja": "プラグインテンプレート",
+    "en": "calendar plugin",
+    "ja": "カレンダープラグイン",
     "zh": "插件模板"
   },
   "description": {
     "en": "kintone-plugin-template",
-    "ja": "プラグインテンプレート",
+    "ja": "オープンソースライブラリであるfullcalendarを使用し、スケジューラーとして利用できるカレンダーを実装します",
     "zh": "插件模板"
   },
   "icon": "image/icon.png",
@@ -19,7 +19,7 @@
   },
   "desktop": {
     "js": ["https://cdn.jsdelivr.net/gh/local-bias/kintone-cdn@latest/dist/desktop.js"],
-    "css": []
+    "css": ["https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"]
   },
   "mobile": {
     "js": ["https://cdn.jsdelivr.net/gh/local-bias/kintone-cdn@latest/dist/desktop.js"],
