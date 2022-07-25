@@ -24,6 +24,8 @@ const Component: FC = () => {
           '$id',
           condition.calendarEvent.titleField,
           condition.calendarEvent.startField,
+          condition.calendarEvent.allDayField,
+          condition.calendarEvent.noteField,
           condition.calendarEvent.endField,
         ];
 
