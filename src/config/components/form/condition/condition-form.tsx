@@ -1,4 +1,4 @@
-import React, { FCX, Suspense, useEffect, useState } from 'react';
+import React, { ChangeEventHandler, FCX, Suspense, useEffect, useState } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import styled from '@emotion/styled';
 import { Autocomplete, FormControlLabel, MenuItem, Switch, TextField } from '@mui/material';
@@ -137,6 +137,18 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
     []
   );
 
+  const onAllDayOptionChange: ChangeEventHandler<HTMLInputElement> = useRecoilCallback(
+    ({ set }) =>
+      (props) => {
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].allDayOption = props.target.value;
+          })
+        );
+      },
+    []
+  );
+
   return (
     <div {...{ className }}>
       <Suspense fallback={<div>一覧情報を取得しています...</div>}>
@@ -213,7 +225,9 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
               select
               variant='outlined'
               color='primary'
+              onChange={onAllDayOptionChange}
               sx={{ width: '350px' }}
+              value={condition.allDayOption}
             >
               {allDayOptions.map((code, i) => (
                 <MenuItem key={i} value={code}>
