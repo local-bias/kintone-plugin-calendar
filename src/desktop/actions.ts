@@ -1,9 +1,11 @@
-import { kintoneClient } from '@common/kintone-api';
-import { EventInput } from '@fullcalendar/react';
-import { getAppId } from '@lb-ribbit/kintone-xapp';
-import { kx } from '@type/kintone.api';
 import produce from 'immer';
 import { DateTime } from 'luxon';
+import { getAppId } from '@lb-ribbit/kintone-xapp';
+
+import { kx } from '@type/kintone.api';
+import { kintoneClient } from '@common/kintone-api';
+
+import { PluginCalendarEvent } from './states/calendar';
 
 export const getDefaultStartDate = (): Date => {
   const now = DateTime.local();
@@ -31,43 +33,73 @@ export const getDefaultEndDate = (): Date => {
   return now.plus({ hours: 2 }).set({ minute: 0 }).toJSDate();
 };
 
-export const completeCalendarEvent = (eventInput: EventInput) => {
+export const completeCalendarEvent = (eventInput: PluginCalendarEvent) => {
   return produce(eventInput, (draft) => {
     if (!draft.start) draft.start = draft.end;
     if (!draft.end) draft.end = draft.start;
   });
 };
 
-const convertEventIntoRecord = (eventInput: EventInput, condition: kintone.plugin.Condition) => {
+const convertEventIntoRecord = (
+  eventInput: PluginCalendarEvent,
+  condition: kintone.plugin.Condition
+) => {
   const { calendarEvent } = condition;
   const start = eventInput.start ? DateTime.fromJSDate(eventInput.start as Date).toISO() : null;
   const end = eventInput.end ? DateTime.fromJSDate(eventInput.end as Date).toISO() : null;
-  return {
-    [calendarEvent.titleField]: { value: eventInput.title },
-    [calendarEvent.startField]: { value: start || '' },
-    [calendarEvent.endField]: { value: end || '' },
-  };
+
+  const record: Record<string, any> = {};
+
+  if (calendarEvent.titleField) {
+    record[calendarEvent.titleField] = { value: eventInput.title };
+  }
+  if (calendarEvent.startField) {
+    record[calendarEvent.startField] = { value: start || '' };
+  }
+  if (calendarEvent.endField) {
+    record[calendarEvent.endField] = { value: end || '' };
+  }
+  if (condition.enablesAllDay && condition.allDayOption && calendarEvent.allDayField) {
+    record[calendarEvent.allDayField] = {
+      value: eventInput.allDay ? [condition.allDayOption] : [],
+    };
+  }
+  if (condition.enablesNote && calendarEvent.noteField) {
+    record[calendarEvent.noteField] = { value: eventInput.note };
+  }
+
+  return record;
 };
 
 export const convertRecordIntoEvent = (
   condition: kintone.plugin.Condition,
   record: kx.RecordData
-): EventInput => {
-  return {
+): PluginCalendarEvent => {
+  const calendarEvent: PluginCalendarEvent = {
     id: record.$id.value as string | undefined,
-    start: record[condition.calendarEvent.startField]?.value as string | undefined,
-    end: record[condition.calendarEvent.endField]?.value as string | undefined,
-    title: record[condition.calendarEvent.titleField]?.value as string | undefined,
+    start: record[condition.calendarEvent?.startField]?.value as string | undefined,
+    end: record[condition.calendarEvent?.endField]?.value as string | undefined,
+    title: record[condition.calendarEvent?.titleField]?.value as string | undefined,
+    note: record[condition.calendarEvent?.noteField]?.value as string | undefined,
   };
+
+  if (condition.enablesAllDay && condition.allDayOption) {
+    const options = record[condition.calendarEvent.allDayField].value as string[];
+    calendarEvent.allDay = options.includes(condition.allDayOption);
+  }
+
+  return calendarEvent;
 };
 
 export const addNewRecord = async (
-  eventInput: EventInput,
+  eventInput: PluginCalendarEvent,
   condition: kintone.plugin.Condition
-): Promise<EventInput> => {
+): Promise<PluginCalendarEvent> => {
   const newEvent = { ...eventInput, title: eventInput.title || '（タイトルなし）' };
 
   const record = convertEventIntoRecord(newEvent, condition);
+
+  console.log('💿 次のレコードを登録します', record);
 
   const response = await kintoneClient.record.addRecord({ app: getAppId()!, record });
 
@@ -75,7 +107,10 @@ export const addNewRecord = async (
   return newEvent;
 };
 
-export const updateRecord = async (eventInput: EventInput, condition: kintone.plugin.Condition) => {
+export const updateRecord = async (
+  eventInput: PluginCalendarEvent,
+  condition: kintone.plugin.Condition
+) => {
   const { id } = eventInput;
   if (!id) {
     throw 'スケジュールに紐づくレコードが存在しません、一覧を更新し、再度お試しください';
