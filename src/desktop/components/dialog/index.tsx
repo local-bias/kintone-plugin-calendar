@@ -1,12 +1,5 @@
 import styled from '@emotion/styled';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from '@mui/material';
+import { Dialog, DialogContent, TextField } from '@mui/material';
 import React, { FCX } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
@@ -15,8 +8,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import produce from 'immer';
 import { calendarEventsState } from '../../states/calendar';
-import { addNewRecord, updateRecord } from '../../actions';
-import { pluginConditionState } from '../../states/kintone';
+
+import FooterActions from './dialog-actions';
+import FixedButtons from './fixed-buttons';
 
 const Component: FCX = ({ className }) => {
   const open = useRecoilValue(dialogShownState);
@@ -75,45 +69,11 @@ const Component: FCX = ({ className }) => {
     []
   );
 
-  const onEnterButtonClick = useRecoilCallback(
-    ({ reset, set, snapshot }) =>
-      async () => {
-        const currentProps = await snapshot.getPromise(dialogPropsState);
-        const condition = await snapshot.getPromise(pluginConditionState);
-
-        if (currentProps.new) {
-          const newEvent = await addNewRecord(currentProps.event, condition!);
-          set(dialogPropsState, (current) =>
-            produce(current, (draft) => {
-              draft.event = newEvent;
-            })
-          );
-          set(calendarEventsState, (current) =>
-            produce(current, (draft) => {
-              const index = draft.findIndex((event) => event.id === currentProps.event.id);
-              draft[index] = newEvent;
-            })
-          );
-        } else {
-          await updateRecord(currentProps.event, condition!);
-          set(calendarEventsState, (current) =>
-            produce(current, (draft) => {
-              const index = draft.findIndex((event) => event.id === currentProps.event.id);
-              draft[index] = currentProps.event;
-            })
-          );
-        }
-
-        reset(dialogShownState);
-        reset(dialogPropsState);
-      },
-    []
-  );
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Dialog open={open} onClose={onDialogClose} maxWidth='sm' fullWidth className={className}>
-        <DialogContent>
+        <DialogContent className='content'>
+          <FixedButtons new={props.new} />
           <div className='inputs'>
             <div>
               <TextField
@@ -142,20 +102,17 @@ const Component: FCX = ({ className }) => {
             </div>
           </div>
         </DialogContent>
-        <DialogActions>
-          <Button color='inherit' variant='contained' onClick={onDialogClose}>
-            キャンセル
-          </Button>
-          <Button color='primary' variant='contained' onClick={onEnterButtonClick}>
-            決定
-          </Button>
-        </DialogActions>
+        <FooterActions onDialogClose={onDialogClose} />
       </Dialog>
     </LocalizationProvider>
   );
 };
 
 const StyledComponent = styled(Component)`
+  .content {
+    position: relative;
+  }
+
   .inputs {
     padding: 1rem;
     display: flex;

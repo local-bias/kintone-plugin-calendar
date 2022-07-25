@@ -1,11 +1,16 @@
-import React, { FCX, Suspense } from 'react';
+import React, { FCX, Suspense, useEffect, useState } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import styled from '@emotion/styled';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, FormControlLabel, MenuItem, Switch, TextField } from '@mui/material';
 import produce from 'immer';
 
 import { kx } from '@type/kintone.api';
-import { appFieldsState } from '../../../states/kintone';
+import {
+  appFieldsState,
+  checkboxFieldsState,
+  dateTimeFieldsState,
+  stringFieldsState,
+} from '../../../states/kintone';
 import { storageState } from '../../../states/plugin';
 import ViewIdForm from './view-id';
 
@@ -13,6 +18,25 @@ type ContainerProps = { condition: kintone.plugin.Condition; index: number };
 
 const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
   const appFields = useRecoilValue(appFieldsState);
+  const stringFields = useRecoilValue(stringFieldsState);
+  const dateTimeFields = useRecoilValue(dateTimeFieldsState);
+  const checkboxFields = useRecoilValue(checkboxFieldsState);
+  const [allDayOptions, setAllDayOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!condition.enablesAllDay) {
+      return;
+    }
+
+    const foundField = checkboxFields.find(
+      (field) => field.code === condition.calendarEvent.allDayField
+    );
+    if (!foundField) {
+      return;
+    }
+
+    setAllDayOptions(Object.keys(foundField.options));
+  }, [condition.calendarEvent.allDayField, condition.enablesAllDay]);
 
   const onTitleFieldChange = useRecoilCallback(
     ({ set }) =>
@@ -59,6 +83,60 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
     []
   );
 
+  const onEnablesAllDayChange = useRecoilCallback(
+    ({ set }) =>
+      (checked: boolean) => {
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].enablesAllDay = checked;
+          })
+        );
+      },
+    []
+  );
+
+  const onAllDayFieldChange = useRecoilCallback(
+    ({ set }) =>
+      (field: kx.FieldProperty | null) => {
+        if (!field) {
+          return;
+        }
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].calendarEvent.allDayField = field.code;
+          })
+        );
+      },
+    []
+  );
+
+  const onEnablesNoteChange = useRecoilCallback(
+    ({ set }) =>
+      (checked: boolean) => {
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].enablesNote = checked;
+          })
+        );
+      },
+    []
+  );
+
+  const onNoteFieldChange = useRecoilCallback(
+    ({ set }) =>
+      (field: kx.FieldProperty | null) => {
+        if (!field) {
+          return;
+        }
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].calendarEvent.noteField = field.code;
+          })
+        );
+      },
+    []
+  );
+
   return (
     <div {...{ className }}>
       <Suspense fallback={<div>一覧情報を取得しています...</div>}>
@@ -76,7 +154,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
         <Autocomplete
           value={appFields.find((field) => field.code === condition.calendarEvent.titleField)}
           sx={{ width: '350px' }}
-          options={appFields}
+          options={stringFields}
           onChange={(_, option) => onTitleFieldChange(option)}
           getOptionLabel={(option) => option.label}
           renderInput={(params) => (
@@ -89,7 +167,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
         <Autocomplete
           value={appFields.find((field) => field.code === condition.calendarEvent.startField)}
           sx={{ width: '350px' }}
-          options={appFields}
+          options={dateTimeFields}
           onChange={(_, option) => onStartFieldChange(option)}
           getOptionLabel={(option) => option.label}
           renderInput={(params) => (
@@ -102,13 +180,70 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
         <Autocomplete
           value={appFields.find((field) => field.code === condition.calendarEvent.endField)}
           sx={{ width: '350px' }}
-          options={appFields}
+          options={dateTimeFields}
           onChange={(_, option) => onEndFieldChange(option)}
           getOptionLabel={(option) => option.label}
           renderInput={(params) => (
             <TextField {...params} label='対象フィールド' variant='outlined' color='primary' />
           )}
         />
+      </div>
+      <div>
+        <h3>終日設定</h3>
+        <FormControlLabel
+          control={<Switch color='primary' checked={!!condition.enablesAllDay} />}
+          onChange={(_, checked) => onEnablesAllDayChange(checked)}
+          sx={{ marginBottom: '1rem' }}
+          label='終日設定を有効にする'
+        />
+        {condition.enablesAllDay && (
+          <>
+            <Autocomplete
+              value={appFields.find((field) => field.code === condition.calendarEvent.allDayField)}
+              sx={{ width: '350px', marginBottom: '1rem' }}
+              options={checkboxFields}
+              onChange={(_, option) => onAllDayFieldChange(option)}
+              getOptionLabel={(option) => option.label}
+              renderInput={(params) => (
+                <TextField {...params} label='対象フィールド' variant='outlined' color='primary' />
+              )}
+            />
+            <TextField
+              label='終日とする値'
+              select
+              variant='outlined'
+              color='primary'
+              sx={{ width: '350px' }}
+            >
+              {allDayOptions.map((code, i) => (
+                <MenuItem key={i} value={code}>
+                  {code}
+                </MenuItem>
+              ))}
+            </TextField>
+          </>
+        )}
+      </div>
+      <div>
+        <h3>スケジュールの備考</h3>
+        <FormControlLabel
+          control={<Switch color='primary' checked={!!condition.enablesNote} />}
+          onChange={(_, checked) => onEnablesNoteChange(checked)}
+          sx={{ marginBottom: '1rem' }}
+          label='スケジュールの備考を有効にする'
+        />
+        {condition.enablesNote && (
+          <Autocomplete
+            value={appFields.find((field) => field.code === condition.calendarEvent.noteField)}
+            sx={{ width: '350px' }}
+            options={stringFields}
+            onChange={(_, option) => onNoteFieldChange(option)}
+            getOptionLabel={(option) => option.label}
+            renderInput={(params) => (
+              <TextField {...params} label='対象フィールド' variant='outlined' color='primary' />
+            )}
+          />
+        )}
       </div>
     </div>
   );

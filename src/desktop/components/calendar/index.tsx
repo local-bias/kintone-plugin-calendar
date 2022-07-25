@@ -1,17 +1,25 @@
 import React, { FC } from 'react';
-import FullCalendar, { DateSelectArg, EventChangeArg, EventClickArg } from '@fullcalendar/react';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
+import FullCalendar, {
+  DateSelectArg,
+  EventAddArg,
+  EventChangeArg,
+  EventClickArg,
+  EventRemoveArg,
+} from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import allLocales from '@fullcalendar/core/locales-all';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { calendarEventsState } from '../../states/calendar';
 import produce from 'immer';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { completeCalendarEvent } from '../../actions';
+import { pluginConditionState } from '../../states/kintone';
 
 const Component: FC = () => {
   const calendarEvents = useRecoilValue(calendarEventsState);
+  const pluginCondition = useRecoilValue(pluginConditionState);
 
   const onEventClick = useRecoilCallback(
     ({ set }) =>
@@ -31,7 +39,7 @@ const Component: FC = () => {
     []
   );
 
-  const onEventAdd = (props: any) => {};
+  const onEventAdd = (props: EventAddArg) => {};
 
   const onDateSelect = useRecoilCallback(
     ({ set }) =>
@@ -58,24 +66,26 @@ const Component: FC = () => {
   const onEventChange = useRecoilCallback(
     ({ set }) =>
       (props: EventChangeArg) => {
+        console.log('🐶 onEventChange', props);
         const changed = props.event;
         set(calendarEventsState, (current) =>
           produce(current, (draft) => {
             const index = draft.findIndex((event) => event.id === changed.id);
             if (index !== -1) {
-              draft[index] = {
-                ...draft[index],
-                start: changed.start || draft[index].start,
-                end: changed.end || draft[index].end,
-              };
+              return;
             }
+            draft[index] = {
+              ...draft[index],
+              start: changed.start || draft[index].start,
+              end: changed.end || draft[index].end,
+            };
           })
         );
       },
     []
   );
 
-  const onEventRemove = (props: any) => {};
+  const onEventRemove = (props: EventRemoveArg) => {};
 
   return (
     <FullCalendar
@@ -89,6 +99,7 @@ const Component: FC = () => {
         right: 'dayGridMonth,timeGridWeek,timeGridDay',
       }}
       events={calendarEvents}
+      allDaySlot={pluginCondition?.enablesAllDay}
       editable
       selectable
       selectMirror

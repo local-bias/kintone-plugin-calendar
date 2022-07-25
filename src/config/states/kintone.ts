@@ -16,6 +16,35 @@ export const appFieldsState = selector<kx.FieldProperty[]>({
   },
 });
 
+export const dateTimeFieldsState = selector<kx.FieldProperty[]>({
+  key: `${PREFIX}dateTimeFieldsState`,
+  get: async ({ get }) => {
+    const fields = get(appFieldsState);
+
+    return fields.filter((field) => field.type === 'DATETIME');
+  },
+});
+
+export const stringFieldsState = selector<kx.FieldProperty[]>({
+  key: `${PREFIX}stringFieldsState`,
+  get: async ({ get }) => {
+    const fields = get(appFieldsState);
+
+    const types: kx.FieldPropertyType[] = ['SINGLE_LINE_TEXT', 'MULTI_LINE_TEXT', 'RICH_TEXT'];
+
+    return fields.filter((field) => types.includes(field.type));
+  },
+});
+
+export const checkboxFieldsState = selector<kx.property.CheckBox[]>({
+  key: `${PREFIX}checkboxFieldsState`,
+  get: async ({ get }) => {
+    const fields = get(appFieldsState);
+    const checkboxFields = fields.filter((field) => field.type === 'CHECK_BOX');
+    return checkboxFields as kx.property.CheckBox[];
+  },
+});
+
 const allAppViewsState = selector({
   key: 'allAppViewsState',
   get: async () => {

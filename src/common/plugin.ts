@@ -41,9 +41,13 @@ export const getNewCondition = (): kintone.plugin.Condition => ({
   viewId: '',
   initialView: 'timeGridWeek',
   enablesAllDay: true,
+  allDayOption: '',
+  enablesNote: false,
   calendarEvent: {
     titleField: '',
     startField: '',
     endField: '',
+    allDayField: '',
+    noteField: '',
   },
 });

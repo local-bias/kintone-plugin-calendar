@@ -3,21 +3,29 @@ import { Fab, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import styled from '@emotion/styled';
 import { useRecoilCallback } from 'recoil';
-import { getDefaultEndDate, getDefaultStartDate } from '../../actions';
+import { completeCalendarEvent, getDefaultEndDate, getDefaultStartDate } from '../../actions';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
+import { calendarEventsState } from '../../states/calendar';
+import produce from 'immer';
 
 const Component: FCX = ({ className }) => {
   const onEventAdditionButtonClick = useRecoilCallback(
     ({ set }) =>
       () => {
+        const temporaryKey = Math.random().toString();
+
+        const completed = completeCalendarEvent({
+          id: temporaryKey,
+          allDay: false,
+          title: '',
+          start: getDefaultStartDate(),
+          end: getDefaultEndDate(),
+        });
+
+        set(calendarEventsState, (current) => produce(current, (draft) => [...draft, completed]));
         set(dialogPropsState, {
           new: true,
-          event: {
-            id: Math.random().toString(),
-            title: '',
-            start: getDefaultStartDate(),
-            end: getDefaultEndDate(),
-          },
+          event: completed,
         });
         set(dialogShownState, true);
       },

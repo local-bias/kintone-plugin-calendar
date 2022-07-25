@@ -10,10 +10,14 @@ declare namespace kintone {
       viewId: string;
       initialView: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay';
       enablesAllDay: boolean;
+      allDayOption: string;
+      enablesNote: boolean;
       calendarEvent: {
         titleField: string;
         startField: string;
         endField: string;
+        allDayField: string;
+        noteField: string;
       };
     };
   }

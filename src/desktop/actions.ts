@@ -1,6 +1,7 @@
 import { kintoneClient } from '@common/kintone-api';
 import { EventInput } from '@fullcalendar/react';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
+import { kx } from '@type/kintone.api';
 import produce from 'immer';
 import { DateTime } from 'luxon';
 
@@ -45,6 +46,18 @@ const convertEventIntoRecord = (eventInput: EventInput, condition: kintone.plugi
     [calendarEvent.titleField]: { value: eventInput.title },
     [calendarEvent.startField]: { value: start || '' },
     [calendarEvent.endField]: { value: end || '' },
+  };
+};
+
+export const convertRecordIntoEvent = (
+  condition: kintone.plugin.Condition,
+  record: kx.RecordData
+): EventInput => {
+  return {
+    id: record.$id.value as string | undefined,
+    start: record[condition.calendarEvent.startField]?.value as string | undefined,
+    end: record[condition.calendarEvent.endField]?.value as string | undefined,
+    title: record[condition.calendarEvent.titleField]?.value as string | undefined,
   };
 };
 

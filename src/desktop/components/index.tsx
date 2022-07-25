@@ -6,10 +6,11 @@ import Calendar from './calendar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { jaJP } from '@mui/material/locale';
 
-import Sidebar from './sidebar';
+import Observer from './observer';
 import Dialog from './dialog';
 import Fab from './fab';
 import { pluginConditionState } from '../states/kintone';
+import { SnackbarProvider } from 'notistack';
 
 const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, condition }) => (
   <ErrorBoundary>
@@ -18,15 +19,18 @@ const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, co
         set(pluginConditionState, condition);
       }}
     >
-      <ThemeProvider theme={createTheme({}, jaJP)}>
-        <Dialog />
-        <div className={className}>
-          <div className='calendar'>
-            <Calendar />
+      <SnackbarProvider maxSnack={1}>
+        <ThemeProvider theme={createTheme({}, jaJP)}>
+          <Observer />
+          <Dialog />
+          <div className={className}>
+            <div className='calendar'>
+              <Calendar />
+            </div>
           </div>
-        </div>
-        <Fab />
-      </ThemeProvider>
+          <Fab />
+        </ThemeProvider>
+      </SnackbarProvider>
     </RecoilRoot>
   </ErrorBoundary>
 );

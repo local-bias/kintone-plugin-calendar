@@ -3,7 +3,10 @@ import {
   Record as DefaultRecord,
   Layout as DefaultLayout,
 } from '@kintone/rest-api-client/lib/client/types';
-import { OneOf as DefaultFieldProperty } from '@kintone/rest-api-client/lib/KintoneFields/types/property';
+import {
+  OneOf as DefaultFieldProperty,
+  CheckBox as DefaultCheckBox,
+} from '@kintone/rest-api-client/lib/KintoneFields/types/property';
 import {
   OneOf as DefaultField,
   Creator as DefaultCreator,
@@ -27,6 +30,10 @@ declare namespace kx {
 
   type Layout = DefaultLayout;
   type LayoutField = DefaultLayoutField;
+
+  namespace property {
+    type CheckBox = DefaultCheckBox;
+  }
 
   namespace field {
     type Creator = DefaultCreator;
