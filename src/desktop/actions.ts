@@ -6,6 +6,7 @@ import { kx } from '@type/kintone.api';
 import { kintoneClient } from '@common/kintone-api';
 
 import { PluginCalendarEvent } from './states/calendar';
+import { EventApi, EventInput } from '@fullcalendar/react';
 
 export const getDefaultStartDate = (): Date => {
   const now = DateTime.local();
@@ -40,7 +41,7 @@ export const completeCalendarEvent = (eventInput: PluginCalendarEvent) => {
   });
 };
 
-const convertEventIntoRecord = (
+export const convertEventIntoRecord = (
   eventInput: PluginCalendarEvent,
   condition: kintone.plugin.Condition
 ) => {
@@ -69,6 +70,16 @@ const convertEventIntoRecord = (
   }
 
   return record;
+};
+
+export const convertEventApiIntoEventInput = (api: EventApi): PluginCalendarEvent => {
+  return {
+    id: api.id,
+    start: api.start ?? undefined,
+    end: api.end ?? undefined,
+    title: api.title,
+    allDay: api.allDay,
+  };
 };
 
 export const convertRecordIntoEvent = (

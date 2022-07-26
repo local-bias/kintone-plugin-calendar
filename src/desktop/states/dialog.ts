@@ -1,5 +1,5 @@
-import { EventInput } from '@fullcalendar/react';
 import { atom } from 'recoil';
+import { PluginCalendarEvent } from './calendar';
 
 const PREFIX = 'dialog';
 
@@ -10,7 +10,7 @@ export const dialogShownState = atom<boolean>({
 
 export const dialogPropsState = atom<{
   new: boolean;
-  event: EventInput;
+  event: PluginCalendarEvent;
 }>({
   key: `${PREFIX}dialogPropsState`,
   default: {

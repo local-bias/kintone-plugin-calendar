@@ -14,25 +14,29 @@ import allLocales from '@fullcalendar/core/locales-all';
 import { calendarEventsState } from '../../states/calendar';
 import produce from 'immer';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
-import { completeCalendarEvent } from '../../actions';
+import { completeCalendarEvent, convertEventApiIntoEventInput, updateRecord } from '../../actions';
 import { pluginConditionState } from '../../states/kintone';
+import { useSnackbar } from 'notistack';
 
 const Component: FC = () => {
   const calendarEvents = useRecoilValue(calendarEventsState);
   const pluginCondition = useRecoilValue(pluginConditionState);
+  const { enqueueSnackbar } = useSnackbar();
 
   const onEventClick = useRecoilCallback(
-    ({ set }) =>
-      (props: EventClickArg) => {
+    ({ set, snapshot }) =>
+      async (props: EventClickArg) => {
+        const calendarEvents = await snapshot.getPromise(calendarEventsState);
+        const foundEvent = calendarEvents.find(
+          (event) => event.id && props.event.id && event.id === props.event.id
+        );
+        if (!foundEvent) {
+          enqueueSnackbar('クリックしたイベントの取得に失敗しました', { variant: 'error' });
+          return;
+        }
         set(dialogPropsState, {
           new: false,
-          event: {
-            id: props.event.id,
-            allDay: props.event.allDay,
-            start: props.event.start || undefined,
-            end: props.event.end || undefined,
-            title: props.event.title,
-          },
+          event: foundEvent,
         });
         set(dialogShownState, true);
       },
@@ -64,9 +68,8 @@ const Component: FC = () => {
   );
 
   const onEventChange = useRecoilCallback(
-    ({ set }) =>
-      (props: EventChangeArg) => {
-        console.log('🐶 onEventChange', props);
+    ({ set, snapshot }) =>
+      async (props: EventChangeArg) => {
         const changed = props.event;
         set(calendarEventsState, (current) =>
           produce(current, (draft) => {
@@ -81,6 +84,11 @@ const Component: FC = () => {
             };
           })
         );
+
+        const condition = await snapshot.getPromise(pluginConditionState);
+        const eventInput = convertEventApiIntoEventInput(props.event);
+        await updateRecord(eventInput, condition!);
+        console.info('レコードを更新しました');
       },
     []
   );
