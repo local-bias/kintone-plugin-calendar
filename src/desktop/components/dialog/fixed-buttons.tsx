@@ -1,5 +1,5 @@
 import React, { FCX } from 'react';
-import { useRecoilCallback } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { Fab, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
@@ -10,7 +10,8 @@ import { kintoneClient } from '@common/kintone-api';
 import { useSnackbar } from 'notistack';
 import styled from '@emotion/styled';
 
-const Component: FCX<{ new: boolean }> = (props) => {
+const Component: FCX = ({ className }) => {
+  const props = useRecoilValue(dialogPropsState);
   const { enqueueSnackbar } = useSnackbar();
 
   const onRemoveButtonClick = useRecoilCallback(
@@ -38,7 +39,7 @@ const Component: FCX<{ new: boolean }> = (props) => {
   );
 
   return (
-    <div className={props.className}>
+    <div className={className}>
       {!props.new && (
         <Tooltip title='このイベントを削除する'>
           <Fab className='icon' color='inherit' size='small' onClick={onRemoveButtonClick}>

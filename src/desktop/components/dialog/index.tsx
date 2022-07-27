@@ -8,12 +8,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { calendarEventsState } from '../../states/calendar';
 
 import FooterActions from './dialog-actions';
-import DialogInputs from './dialog-inputs';
+import DialogInputs from './inputs';
 import FixedButtons from './fixed-buttons';
 
 const Component: FCX = ({ className }) => {
   const open = useRecoilValue(dialogShownState);
-  const props = useRecoilValue(dialogPropsState);
 
   const onDialogClose = useRecoilCallback(
     ({ reset, set, snapshot }) =>
@@ -35,7 +34,7 @@ const Component: FCX = ({ className }) => {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Dialog open={open} onClose={onDialogClose} maxWidth='sm' fullWidth className={className}>
         <DialogContent className='content'>
-          <FixedButtons new={props.new} />
+          <FixedButtons />
           <DialogInputs />
         </DialogContent>
         <FooterActions onDialogClose={onDialogClose} />

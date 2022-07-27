@@ -73,8 +73,9 @@ const Component: FC = () => {
         const changed = props.event;
         set(calendarEventsState, (current) =>
           produce(current, (draft) => {
-            const index = draft.findIndex((event) => event.id === changed.id);
-            if (index !== -1) {
+            const index = draft.findIndex(({ id }) => id === changed.id);
+            if (index === -1) {
+              console.warn('紐づくレコードが見つかりませんでした', index);
               return;
             }
             draft[index] = {

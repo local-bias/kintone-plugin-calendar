@@ -1,12 +1,10 @@
-import React, { FCX } from 'react';
+import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { TextField } from '@mui/material';
 import produce from 'immer';
 import { dialogPropsState } from '../../../states/dialog';
 
-const Component: FCX = ({ className }) => {
-  const props = useRecoilValue(dialogPropsState);
-
+const Component: FC<{ title?: string }> = memo(({ title }) => {
   const onTitleChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> =
     useRecoilCallback(
       ({ set }) =>
@@ -26,11 +24,16 @@ const Component: FCX = ({ className }) => {
         variant='outlined'
         color='primary'
         label='イベントのタイトル'
-        value={props.event.title || ''}
+        value={title || ''}
         onChange={onTitleChange}
       />
     </div>
   );
+});
+
+const Container: FC = () => {
+  const props = useRecoilValue(dialogPropsState);
+  return <Component title={props.event.title} />;
 };
 
-export default Component;
+export default Container;

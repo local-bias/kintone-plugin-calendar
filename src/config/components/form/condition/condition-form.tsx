@@ -156,9 +156,8 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
           <h3>テーブルを表示する一覧の設定</h3>
           <ViewIdForm conditionIndex={index} />
           <small>
-            選択する一覧は必ず表示形式を「カスタマイズ」に設定し、「ページネーションを表示する」のチェックを外してください。
+            選択できるのは表示形式が「カスタマイズ」の一覧のみです。対象の一覧が選択肢に存在しない場合は、一度アプリを更新してください。
           </small>
-          <small>対象の一覧が選択肢に存在しない場合は、一度アプリを更新してください。</small>
         </div>
       </Suspense>
       <div>

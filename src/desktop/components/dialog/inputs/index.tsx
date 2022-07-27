@@ -1,9 +1,9 @@
 import React, { FCX } from 'react';
 import styled from '@emotion/styled';
 
-import Title from './inputs/title';
-import StartEnd from './inputs/start-end';
-import Note from './inputs/note';
+import Title from './title';
+import StartEnd from './start-end';
+import Note from './note';
 
 const Component: FCX = ({ className }) => (
   <div className={className}>

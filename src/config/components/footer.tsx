@@ -8,6 +8,9 @@ import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore
 
 import { storeStorage } from '@common/plugin';
 import { storageState } from '../states/plugin';
+import { getAppViews, updateAppViews } from '@common/kintone-api';
+import produce from 'immer';
+import { VIEW_ROOT_ID } from '@common/static';
 
 type Props = {
   onSaveButtonClick: () => void;
@@ -56,6 +59,21 @@ const Container: FC = () => {
     ({ snapshot }) =>
       async () => {
         const storage = await snapshot.getPromise(storageState);
+
+        const views = await getAppViews();
+
+        const newViews = produce(views, (draft) => {
+          for (const condition of storage?.conditions || []) {
+            for (const view of Object.values(draft)) {
+              if (view.id === condition.viewId && view.type === 'CUSTOM') {
+                view.html = `<div id='${VIEW_ROOT_ID}'></div>`;
+                view.pager = false;
+              }
+            }
+          }
+        });
+
+        await updateAppViews(newViews);
 
         storeStorage(storage!, () => true);
         enqueueSnackbar('設定を保存しました', {

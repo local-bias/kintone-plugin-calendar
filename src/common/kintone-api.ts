@@ -1,4 +1,5 @@
 import { KintoneRestAPIClient } from '@kintone/rest-api-client';
+import { ViewForParameter } from '@kintone/rest-api-client/lib/client/types';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { kx } from '@type/kintone.api';
 
@@ -184,11 +185,22 @@ export const getAppViews = async () => {
   const app = getAppId();
 
   if (!app) {
-    throw new Error('アプリのフィールド情報が取得できませんでした');
+    throw 'アプリのフィールド情報が取得できませんでした';
   }
 
   const client = new KintoneRestAPIClient();
   const { views } = await client.app.getViews({ app });
 
   return views;
+};
+
+export const updateAppViews = async (views: Record<string, ViewForParameter>) => {
+  const app = getAppId();
+
+  if (!app) {
+    throw 'アプリのフィールド情報が取得できませんでした';
+  }
+  const client = new KintoneRestAPIClient();
+
+  return client.app.updateViews({ app, views });
 };

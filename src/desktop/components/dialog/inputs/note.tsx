@@ -1,14 +1,11 @@
 import { TextField } from '@mui/material';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { dialogPropsState } from '../../../states/dialog';
 import produce from 'immer';
 import { pluginConditionState } from '../../../states/kintone';
 
-const Component: FC = () => {
-  const props = useRecoilValue(dialogPropsState);
-  const condition = useRecoilValue(pluginConditionState);
-
+const Component: FC<{ value: string }> = memo((props) => {
   const onNoteChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> =
     useRecoilCallback(
       ({ set }) =>
@@ -22,15 +19,21 @@ const Component: FC = () => {
       []
     );
 
+  return (
+    <div className='full'>
+      <TextField label='説明' multiline rows={4} value={props.value} onChange={onNoteChange} />
+    </div>
+  );
+});
+
+const Container: FC = () => {
+  const props = useRecoilValue(dialogPropsState);
+  const condition = useRecoilValue(pluginConditionState);
+
   if (!condition?.enablesNote) {
     return null;
   }
-
-  return (
-    <div className='full'>
-      <TextField label='説明' multiline rows={4} value={props.event.note} onChange={onNoteChange} />
-    </div>
-  );
+  return <Component value={props.event.note || ''} />;
 };
 
-export default Component;
+export default Container;
