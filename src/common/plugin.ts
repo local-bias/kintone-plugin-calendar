@@ -43,6 +43,8 @@ export const getNewCondition = (): kintone.plugin.Condition => ({
   enablesAllDay: true,
   allDayOption: '',
   enablesNote: false,
+  slotMinTime: '0:00:00',
+  slotMaxTime: '24:00:00',
   calendarEvent: {
     titleField: '',
     startField: '',

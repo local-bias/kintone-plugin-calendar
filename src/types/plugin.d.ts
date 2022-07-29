@@ -12,6 +12,8 @@ declare namespace kintone {
       enablesAllDay: boolean;
       allDayOption: string;
       enablesNote: boolean;
+      slotMaxTime: string;
+      slotMinTime: string;
       calendarEvent: {
         titleField: string;
         startField: string;

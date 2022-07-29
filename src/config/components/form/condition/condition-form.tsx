@@ -149,6 +149,30 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
     []
   );
 
+  const onSlotMinTimeChange: ChangeEventHandler<HTMLInputElement> = useRecoilCallback(
+    ({ set }) =>
+      (props) => {
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].slotMinTime = `${props.target.value}:00:00`;
+          })
+        );
+      },
+    []
+  );
+
+  const onSlotMaxTimeChange: ChangeEventHandler<HTMLInputElement> = useRecoilCallback(
+    ({ set }) =>
+      (props) => {
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].slotMaxTime = `${props.target.value}:00:00`;
+          })
+        );
+      },
+    []
+  );
+
   return (
     <div {...{ className }}>
       <Suspense fallback={<div>一覧情報を取得しています...</div>}>
@@ -229,7 +253,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
               value={condition.allDayOption}
             >
               {allDayOptions.map((code, i) => (
-                <MenuItem key={i} value={code}>
+                <MenuItem key={`allDayOptions-${code}`} value={code}>
                   {code}
                 </MenuItem>
               ))}
@@ -257,6 +281,91 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
             )}
           />
         )}
+      </div>
+      <div>
+        <h3>表示時間帯の設定</h3>
+        <TextField
+          label='開始'
+          select
+          variant='outlined'
+          color='primary'
+          onChange={onSlotMinTimeChange}
+          sx={{ width: '150px', marginRight: '1rem' }}
+          value={(condition.slotMinTime || '0:').split(':')[0]}
+        >
+          {[
+            '0',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12',
+            '13',
+            '14',
+            '15',
+            '16',
+            '17',
+            '18',
+            '19',
+            '20',
+            '21',
+            '22',
+            '23',
+            '24',
+          ].map((hour, i) => (
+            <MenuItem key={`slotMinTime-${hour}`} value={hour}>
+              {hour}時
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          label='終了'
+          select
+          variant='outlined'
+          color='primary'
+          onChange={onSlotMaxTimeChange}
+          sx={{ width: '150px' }}
+          value={(condition.slotMaxTime || '24:').split(':')[0]}
+        >
+          {[
+            '0',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12',
+            '13',
+            '14',
+            '15',
+            '16',
+            '17',
+            '18',
+            '19',
+            '20',
+            '21',
+            '22',
+            '23',
+            '24',
+          ].map((hour, i) => (
+            <MenuItem key={i} value={hour}>
+              {hour}時
+            </MenuItem>
+          ))}
+        </TextField>
       </div>
     </div>
   );

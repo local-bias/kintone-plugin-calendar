@@ -112,6 +112,8 @@ const Component: FC = () => {
       editable
       selectable
       selectMirror
+      slotMinTime={pluginCondition?.slotMinTime || '0:00:00'}
+      slotMaxTime={pluginCondition?.slotMaxTime || '24:00:00'}
       themeSystem='normal'
       select={onDateSelect}
       eventClick={onEventClick}
