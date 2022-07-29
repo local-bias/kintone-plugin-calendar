@@ -1,6 +1,6 @@
 {
   "manifest_version": 1,
-  "version": 10,
+  "version": 20,
   "type": "APP",
   "name": {
     "en": "calendar plugin",
