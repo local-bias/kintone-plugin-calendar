@@ -17,8 +17,8 @@ type Props = Readonly<{
 const Component: FCX<Props> = memo(({ className, views, viewId, onChange }) => (
   <div {...{ className }}>
     <TextField select label='一覧の名前' value={viewId} {...{ onChange }}>
-      {Object.entries(views).map(([name, { id }], i) => (
-        <MenuItem key={i} value={id}>
+      {Object.entries(views).map(([name, { id }]) => (
+        <MenuItem key={id} value={id}>
           {name}
         </MenuItem>
       ))}
