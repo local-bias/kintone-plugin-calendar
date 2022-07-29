@@ -5,12 +5,13 @@ import { RecoilRoot } from 'recoil';
 import Calendar from './calendar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { jaJP } from '@mui/material/locale';
+import { SnackbarProvider } from 'notistack';
 
+import { pluginConditionState } from '../states/kintone';
 import Observer from './observer';
 import Dialog from './dialog';
 import Fab from './fab';
-import { pluginConditionState } from '../states/kintone';
-import { SnackbarProvider } from 'notistack';
+import Sidebar from './sidebar';
 
 const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, condition }) => (
   <ErrorBoundary>
@@ -24,6 +25,7 @@ const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, co
           <Observer />
           <Dialog />
           <div className={className}>
+            <Sidebar />
             <div className='calendar'>
               <Calendar />
             </div>
@@ -38,6 +40,13 @@ const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, co
 const StyledComponent = styled(Component)`
   font-family: 'Noto Sans JP', 'Yu Gothic Medium', YuGothic, メイリオ;
   color: #41525c;
+
+  --fc-button-bg-color: #1976d2;
+  --fc-button-hover-bg-color: #1565c0;
+  --fc-button-active-bg-color: #0d47a1;
+  --fc-button-border-color: #fff;
+  --fc-button-hover-border-color: #fff;
+  --fc-button-active-border-color: #fff;
 
   padding: 1rem;
   display: flex;
