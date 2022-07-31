@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@common/components/error-boundary';
 import styled from '@emotion/styled';
-import React, { FC, FCX } from 'react';
+import React, { FC, FCX, Suspense } from 'react';
 import { RecoilRoot } from 'recoil';
 import Calendar from './calendar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -22,7 +22,9 @@ const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, co
     >
       <SnackbarProvider maxSnack={1}>
         <ThemeProvider theme={createTheme({}, jaJP)}>
-          <Observer />
+          <Suspense fallback={null}>
+            <Observer />
+          </Suspense>
           <Dialog />
           <div className={className}>
             <Sidebar />
@@ -47,6 +49,10 @@ const StyledComponent = styled(Component)`
   --fc-button-border-color: #fff;
   --fc-button-hover-border-color: #fff;
   --fc-button-active-border-color: #fff;
+
+  .fc .fc-timegrid-slot-minor {
+    border-style: none;
+  }
 
   padding: 1rem;
   display: flex;

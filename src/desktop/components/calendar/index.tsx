@@ -43,7 +43,9 @@ const Component: FC = () => {
     []
   );
 
-  const onEventAdd = (props: EventAddArg) => {};
+  const onEventAdd = (props: EventAddArg) => {
+    console.info('📅 イベントが追加されました', props);
+  };
 
   const onDateSelect = useRecoilCallback(
     ({ set }) =>
@@ -94,7 +96,9 @@ const Component: FC = () => {
     []
   );
 
-  const onEventRemove = (props: EventRemoveArg) => {};
+  const onEventRemove = (props: EventRemoveArg) => {
+    console.info('📅 イベントが削除されました', props);
+  };
 
   return (
     <FullCalendar
@@ -117,9 +121,10 @@ const Component: FC = () => {
       themeSystem='normal'
       select={onDateSelect}
       eventClick={onEventClick}
-      eventAdd={onEventAdd}
       eventChange={onEventChange}
+      eventAdd={onEventAdd}
       eventRemove={onEventRemove}
+      height='auto'
     />
   );
 };

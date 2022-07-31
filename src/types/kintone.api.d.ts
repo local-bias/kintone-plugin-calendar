@@ -6,6 +6,8 @@ import {
 import {
   OneOf as DefaultFieldProperty,
   CheckBox as DefaultCheckBox,
+  Dropdown as DefaultDropdown,
+  RadioButton as DefaultRadioButton,
 } from '@kintone/rest-api-client/lib/KintoneFields/types/property';
 import {
   OneOf as DefaultField,
@@ -33,6 +35,8 @@ declare namespace kx {
 
   namespace property {
     type CheckBox = DefaultCheckBox;
+    type Dropdown = DefaultDropdown;
+    type RadioButton = DefaultRadioButton;
   }
 
   namespace field {

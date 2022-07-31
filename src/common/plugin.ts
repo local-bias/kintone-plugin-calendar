@@ -51,5 +51,6 @@ export const getNewCondition = (): kintone.plugin.Condition => ({
     endField: '',
     allDayField: '',
     noteField: '',
+    categoryField: '',
   },
 });

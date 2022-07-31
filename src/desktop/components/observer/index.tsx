@@ -1,14 +1,15 @@
-import { kintoneClient } from '@common/kintone-api';
-import { getAppId } from '@lb-ribbit/kintone-xapp';
+import { getAllRecords } from '@common/kintone-rest-api';
+import { getAppId, getQuery } from '@lb-ribbit/kintone-xapp';
 import { FC, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { convertRecordIntoEvent } from '../../actions';
 import { calendarEventsState } from '../../states/calendar';
-import { loadingState, pluginConditionState } from '../../states/kintone';
+import { appPropertiesState, loadingState, pluginConditionState } from '../../states/kintone';
 
 const Component: FC = () => {
   const condition = useRecoilValue(pluginConditionState);
   const setEvents = useSetRecoilState(calendarEventsState);
+  const properties = useRecoilValue(appPropertiesState);
   const setLoading = useSetRecoilState(loadingState);
 
   useEffect(() => {
@@ -19,7 +20,7 @@ const Component: FC = () => {
       setLoading(true);
       try {
         const app = getAppId()!;
-        const query = `${condition.calendarEvent.endField} >= FROM_TODAY(-${60}, DAYS)`;
+        const query = (getQuery() || '').replace(/limit [0-9]+/g, '').replace(/offset [0-9]+/g, '');
         const fields = [
           '$id',
           condition.calendarEvent.titleField,
@@ -29,10 +30,21 @@ const Component: FC = () => {
           condition.calendarEvent.endField,
         ];
 
-        const records = await kintoneClient.record.getAllRecordsWithCursor({ app, query, fields });
-        console.log('🐁 初期レコード', { fields, records });
-        const events = records.map((record) => convertRecordIntoEvent(condition, record));
-        setEvents(events);
+        if (condition.calendarEvent.categoryField) {
+          fields.push(condition.calendarEvent.categoryField);
+        }
+
+        await getAllRecords({
+          app,
+          query,
+          fields,
+          onAdvance: (thisStepData) => {
+            const thisStepEvents = thisStepData.map((record) =>
+              convertRecordIntoEvent(condition, properties, record)
+            );
+            setEvents((current) => [...current, ...thisStepEvents]);
+          },
+        });
       } catch (error) {
         console.error('レコードの取得に失敗しました', error);
       } finally {

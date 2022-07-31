@@ -20,6 +20,7 @@ declare namespace kintone {
         endField: string;
         allDayField: string;
         noteField: string;
+        categoryField: string;
       };
     };
   }

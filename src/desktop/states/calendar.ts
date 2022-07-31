@@ -1,7 +1,7 @@
 import { EventInput } from '@fullcalendar/react';
 import { atom } from 'recoil';
 
-export type PluginCalendarEvent = EventInput & { note?: string };
+export type PluginCalendarEvent = EventInput & { note?: string; category?: string };
 
 const PREFIX = 'calendar';
 

@@ -1,5 +1,6 @@
+import { getUserDefinedFields } from '@common/kintone-api';
 import { kx } from '@type/kintone.api';
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
 
 const PREFIX = 'kintone';
 
@@ -16,4 +17,9 @@ export const loadingState = atom<boolean>({
 export const kintoneRecordsState = atom<kx.RecordData[]>({
   key: `${PREFIX}kintoneRecordsState`,
   default: [],
+});
+
+export const appPropertiesState = selector<kx.FieldProperties>({
+  key: `${PREFIX}appPropertiesState`,
+  get: () => getUserDefinedFields(),
 });

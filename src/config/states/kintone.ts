@@ -45,6 +45,23 @@ export const checkboxFieldsState = selector<kx.property.CheckBox[]>({
   },
 });
 
+export const selectableFieldsState = selector<
+  (kx.property.CheckBox | kx.property.Dropdown | kx.property.RadioButton)[]
+>({
+  key: `${PREFIX}selectableFieldsState`,
+  get: async ({ get }) => {
+    const fields = get(appFieldsState);
+    const targetFields = fields.filter((field) =>
+      ['CHECK_BOX', 'DROP_DOWN', 'RADIO_BUTTON'].includes(field.type)
+    );
+    return targetFields as (
+      | kx.property.CheckBox
+      | kx.property.Dropdown
+      | kx.property.RadioButton
+    )[];
+  },
+});
+
 const allAppViewsState = selector({
   key: 'allAppViewsState',
   get: async () => {

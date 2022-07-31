@@ -9,6 +9,7 @@ import {
   appFieldsState,
   checkboxFieldsState,
   dateTimeFieldsState,
+  selectableFieldsState,
   stringFieldsState,
 } from '../../../states/kintone';
 import { storageState } from '../../../states/plugin';
@@ -21,6 +22,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
   const stringFields = useRecoilValue(stringFieldsState);
   const dateTimeFields = useRecoilValue(dateTimeFieldsState);
   const checkboxFields = useRecoilValue(checkboxFieldsState);
+  const selectableFields = useRecoilValue(selectableFieldsState);
   const [allDayOptions, setAllDayOptions] = useState<string[]>([]);
 
   useEffect(() => {
@@ -104,6 +106,18 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
         set(storageState, (_, _storage = _!) =>
           produce(_storage, (draft) => {
             draft.conditions[index].calendarEvent.allDayField = field.code;
+          })
+        );
+      },
+    []
+  );
+
+  const onCategoryFieldChange = useRecoilCallback(
+    ({ set }) =>
+      (field: kx.FieldProperty | null) => {
+        set(storageState, (_, _storage = _!) =>
+          produce(_storage, (draft) => {
+            draft.conditions[index].calendarEvent.categoryField = field ? field.code : '';
           })
         );
       },
@@ -366,6 +380,20 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
             </MenuItem>
           ))}
         </TextField>
+      </div>
+      <div>
+        <h3>カテゴリー設定</h3>
+        <Autocomplete
+          value={appFields.find((field) => field.code === condition.calendarEvent.categoryField)}
+          sx={{ width: '350px' }}
+          options={selectableFields}
+          onChange={(_, option) => onCategoryFieldChange(option)}
+          getOptionLabel={(option) => option.label}
+          renderInput={(params) => (
+            <TextField {...params} label='対象フィールド' variant='outlined' color='primary' />
+          )}
+        />
+        <small>対象フィールド: チェックボックス、ドロップダウン、ラジオボタン</small>
       </div>
     </div>
   );
