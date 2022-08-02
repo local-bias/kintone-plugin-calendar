@@ -1,5 +1,6 @@
 import { EventInput } from '@fullcalendar/react';
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
+import { displayingCategoriesState } from './sidebar';
 
 export type PluginCalendarEvent = EventInput & { note?: string; category?: string };
 
@@ -15,4 +16,18 @@ export const calendarEventsState = atom<PluginCalendarEvent[]>({
       });
     },
   ],
+});
+
+export const filteredCalendarEventsState = selector<PluginCalendarEvent[]>({
+  key: `${PREFIX}filteredCalendarEventsState`,
+  get: ({ get }) => {
+    const allEvents = get(calendarEventsState);
+    const categories = get(displayingCategoriesState);
+
+    if (!categories) {
+      return allEvents;
+    }
+
+    return allEvents.filter((event) => !event.category || categories.includes(event.category));
+  },
 });

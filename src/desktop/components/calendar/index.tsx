@@ -11,15 +11,15 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import allLocales from '@fullcalendar/core/locales-all';
-import { calendarEventsState } from '../../states/calendar';
+import { calendarEventsState, filteredCalendarEventsState } from '../../states/calendar';
 import produce from 'immer';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
-import { completeCalendarEvent, convertEventApiIntoEventInput, updateRecord } from '../../actions';
-import { pluginConditionState } from '../../states/kintone';
+import { completeCalendarEvent, updateRecord } from '../../actions';
+import { loadingState, pluginConditionState } from '../../states/kintone';
 import { useSnackbar } from 'notistack';
 
 const Component: FC = () => {
-  const calendarEvents = useRecoilValue(calendarEventsState);
+  const calendarEvents = useRecoilValue(filteredCalendarEventsState);
   const pluginCondition = useRecoilValue(pluginConditionState);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -72,26 +72,39 @@ const Component: FC = () => {
   const onEventChange = useRecoilCallback(
     ({ set, snapshot }) =>
       async (props: EventChangeArg) => {
-        const changed = props.event;
-        set(calendarEventsState, (current) =>
-          produce(current, (draft) => {
-            const index = draft.findIndex(({ id }) => id === changed.id);
-            if (index === -1) {
-              console.warn('紐づくレコードが見つかりませんでした', index);
-              return;
-            }
-            draft[index] = {
-              ...draft[index],
-              start: changed.start || draft[index].start,
-              end: changed.end || draft[index].end,
-            };
-          })
-        );
+        set(loadingState, true);
 
-        const condition = await snapshot.getPromise(pluginConditionState);
-        const eventInput = convertEventApiIntoEventInput(props.event);
-        await updateRecord(eventInput, condition!);
-        console.info('レコードを更新しました');
+        try {
+          const changed = props.event;
+
+          const events = await snapshot.getPromise(calendarEventsState);
+          let index = 0;
+          const targetEvent = events.find(({ id }, i) => {
+            index = i;
+            return id === props.event.id;
+          });
+          if (!targetEvent) {
+            console.warn('更新対象レコードに紐づくカレンダーイベントの取得に失敗しました');
+            return;
+          }
+
+          const newEvent = {
+            ...targetEvent,
+            start: changed.start || targetEvent.start,
+            end: changed.end || targetEvent.end,
+          };
+          set(calendarEventsState, (current) => {
+            const newEvents = [...current];
+            newEvents[index] = newEvent;
+            return newEvents;
+          });
+
+          const condition = await snapshot.getPromise(pluginConditionState);
+          await updateRecord(newEvent, condition!);
+          console.info('レコードを更新しました');
+        } finally {
+          set(loadingState, false);
+        }
       },
     []
   );

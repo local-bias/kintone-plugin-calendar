@@ -1,14 +1,18 @@
 import React, { FCX } from 'react';
-import { Fab, Tooltip } from '@mui/material';
+import { CircularProgress, Fab, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import styled from '@emotion/styled';
-import { useRecoilCallback } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { completeCalendarEvent, getDefaultEndDate, getDefaultStartDate } from '../../actions';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { calendarEventsState } from '../../states/calendar';
 import produce from 'immer';
+import { loadingState } from '../../states/kintone';
 
 const Component: FCX = ({ className }) => {
+  const loading = useRecoilValue(loadingState);
+
   const onEventAdditionButtonClick = useRecoilCallback(
     ({ set }) =>
       () => {
@@ -42,7 +46,7 @@ const Component: FCX = ({ className }) => {
           aria-label='add'
           onClick={onEventAdditionButtonClick}
         >
-          <AddIcon />
+          {loading ? <HourglassEmptyIcon /> : <AddIcon />}
         </Fab>
       </Tooltip>
     </div>

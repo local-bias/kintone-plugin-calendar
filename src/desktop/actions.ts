@@ -70,22 +70,11 @@ export const convertEventIntoRecord = (
     record[calendarEvent.noteField] = { value: eventInput.note };
   }
   if (calendarEvent.categoryField) {
-    record[calendarEvent.categoryField] = { value: eventInput.category || '' };
+    record[calendarEvent.categoryField] = { value: eventInput.category };
   }
 
   console.log('♻ カレンダーイベントがkintoneレコードに変換されました', { eventInput, record });
   return record;
-};
-
-export const convertEventApiIntoEventInput = (api: EventApi): PluginCalendarEvent => {
-  return {
-    id: api.id,
-    start: api.start ?? undefined,
-    end: api.end ?? undefined,
-    title: api.title,
-    allDay: api.allDay,
-    backgroundColor: api.backgroundColor,
-  };
 };
 
 export const convertRecordIntoEvent = (

@@ -23,3 +23,26 @@ export const appPropertiesState = selector<kx.FieldProperties>({
   key: `${PREFIX}appPropertiesState`,
   get: () => getUserDefinedFields(),
 });
+
+export const calendarEventCategoryState = selector<string[] | null>({
+  key: `${PREFIX}calendarEventCategoryState`,
+  get: ({ get }) => {
+    const condition = get(pluginConditionState);
+    if (!condition || !condition.calendarEvent.categoryField) {
+      return null;
+    }
+
+    const properties = get(appPropertiesState);
+    const categoryProperty = properties[condition.calendarEvent.categoryField];
+
+    if (
+      categoryProperty.type !== 'CHECK_BOX' &&
+      categoryProperty.type !== 'RADIO_BUTTON' &&
+      categoryProperty.type !== 'DROP_DOWN'
+    ) {
+      return null;
+    }
+
+    return Object.keys(categoryProperty.options);
+  },
+});

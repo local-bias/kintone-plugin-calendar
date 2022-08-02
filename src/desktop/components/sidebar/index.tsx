@@ -1,11 +1,10 @@
 import styled from '@emotion/styled';
-import { Button } from '@mui/material';
-import produce from 'immer';
-import React, { FC, FCX } from 'react';
+import React, { FC, FCX, Suspense } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { calendarEventsState } from '../../states/calendar';
 import { sidebarExpandedState } from '../../states/sidebar';
 import { Squash as Hamburger } from 'hamburger-react';
+
+import Categories from './categories';
 
 const Component: FCX<{ expanded: boolean }> = ({ className, expanded }) => {
   const onToggleHamburger = useRecoilCallback(
@@ -23,10 +22,9 @@ const Component: FCX<{ expanded: boolean }> = ({ className, expanded }) => {
         <div className='content'>
           {expanded && (
             <>
-              <img src='https://loosedrawing.com/wp/wp-content/uploads/2022/01/b1166.png' />
-              <div>
-                ラジオボタンやチェックボックスに基づき、色分けされた複数カテゴリーのスケジュールを表示・非表示にできる機能をここに実装する予定です。
-              </div>
+              <Suspense fallback={null}>
+                <Categories />
+              </Suspense>
             </>
           )}
         </div>

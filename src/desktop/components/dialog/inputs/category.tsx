@@ -3,7 +3,11 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { MenuItem, TextField } from '@mui/material';
 import produce from 'immer';
 import { dialogPropsState } from '../../../states/dialog';
-import { appPropertiesState, pluginConditionState } from '../../../states/kintone';
+import {
+  appPropertiesState,
+  calendarEventCategoryState,
+  pluginConditionState,
+} from '../../../states/kintone';
 import { getEventBackgroundColor } from '../../../actions';
 import { COLORS } from '../../../static';
 
@@ -64,26 +68,7 @@ const Component: FC<{ category?: string; categories: string[] }> = memo(
 
 const Container: FC = () => {
   const props = useRecoilValue(dialogPropsState);
-  const properties = useRecoilValue(appPropertiesState);
-  const condition = useRecoilValue(pluginConditionState);
-
-  if (!condition || !condition.calendarEvent.categoryField) {
-    return null;
-  }
-
-  const property = properties[condition.calendarEvent.categoryField];
-  if (!property) {
-    return null;
-  }
-
-  let categories: string[] | null = null;
-  if (
-    property.type === 'CHECK_BOX' ||
-    property.type === 'DROP_DOWN' ||
-    property.type === 'RADIO_BUTTON'
-  ) {
-    categories = Object.keys(property.options);
-  }
+  const categories = useRecoilValue(calendarEventCategoryState);
 
   if (!categories) {
     return null;
