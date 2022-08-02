@@ -43,16 +43,37 @@ const StyledComponent = styled(Component)`
   font-family: 'Noto Sans JP', 'Yu Gothic Medium', YuGothic, メイリオ;
   color: #41525c;
 
-  --fc-button-bg-color: #1976d2;
-  --fc-button-hover-bg-color: #1565c0;
-  --fc-button-active-bg-color: #0d47a1;
-  --fc-button-border-color: #fff;
-  --fc-button-hover-border-color: #fff;
-  --fc-button-active-border-color: #fff;
+  --fc-button-bg-color: #fff;
+  --fc-button-hover-bg-color: #d2e3fc;
+  --fc-button-active-bg-color: #d2e3fc;
+  --fc-button-border-color: transparent;
+  --fc-button-hover-border-color: transparent;
+  --fc-button-active-border-color: transparent;
+  --fc-button-text-color: #41525c;
 
   .fc .fc-scrollgrid,
   .fc .fc-timegrid-slot-minor {
     border-style: none;
+  }
+
+  .fc-button {
+    transition: all 250ms ease;
+  }
+
+  .fc .fc-button:focus {
+    box-shadow: none !important;
+  }
+
+  .fc-today-button {
+    border: 1px solid #0004;
+    background-color: #fff;
+    color: #41525c;
+
+    &:disabled {
+      border: 1px solid #0002;
+      color: #0006;
+      background-color: #fff;
+    }
   }
 
   padding: 1rem;

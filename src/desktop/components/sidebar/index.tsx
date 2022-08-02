@@ -18,7 +18,7 @@ const Component: FCX<{ expanded: boolean }> = ({ className, expanded }) => {
   return (
     <div className={className}>
       <div className='container'>
-        <Hamburger toggled={expanded} onToggle={onToggleHamburger} color='#1976d2' />
+        <Hamburger toggled={expanded} onToggle={onToggleHamburger} color='#718291' />
         <div className='content'>
           {expanded && (
             <>
