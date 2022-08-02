@@ -35,16 +35,18 @@ const Component: FC<{ start: PluginCalendarEvent['start']; end: PluginCalendarEv
     return (
       <div>
         <DateTimePicker
+          ampm={false}
           renderInput={(props) => <TextField {...props} />}
           label='開始日時'
-          inputFormat='yyyy/MM/dd hh:mm a'
+          inputFormat='yyyy/MM/dd HH:mm'
           value={props.start}
           onChange={onStartChange}
         />
         <DateTimePicker
+          ampm={false}
           renderInput={(props) => <TextField {...props} />}
           label='終了日時'
-          inputFormat='yyyy/MM/dd hh:mm a'
+          inputFormat='yyyy/MM/dd HH:mm'
           value={props.end}
           onChange={onEndChange}
         />
