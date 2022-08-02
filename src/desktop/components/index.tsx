@@ -50,6 +50,7 @@ const StyledComponent = styled(Component)`
   --fc-button-hover-border-color: #fff;
   --fc-button-active-border-color: #fff;
 
+  .fc .fc-scrollgrid,
   .fc .fc-timegrid-slot-minor {
     border-style: none;
   }
