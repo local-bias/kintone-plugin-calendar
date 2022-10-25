@@ -1,3 +1,5 @@
+import produce from 'immer';
+
 /**
  * プラグインがアプリ単位で保存している設定情報を返却します
  */
@@ -54,3 +56,35 @@ export const getNewCondition = (): kintone.plugin.Condition => ({
     categoryField: '',
   },
 });
+
+export const getUpdatedStorage = <T extends keyof kintone.plugin.Condition>(
+  storage: kintone.plugin.Storage | null,
+  props: {
+    conditionIndex: number;
+    key: T;
+    value: kintone.plugin.Condition[T];
+  }
+) => {
+  const { conditionIndex, key, value } = props;
+  return produce(storage, (draft) => {
+    if (!draft) {
+      return;
+    }
+    draft.conditions[conditionIndex][key] = value;
+  });
+};
+
+export const getConditionField = <T extends keyof kintone.plugin.Condition>(
+  storage: kintone.plugin.Storage | null,
+  props: {
+    conditionIndex: number;
+    key: T;
+    defaultValue: NonNullable<kintone.plugin.Condition[T]>;
+  }
+): NonNullable<kintone.plugin.Condition[T]> => {
+  const { conditionIndex, key, defaultValue } = props;
+  if (!storage || !storage.conditions[conditionIndex]) {
+    return defaultValue;
+  }
+  return storage.conditions[conditionIndex][key] ?? defaultValue;
+};
