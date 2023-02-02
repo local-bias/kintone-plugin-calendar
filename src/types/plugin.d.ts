@@ -5,10 +5,12 @@ declare namespace kintone {
       conditions: Condition[];
     };
 
+    type ViewType = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay';
+
     /** プラグインの制御単位の設定情報🔌 */
     type Condition = {
       viewId: string;
-      initialView: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay';
+      initialView: ViewType;
       enablesAllDay: boolean;
       allDayOption: string;
       enablesNote: boolean;

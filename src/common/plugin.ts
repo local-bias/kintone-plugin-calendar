@@ -86,5 +86,8 @@ export const getConditionField = <T extends keyof kintone.plugin.Condition>(
   if (!storage || !storage.conditions[conditionIndex]) {
     return defaultValue;
   }
-  return storage.conditions[conditionIndex][key] ?? defaultValue;
+  return (
+    (storage.conditions[conditionIndex][key] as NonNullable<kintone.plugin.Condition[T]>) ??
+    defaultValue
+  );
 };
