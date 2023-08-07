@@ -2,7 +2,7 @@ import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { TextField } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import produce from 'immer';
+import { produce } from 'immer';
 import { dialogPropsState } from '../../../states/dialog';
 import { PluginCalendarEvent } from '../../../states/calendar';
 

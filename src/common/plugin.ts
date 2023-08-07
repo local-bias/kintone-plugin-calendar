@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 
 /**
  * プラグインがアプリ単位で保存している設定情報を返却します

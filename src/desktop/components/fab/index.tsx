@@ -7,7 +7,7 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { completeCalendarEvent, getDefaultEndDate, getDefaultStartDate } from '../../actions';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { calendarEventsState } from '../../states/calendar';
-import produce from 'immer';
+import { produce } from 'immer';
 import { loadingState } from '../../states/kintone';
 
 const Component: FCX = ({ className }) => {

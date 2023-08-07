@@ -1,7 +1,7 @@
 import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { MenuItem, TextField } from '@mui/material';
-import produce from 'immer';
+import { produce } from 'immer';
 import { dialogPropsState } from '../../../states/dialog';
 import {
   appPropertiesState,

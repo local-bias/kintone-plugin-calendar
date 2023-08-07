@@ -12,7 +12,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import allLocales from '@fullcalendar/core/locales-all';
 import { calendarEventsState, filteredCalendarEventsState } from '../../states/calendar';
-import produce from 'immer';
+import { produce } from 'immer';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { completeCalendarEvent, updateRecord } from '../../actions';
 import { loadingState, pluginConditionState } from '../../states/kintone';

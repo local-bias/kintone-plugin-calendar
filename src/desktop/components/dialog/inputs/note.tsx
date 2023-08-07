@@ -2,7 +2,7 @@ import { TextField } from '@mui/material';
 import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { dialogPropsState } from '../../../states/dialog';
-import produce from 'immer';
+import { produce } from 'immer';
 import { pluginConditionState } from '../../../states/kintone';
 
 const Component: FC<{ value: string }> = memo((props) => {

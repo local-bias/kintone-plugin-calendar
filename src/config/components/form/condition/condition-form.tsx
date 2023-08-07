@@ -2,7 +2,7 @@ import React, { ChangeEventHandler, FCX, Suspense, useEffect, useState } from 'r
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import styled from '@emotion/styled';
 import { Autocomplete, FormControlLabel, MenuItem, Switch, TextField } from '@mui/material';
-import produce from 'immer';
+import { produce } from 'immer';
 
 import { kx } from '@type/kintone.api';
 import {

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import produce from 'immer';
+import { produce } from 'immer';
 import { Button, DialogActions } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
