@@ -1,4 +1,4 @@
-import { getUserDefinedFields } from '@common/kintone-api';
+import { getUserDefinedFields } from '@/common/kintone-api';
 import { kx } from '@type/kintone.api';
 import { atom, selector } from 'recoil';
 

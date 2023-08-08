@@ -1,4 +1,4 @@
-import { ErrorBoundary } from '@common/components/error-boundary';
+import { ErrorBoundary } from '@/common/components/error-boundary';
 import styled from '@emotion/styled';
 import React, { FC, FCX, Suspense } from 'react';
 import { RecoilRoot } from 'recoil';

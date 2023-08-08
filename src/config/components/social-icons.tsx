@@ -5,7 +5,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HomeIcon from '@mui/icons-material/Home';
 
-import { URL_HOMEPAGE, URL_TWITTER, URL_GITHUB } from '@common/static';
+import { URL_HOMEPAGE, URL_TWITTER, URL_GITHUB } from '@/common/static';
 
 import GradientButton from './gradient-button';
 

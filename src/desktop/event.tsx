@@ -1,6 +1,6 @@
 import React from 'react';
-import { restoreStorage } from '@common/plugin';
-import { VIEW_ROOT_ID } from '@common/static';
+import { restoreStorage } from '@/common/plugin';
+import { VIEW_ROOT_ID } from '@/common/static';
 import { createRoot } from 'react-dom/client';
 
 import App from './components';

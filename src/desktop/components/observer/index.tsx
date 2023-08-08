@@ -1,4 +1,4 @@
-import { getAllRecords } from '@common/kintone-rest-api';
+import { getAllRecords } from '@/common/kintone-rest-api';
 import { getAppId, getQuery } from '@lb-ribbit/kintone-xapp';
 import { FC, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';

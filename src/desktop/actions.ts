@@ -1,9 +1,9 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { DateTime } from 'luxon';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 
 import { kx } from '@type/kintone.api';
-import { kintoneClient } from '@common/kintone-api';
+import { kintoneClient } from '@/common/kintone-api';
 
 import { PluginCalendarEvent } from './states/calendar';
 import { DateInput, EventApi, EventInput } from '@fullcalendar/react';
