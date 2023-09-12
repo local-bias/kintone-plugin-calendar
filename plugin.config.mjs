@@ -1,7 +1,7 @@
 const hp = 'https://konomi.app/';
 const commonCdn = 'https://cdn.jsdelivr.net/gh/local-bias/kintone-cdn@latest';
 const cdn = 'https://cdn.jsdelivr.net/gh/local-bias/kintone-plugin-calendar@latest';
-const localhost = 'https://127.0.0.1:5500';
+const localhost = 'https://127.0.0.1:8487';
 
 /** @type {import('./src/types/plugin-config').PluginConfig} */
 export default {
@@ -40,9 +40,18 @@ export default {
       },
     },
     dev: {
-      desktop: { js: [`${localhost}/dist/dev/desktop/index.js`] },
-      mobile: { js: [`${localhost}/dist/dev/desktop/index.js`] },
-      config: { js: [`${localhost}/dist/dev/config/index.js`] },
+      desktop: {
+        js: [`${localhost}/dist/dev/desktop/index.js`],
+        css: [`${localhost}/dist/dev/desktop/index.css`],
+      },
+      mobile: {
+        js: [`${localhost}/dist/dev/desktop/index.js`],
+        css: [`${localhost}/dist/dev/desktop/index.css`],
+      },
+      config: {
+        js: [`${localhost}/dist/dev/config/index.js`],
+        css: [`${localhost}/dist/dev/config/index.css`],
+      },
     },
     prod: {
       desktop: { js: [`${cdn}/cdn/desktop.js`] },
