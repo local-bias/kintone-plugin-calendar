@@ -3,7 +3,7 @@
  */
 
 /*
-import { EventApi, EventInput } from '@fullcalendar/react';
+import { EventApi, EventInput } from '@fullcalendar/core';
 import { kx } from '@type/kintone.api';
 import { DateTime } from 'luxon';
 

@@ -2,7 +2,7 @@ import React, { ChangeEventHandler, memo, FC, FCX } from 'react';
 import styled from '@emotion/styled';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { produce } from 'immer';
-import { ViewForResponse } from '@kintone/rest-api-client/lib/client/types';
+import { ViewForResponse } from '@kintone/rest-api-client/lib/src/client/types';
 import { MenuItem, TextField } from '@mui/material';
 import { customViewsState } from '../../../states/kintone';
 import { storageState } from '../../../states/plugin';

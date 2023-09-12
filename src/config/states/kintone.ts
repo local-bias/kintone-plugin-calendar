@@ -1,7 +1,7 @@
 import { selector } from 'recoil';
 import { getAppViews, getUserDefinedFields } from '@/common/kintone-api';
 import { kx } from '../../types/kintone.api';
-import { ViewForResponse } from '@kintone/rest-api-client/lib/client/types';
+import { ViewForResponse } from '@kintone/rest-api-client/lib/src/client/types';
 
 const PREFIX = 'kintone';
 

@@ -9,7 +9,7 @@ import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore
 import { storeStorage } from '@common/plugin';
 import { loadingState, storageState } from '../states/plugin';
 import { getAppViews, updateAppViews } from '@common/kintone-api';
-import produce from 'immer';
+import { produce } from 'immer';
 import { VIEW_ROOT_ID } from '@common/static';
 
 type Props = {

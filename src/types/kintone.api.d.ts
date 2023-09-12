@@ -2,22 +2,22 @@ import {
   App as DefaultApp,
   Record as DefaultRecord,
   Layout as DefaultLayout,
-} from '@kintone/rest-api-client/lib/client/types';
+} from '@kintone/rest-api-client/lib/src/client/types';
 import {
   OneOf as DefaultFieldProperty,
   CheckBox as DefaultCheckBox,
   Dropdown as DefaultDropdown,
   RadioButton as DefaultRadioButton,
-} from '@kintone/rest-api-client/lib/KintoneFields/types/property';
+} from '@kintone/rest-api-client/lib/src/KintoneFields/types/property';
 import {
   OneOf as DefaultField,
   Creator as DefaultCreator,
   UserSelect as DefaultUserSelect,
-} from '@kintone/rest-api-client/lib/KintoneFields/types/field';
+} from '@kintone/rest-api-client/lib/src/KintoneFields/types/field';
 import {
   OneOf as DefaultLayoutField,
   Label as DefaultLayoutLabel,
-} from '@kintone/rest-api-client/lib/KintoneFields/types/fieldLayout';
+} from '@kintone/rest-api-client/lib/src/KintoneFields/types/fieldLayout';
 
 declare namespace kx {
   type App = DefaultApp;

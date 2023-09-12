@@ -1,5 +1,5 @@
 import { KintoneRestAPIClient } from '@kintone/rest-api-client';
-import { ViewForParameter } from '@kintone/rest-api-client/lib/client/types';
+import { ViewForParameter } from '@kintone/rest-api-client/lib/src/client/types';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { kx } from '@type/kintone.api';
 

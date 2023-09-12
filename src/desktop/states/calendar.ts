@@ -1,4 +1,4 @@
-import { EventInput } from '@fullcalendar/react';
+import { EventInput } from '@fullcalendar/core';
 import { atom, selector } from 'recoil';
 import { displayingCategoriesState } from './sidebar';
 

@@ -6,7 +6,7 @@ import { kx } from '@type/kintone.api';
 import { kintoneClient } from '@/common/kintone-api';
 
 import { PluginCalendarEvent } from './states/calendar';
-import { DateInput, EventApi, EventInput } from '@fullcalendar/react';
+import { DateInput, EventApi, EventInput } from '@fullcalendar/core';
 import { COLORS } from './static';
 
 export const getDefaultStartDate = (): Date => {
