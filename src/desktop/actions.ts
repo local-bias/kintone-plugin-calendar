@@ -173,3 +173,20 @@ const convertCalendarDateIntoKintoneDate = (eventDate: DateInput) => {
   }
   return eventDate;
 };
+
+export const dateInputToDateTime = (dateInput: DateInput): DateTime => {
+  if (typeof dateInput === 'string') {
+    return DateTime.fromISO(dateInput);
+  } else if (typeof dateInput === 'number') {
+    return DateTime.fromSeconds(dateInput);
+  } else if (Array.isArray(dateInput)) {
+    return DateTime.local(dateInput[0], dateInput[1], dateInput[2]);
+  } else if (typeof dateInput === 'object') {
+    return DateTime.fromJSDate(dateInput);
+  }
+  return dateInput;
+};
+
+export const dateTimeToDateInput = (dateTime: DateTime): DateInput => {
+  return dateTime.toJSDate();
+};

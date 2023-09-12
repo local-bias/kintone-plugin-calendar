@@ -1,19 +1,22 @@
 import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { TextField } from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { produce } from 'immer';
 import { dialogPropsState } from '../../../states/dialog';
 import { PluginCalendarEvent } from '../../../states/calendar';
+import { DateTimePicker } from '@/common/components/datetime-picker';
+import { DateTime } from 'luxon';
+import { dateInputToDateTime, dateTimeToDateInput } from '@/desktop/actions';
 
 const Component: FC<{ start: PluginCalendarEvent['start']; end: PluginCalendarEvent['end'] }> =
   memo((props) => {
     const onStartChange = useRecoilCallback(
       ({ set }) =>
-        (date: any) => {
+        (date: DateTime | null) => {
           set(dialogPropsState, (current) =>
             produce(current, (draft) => {
-              draft.event.start = date;
+              if (date) {
+                draft.event.start = dateTimeToDateInput(date);
+              }
             })
           );
         },
@@ -22,10 +25,12 @@ const Component: FC<{ start: PluginCalendarEvent['start']; end: PluginCalendarEv
 
     const onEndChange = useRecoilCallback(
       ({ set }) =>
-        (date: any) => {
+        (date: DateTime | null) => {
           set(dialogPropsState, (current) =>
             produce(current, (draft) => {
-              draft.event.end = date;
+              if (date) {
+                draft.event.end = dateTimeToDateInput(date);
+              }
             })
           );
         },
@@ -36,18 +41,14 @@ const Component: FC<{ start: PluginCalendarEvent['start']; end: PluginCalendarEv
       <div>
         <DateTimePicker
           ampm={false}
-          renderInput={(props) => <TextField {...props} />}
           label='開始日時'
-          inputFormat='yyyy/MM/dd HH:mm'
-          value={props.start}
+          value={props.start ? dateInputToDateTime(props.start) : DateTime.local()}
           onChange={onStartChange}
         />
         <DateTimePicker
           ampm={false}
-          renderInput={(props) => <TextField {...props} />}
           label='終了日時'
-          inputFormat='yyyy/MM/dd HH:mm'
-          value={props.end}
+          value={props.end ? dateInputToDateTime(props.end) : DateTime.local()}
           onChange={onEndChange}
         />
       </div>

@@ -1,4 +1,5 @@
 import Launcher from '@/common/launcher';
+import './styles.css';
 
 import event from './event';
 

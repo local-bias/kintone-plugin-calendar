@@ -6,11 +6,11 @@ import { Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 
-import { storeStorage } from '@common/plugin';
+import { storeStorage } from '@/common/plugin';
 import { loadingState, storageState } from '../states/plugin';
-import { getAppViews, updateAppViews } from '@common/kintone-api';
+import { getAppViews, updateAppViews } from '@/common/kintone-api';
 import { produce } from 'immer';
-import { VIEW_ROOT_ID } from '@common/static';
+import { VIEW_ROOT_ID } from '@/common/static';
 
 type Props = {
   onSaveButtonClick: () => void;

@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import FullCalendar, {
+import FullCalendar from '@fullcalendar/react';
+import {
   DateSelectArg,
   EventAddArg,
   EventChangeArg,
