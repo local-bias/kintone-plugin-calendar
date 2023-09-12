@@ -1,6 +1,5 @@
 const hp = 'https://konomi.app/';
-const commonCdn = 'https://cdn.jsdelivr.net/gh/local-bias/kintone-cdn@latest';
-const cdn = 'https://cdn.jsdelivr.net/gh/local-bias/kintone-plugin-calendar@latest';
+const commonCdn = 'https://kintone-plugin.konomi.app/common';
 const localhost = 'https://127.0.0.1:8487';
 
 /** @type {import('./src/types/plugin-config').PluginConfig} */
@@ -8,7 +7,7 @@ export default {
   manifest: {
     base: {
       manifest_version: 1,
-      version: '1.0.0',
+      version: '0.2.0',
       type: 'APP',
       name: {
         en: 'calendar plugin',
@@ -26,18 +25,13 @@ export default {
         en: hp,
       },
       desktop: {
-        js: [`${commonCdn}/dist/desktop.js`],
+        js: [`${commonCdn}/desktop.js`],
         css: [
           'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap',
         ],
       },
-      mobile: { js: [`${commonCdn}/dist/desktop.js`], css: [] },
-      config: {
-        html: 'config.html',
-        js: [`${commonCdn}/dist/config.js`],
-        css: [],
-        required_params: [],
-      },
+      mobile: { js: [`${commonCdn}/desktop.js`], css: [] },
+      config: { html: 'config.html', js: [`${commonCdn}/config.js`], css: [], required_params: [] },
     },
     dev: {
       desktop: {
@@ -54,9 +48,9 @@ export default {
       },
     },
     prod: {
-      desktop: { js: [`${cdn}/cdn/desktop.js`] },
-      mobile: { js: [`${cdn}/cdn/desktop.js`] },
-      config: { js: [`${cdn}/cdn/config.js`] },
+      desktop: { js: [`desktop.js`], css: [`desktop.css`] },
+      mobile: { js: [`desktop.js`], css: [`desktop.css`] },
+      config: { js: [`config.js`], css: [`config.css`] },
     },
   },
 };
