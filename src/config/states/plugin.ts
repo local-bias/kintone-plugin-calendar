@@ -4,7 +4,7 @@ import { atom } from 'recoil';
 
 const PREFIX = 'plugin';
 
-export const storageState = atom<kintone.plugin.Storage | null>({
+export const storageState = atom<kintone.plugin.Storage>({
   key: `${PREFIX}storageState`,
   default: restoreStorage(PLUGIN_ID),
 });

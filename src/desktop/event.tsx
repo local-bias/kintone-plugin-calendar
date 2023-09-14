@@ -4,11 +4,11 @@ import { VIEW_ROOT_ID } from '@/common/static';
 import { createRoot } from 'react-dom/client';
 
 import App from './components';
+import { listener } from '@/common/listener';
+import { PLUGIN_ID } from '@/common/global';
 
-const events: launcher.Events = ['app.record.index.show'];
-
-const action: launcher.Action = async (event, pluginId) => {
-  const config = restoreStorage(pluginId);
+listener.add(['app.record.index.show'], (event) => {
+  const config = restoreStorage(PLUGIN_ID);
 
   const root = document.getElementById(VIEW_ROOT_ID);
   if (!root) {
@@ -23,6 +23,4 @@ const action: launcher.Action = async (event, pluginId) => {
   createRoot(root).render(<App condition={found} />);
 
   return event;
-};
-
-export default { events, action };
+});

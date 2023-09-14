@@ -184,27 +184,3 @@ export const someFieldValue = (field: kintoneAPI.RecordData[string], searchValue
       return field.value && ~field.value.indexOf(searchValue);
   }
 };
-
-export const getAppViews = async () => {
-  const app = getAppId();
-
-  if (!app) {
-    throw 'アプリのフィールド情報が取得できませんでした';
-  }
-
-  const client = new KintoneRestAPIClient();
-  const { views } = await client.app.getViews({ app });
-
-  return views;
-};
-
-export const updateAppViews = async (views: Record<string, ViewForParameter>) => {
-  const app = getAppId();
-
-  if (!app) {
-    throw 'アプリのフィールド情報が取得できませんでした';
-  }
-  const client = new KintoneRestAPIClient();
-
-  return client.app.updateViews({ app, views });
-};
