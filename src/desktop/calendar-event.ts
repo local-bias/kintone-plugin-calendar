@@ -61,7 +61,7 @@ export class PluginCalendarEvent {
     });
   }
 
-  public static fromKintoneRecord(condition: kintone.plugin.Condition, record: kx.RecordData) {
+  public static fromKintoneRecord(condition: kintone.plugin.Condition, record: kintoneAPI.RecordData) {
     const recordId = record.$id.value as string | undefined;
     if (!recordId) {
       throw 'レコードIDの取得に失敗しました';
@@ -85,7 +85,7 @@ export class PluginCalendarEvent {
     return new PluginCalendarEvent(calendarEvent as ConstructorProps);
   }
 
-  public toKintoneRecord(condition: kintone.plugin.Condition): kx.RecordData {
+  public toKintoneRecord(condition: kintone.plugin.Condition): kintoneAPI.RecordData {
     const { calendarEvent } = condition;
     const start = this._start ? DateTime.fromJSDate(this._start as Date).toISO() : null;
     const end = this._end ? DateTime.fromJSDate(this._end as Date).toISO() : null;

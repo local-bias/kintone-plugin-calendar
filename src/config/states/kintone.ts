@@ -1,14 +1,22 @@
 import { selector } from 'recoil';
-import { getAppViews, getUserDefinedFields } from '@/common/kintone-api';
-import { kx } from '../../types/kintone.api';
+import { getAppViews } from '@/common/kintone-api';
 import { ViewForResponse } from '@kintone/rest-api-client/lib/src/client/types';
+import { getAppId } from '@lb-ribbit/kintone-xapp';
+import { getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
+import { GUEST_SPACE_ID } from '@/common/global';
 
 const PREFIX = 'kintone';
 
-export const appFieldsState = selector<kx.FieldProperty[]>({
+export const appFieldsState = selector<kintoneAPI.FieldProperty[]>({
   key: `${PREFIX}appFieldsState`,
   get: async () => {
-    const properties = await getUserDefinedFields();
+    const app = getAppId()!;
+    const { properties } = await getFormFields({
+      app,
+      preview: true,
+      guestSpaceId: GUEST_SPACE_ID,
+      debug: process.env.NODE_ENV === 'development',
+    });
 
     const values = Object.values(properties);
 
@@ -16,7 +24,7 @@ export const appFieldsState = selector<kx.FieldProperty[]>({
   },
 });
 
-export const dateTimeFieldsState = selector<kx.FieldProperty[]>({
+export const dateTimeFieldsState = selector<kintoneAPI.FieldProperty[]>({
   key: `${PREFIX}dateTimeFieldsState`,
   get: async ({ get }) => {
     const fields = get(appFieldsState);
@@ -25,28 +33,32 @@ export const dateTimeFieldsState = selector<kx.FieldProperty[]>({
   },
 });
 
-export const stringFieldsState = selector<kx.FieldProperty[]>({
+export const stringFieldsState = selector<kintoneAPI.FieldProperty[]>({
   key: `${PREFIX}stringFieldsState`,
   get: async ({ get }) => {
     const fields = get(appFieldsState);
 
-    const types: kx.FieldPropertyType[] = ['SINGLE_LINE_TEXT', 'MULTI_LINE_TEXT', 'RICH_TEXT'];
+    const types: kintoneAPI.FieldPropertyType[] = [
+      'SINGLE_LINE_TEXT',
+      'MULTI_LINE_TEXT',
+      'RICH_TEXT',
+    ];
 
     return fields.filter((field) => types.includes(field.type));
   },
 });
 
-export const checkboxFieldsState = selector<kx.property.CheckBox[]>({
+export const checkboxFieldsState = selector<kintoneAPI.property.CheckBox[]>({
   key: `${PREFIX}checkboxFieldsState`,
   get: async ({ get }) => {
     const fields = get(appFieldsState);
     const checkboxFields = fields.filter((field) => field.type === 'CHECK_BOX');
-    return checkboxFields as kx.property.CheckBox[];
+    return checkboxFields as kintoneAPI.property.CheckBox[];
   },
 });
 
 export const selectableFieldsState = selector<
-  (kx.property.CheckBox | kx.property.Dropdown | kx.property.RadioButton)[]
+  (kintoneAPI.property.CheckBox | kintoneAPI.property.Dropdown | kintoneAPI.property.RadioButton)[]
 >({
   key: `${PREFIX}selectableFieldsState`,
   get: async ({ get }) => {
@@ -55,9 +67,9 @@ export const selectableFieldsState = selector<
       ['CHECK_BOX', 'DROP_DOWN', 'RADIO_BUTTON'].includes(field.type)
     );
     return targetFields as (
-      | kx.property.CheckBox
-      | kx.property.Dropdown
-      | kx.property.RadioButton
+      | kintoneAPI.property.CheckBox
+      | kintoneAPI.property.Dropdown
+      | kintoneAPI.property.RadioButton
     )[];
   },
 });

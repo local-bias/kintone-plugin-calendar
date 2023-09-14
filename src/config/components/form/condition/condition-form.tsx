@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { Autocomplete, FormControlLabel, MenuItem, Switch, TextField } from '@mui/material';
 import { produce } from 'immer';
 
-import { kx } from '@type/kintone.api';
 import {
   appFieldsState,
   checkboxFieldsState,
@@ -14,6 +13,7 @@ import {
 } from '../../../states/kintone';
 import { storageState } from '../../../states/plugin';
 import ViewIdForm from './view-id';
+import { kintoneAPI } from '@konomi-app/kintone-utilities';
 
 type ContainerProps = { condition: kintone.plugin.Condition; index: number };
 
@@ -42,7 +42,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
 
   const onTitleFieldChange = useRecoilCallback(
     ({ set }) =>
-      (field: kx.FieldProperty | null) => {
+      (field: kintoneAPI.FieldProperty | null) => {
         if (!field) {
           return;
         }
@@ -57,7 +57,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
 
   const onStartFieldChange = useRecoilCallback(
     ({ set }) =>
-      (field: kx.FieldProperty | null) => {
+      (field: kintoneAPI.FieldProperty | null) => {
         if (!field) {
           return;
         }
@@ -72,7 +72,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
 
   const onEndFieldChange = useRecoilCallback(
     ({ set }) =>
-      (field: kx.FieldProperty | null) => {
+      (field: kintoneAPI.FieldProperty | null) => {
         if (!field) {
           return;
         }
@@ -99,7 +99,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
 
   const onAllDayFieldChange = useRecoilCallback(
     ({ set }) =>
-      (field: kx.FieldProperty | null) => {
+      (field: kintoneAPI.FieldProperty | null) => {
         if (!field) {
           return;
         }
@@ -114,7 +114,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
 
   const onCategoryFieldChange = useRecoilCallback(
     ({ set }) =>
-      (field: kx.FieldProperty | null) => {
+      (field: kintoneAPI.FieldProperty | null) => {
         set(storageState, (_, _storage = _!) =>
           produce(_storage, (draft) => {
             draft.conditions[index].calendarEvent.categoryField = field ? field.code : '';
@@ -138,7 +138,7 @@ const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
 
   const onNoteFieldChange = useRecoilCallback(
     ({ set }) =>
-      (field: kx.FieldProperty | null) => {
+      (field: kintoneAPI.FieldProperty | null) => {
         if (!field) {
           return;
         }

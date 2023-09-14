@@ -2,12 +2,12 @@ import { produce } from 'immer';
 import { DateTime } from 'luxon';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 
-import { kx } from '@type/kintone.api';
 import { kintoneClient } from '@/common/kintone-api';
 
 import { PluginCalendarEvent } from './states/calendar';
-import { DateInput, EventApi, EventInput } from '@fullcalendar/core';
+import { DateInput } from '@fullcalendar/core';
 import { COLORS } from './static';
+import { kintoneAPI } from '@konomi-app/kintone-utilities';
 
 export const getDefaultStartDate = (): Date => {
   const now = DateTime.local();
@@ -79,8 +79,8 @@ export const convertEventIntoRecord = (
 
 export const convertRecordIntoEvent = (
   condition: kintone.plugin.Condition,
-  properties: kx.FieldProperties,
-  record: kx.RecordData
+  properties: kintoneAPI.FieldProperties,
+  record: kintoneAPI.RecordData
 ): PluginCalendarEvent => {
   const calendarEvent: PluginCalendarEvent = {
     id: record.$id.value as string | undefined,
@@ -137,9 +137,9 @@ export const updateRecord = async (
 };
 
 export const getEventBackgroundColor = (
-  value: kx.RecordData[string]['value'] | undefined,
+  value: kintoneAPI.RecordData[string]['value'] | undefined,
   condition: kintone.plugin.Condition,
-  properties: kx.FieldProperties
+  properties: kintoneAPI.FieldProperties
 ) => {
   if (!value) {
     return COLORS[0];
