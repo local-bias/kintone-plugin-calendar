@@ -1,12 +1,12 @@
+import { PLUGIN_ID } from '@/common/global';
+import { restoreStorage } from '@/common/plugin';
 import { atom } from 'recoil';
 
 const PREFIX = 'plugin';
 
-export const pluginIdState = atom<string>({ key: `${PREFIX}pluginIdState`, default: '' });
-
 export const storageState = atom<kintone.plugin.Storage | null>({
   key: `${PREFIX}storageState`,
-  default: null,
+  default: restoreStorage(PLUGIN_ID),
 });
 
 export const loadingState = atom<boolean>({
