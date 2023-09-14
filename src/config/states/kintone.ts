@@ -1,8 +1,7 @@
 import { selector } from 'recoil';
-import { getAppViews } from '@/common/kintone-api';
 import { ViewForResponse } from '@kintone/rest-api-client/lib/src/client/types';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
-import { getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
+import { getFormFields, getViews, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/common/global';
 
 const PREFIX = 'kintone';
@@ -79,11 +78,17 @@ export const selectableFieldsState = selector<
   },
 });
 
-const allAppViewsState = selector({
+const allAppViewsState = selector<Record<string, kintoneAPI.view.Response>>({
   key: 'allAppViewsState',
   get: async () => {
-    const allViews = await getAppViews();
-    return allViews;
+    const app = getAppId()!;
+    const { views } = await getViews({
+      app,
+      preview: true,
+      guestSpaceId: GUEST_SPACE_ID,
+      debug: process.env.NODE_ENV === 'development',
+    });
+    return views;
   },
 });
 
