@@ -24,16 +24,21 @@ export const appFieldsState = selector<kintoneAPI.FieldProperty[]>({
   },
 });
 
-export const dateTimeFieldsState = selector<kintoneAPI.FieldProperty[]>({
+export const dateTimeFieldsState = selector<kintoneAPI.property.DateTime[]>({
   key: `${PREFIX}dateTimeFieldsState`,
   get: async ({ get }) => {
     const fields = get(appFieldsState);
 
-    return fields.filter((field) => field.type === 'DATETIME');
+    return fields.filter((field) => field.type === 'DATETIME') as kintoneAPI.property.DateTime[];
   },
 });
 
-export const stringFieldsState = selector<kintoneAPI.FieldProperty[]>({
+type TextFieldProperty =
+  | kintoneAPI.property.SingleLineText
+  | kintoneAPI.property.MultiLineText
+  | kintoneAPI.property.RichText;
+
+export const stringFieldsState = selector<TextFieldProperty[]>({
   key: `${PREFIX}stringFieldsState`,
   get: async ({ get }) => {
     const fields = get(appFieldsState);
@@ -44,7 +49,7 @@ export const stringFieldsState = selector<kintoneAPI.FieldProperty[]>({
       'RICH_TEXT',
     ];
 
-    return fields.filter((field) => types.includes(field.type));
+    return fields.filter((field) => types.includes(field.type)) as TextFieldProperty[];
   },
 });
 
