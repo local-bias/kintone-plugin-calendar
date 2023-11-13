@@ -2,7 +2,7 @@ import { produce } from 'immer';
 import { DateTime } from 'luxon';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 
-import { kintoneClient } from '@/common/kintone-api';
+import { kintoneClient } from '@/desktop/kintone-api';
 
 import { PluginCalendarEvent } from './states/calendar';
 import { DateInput } from '@fullcalendar/core';

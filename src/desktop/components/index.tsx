@@ -1,4 +1,4 @@
-import { ErrorBoundary } from '@/common/components/error-boundary';
+import { PluginErrorBoundary } from '@/lib/components/error-boundary';
 import styled from '@emotion/styled';
 import React, { FC, FCX, Suspense } from 'react';
 import { RecoilRoot } from 'recoil';
@@ -14,7 +14,7 @@ import Fab from './fab';
 import Sidebar from './sidebar';
 
 const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, condition }) => (
-  <ErrorBoundary>
+  <PluginErrorBoundary>
     <RecoilRoot
       initializeState={({ set }) => {
         set(pluginConditionState, condition);
@@ -36,7 +36,7 @@ const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, co
         </ThemeProvider>
       </SnackbarProvider>
     </RecoilRoot>
-  </ErrorBoundary>
+  </PluginErrorBoundary>
 );
 
 const StyledComponent = styled(Component)`

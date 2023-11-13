@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { LOCAL_STORAGE_KEY, PLUGIN_VERSION } from '@/common/static';
+import { LOCAL_STORAGE_KEY, PLUGIN_VERSION } from '@/lib/static';
 import { NewVersionAlert } from '../ui/new-version-alert';
 import { PluginLocalStorage } from '@konomi-app/kintone-utilities';
 

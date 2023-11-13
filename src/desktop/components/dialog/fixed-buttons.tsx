@@ -6,7 +6,7 @@ import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { calendarEventsState } from '../../states/calendar';
 import { loadingState } from '../../states/kintone';
-import { kintoneClient } from '@/common/kintone-api';
+import { kintoneClient } from '@/desktop/kintone-api';
 import { useSnackbar } from 'notistack';
 import styled from '@emotion/styled';
 

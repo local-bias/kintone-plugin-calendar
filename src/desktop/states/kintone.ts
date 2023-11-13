@@ -1,4 +1,4 @@
-import { getUserDefinedFields } from '@/common/kintone-api';
+import { getUserDefinedFields } from '@/desktop/kintone-api';
 import { kintoneAPI } from '@konomi-app/kintone-utilities';
 import { atom, selector } from 'recoil';
 

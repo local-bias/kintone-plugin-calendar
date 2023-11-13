@@ -3,7 +3,7 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { produce } from 'immer';
 import { dialogPropsState } from '../../../states/dialog';
 import { PluginCalendarEvent } from '../../../states/calendar';
-import { DateTimePicker } from '@/common/components/datetime-picker';
+import { DateTimePicker } from '@/lib/components/datetime-picker';
 import { DateTime } from 'luxon';
 import { dateInputToDateTime, dateTimeToDateInput } from '@/desktop/actions';
 

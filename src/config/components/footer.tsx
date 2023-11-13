@@ -6,13 +6,13 @@ import { Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 
-import { storeStorage } from '@/common/plugin';
+import { storeStorage } from '@/lib/plugin';
 import { loadingState, storageState } from '../states/plugin';
 import { produce } from 'immer';
-import { VIEW_ROOT_ID } from '@/common/static';
+import { VIEW_ROOT_ID } from '@/lib/static';
 import { getViews, updateViews } from '@konomi-app/kintone-utilities';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
-import { GUEST_SPACE_ID } from '@/common/global';
+import { GUEST_SPACE_ID } from '@/lib/global';
 
 type Props = {
   onSaveButtonClick: () => void;
