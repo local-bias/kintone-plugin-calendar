@@ -3,20 +3,29 @@ import React, { FC, FCX, Suspense } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { sidebarExpandedState } from '../../states/sidebar';
 import { Squash as Hamburger } from 'hamburger-react';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import Categories from './categories';
+import { Fab, Tooltip } from '@mui/material';
 
 const Component: FCX<{ expanded: boolean }> = ({ className, expanded }) => {
   const onToggleHamburger = useRecoilCallback(
     ({ set }) =>
-      (toggled: boolean) => {
-        set(sidebarExpandedState, toggled);
+      () => {
+        set(sidebarExpandedState, (current) => !current);
       },
     []
   );
 
   return (
     <div className={className}>
+      <div className='fixed right-8 bottom-4 z-10'>
+        <Tooltip title='サイドバーを表示'>
+          <Fab variant='circular' size='large' color='primary' onClick={onToggleHamburger}>
+            <MenuIcon />
+          </Fab>
+        </Tooltip>
+      </div>
       <div className='container'>
         <Hamburger toggled={expanded} onToggle={onToggleHamburger} color='#718291' />
         <div className='content'>

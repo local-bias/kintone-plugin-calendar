@@ -1,4 +1,4 @@
-import React, { FCX } from 'react';
+import React, { FC } from 'react';
 import { CircularProgress, Fab, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
@@ -10,7 +10,7 @@ import { calendarEventsState } from '../../states/calendar';
 import { produce } from 'immer';
 import { loadingState } from '../../states/kintone';
 
-const Component: FCX = ({ className }) => {
+const Component: FC = () => {
   const loading = useRecoilValue(loadingState);
 
   const onEventAdditionButtonClick = useRecoilCallback(
@@ -37,7 +37,7 @@ const Component: FCX = ({ className }) => {
   );
 
   return (
-    <div className={className}>
+    <div className='fixed right-8 bottom-4 z-10'>
       <Tooltip title='スケジュールを追加する'>
         <Fab
           variant='circular'
@@ -53,11 +53,4 @@ const Component: FCX = ({ className }) => {
   );
 };
 
-const StyledComponent = styled(Component)`
-  position: fixed;
-  right: 2rem;
-  bottom: 1rem;
-  z-index: 10;
-`;
-
-export default StyledComponent;
+export default Component;
