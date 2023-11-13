@@ -11,12 +11,10 @@ const Component: FC = () => {
 
   return (
     <div>
-      <div className='fixed left-8 bottom-4 z-10'>
-        <Tooltip title='サイドバーを表示'>
-          <Fab variant='circular' size='large' color='primary' onClick={toggle}>
-            <MenuIcon />
-          </Fab>
-        </Tooltip>
+      <div className='fixed right-4 md:right-8 bottom-20 z-10'>
+        <Fab variant='circular' size='large' color='primary' onClick={toggle}>
+          <MenuIcon />
+        </Fab>
       </div>
       <Drawer anchor='left' open={open} onClose={toggle}>
         <div className='p-8'>

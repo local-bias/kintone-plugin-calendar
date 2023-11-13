@@ -28,7 +28,8 @@ listener.add(['app.record.index.show'], (event) => {
       transition: none;
     }
     .gaia-mobile-v2-navigationpanel,
-    .gaia-mobile-v2-viewpanel-footer {
+    .gaia-mobile-v2-viewpanel-footer,
+    .gaia-mobile-v2-viewpanel-globalnavigationbar-navigationpanel-button {
       display: none;
     }
   `);

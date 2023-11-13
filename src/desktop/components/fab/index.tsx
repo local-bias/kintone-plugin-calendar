@@ -37,7 +37,7 @@ const Component: FC = () => {
   );
 
   return (
-    <div className='fixed right-8 bottom-4 z-10'>
+    <div className='fixed right-4 md:right-8 bottom-4 z-10'>
       <Tooltip title='スケジュールを追加する'>
         <Fab
           variant='circular'
