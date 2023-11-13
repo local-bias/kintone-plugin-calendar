@@ -16,7 +16,7 @@ import { calendarEventsState, filteredCalendarEventsState } from '../../states/c
 import { produce } from 'immer';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { completeCalendarEvent, reschedule } from '../../actions';
-import { loadingState, pluginConditionState } from '../../states/kintone';
+import { appPropertiesState, loadingState, pluginConditionState } from '../../states/kintone';
 import { useSnackbar } from 'notistack';
 
 const Component: FC = () => {
@@ -78,6 +78,7 @@ const Component: FC = () => {
         try {
           const changed = props.event;
 
+          const properties = await snapshot.getPromise(appPropertiesState);
           const events = await snapshot.getPromise(calendarEventsState);
           let index = 0;
           const targetEvent = events.find(({ id }, i) => {
@@ -101,7 +102,11 @@ const Component: FC = () => {
           });
 
           const condition = await snapshot.getPromise(pluginConditionState);
-          await reschedule(newEvent, condition!);
+          await reschedule({
+            calendarEvent: newEvent,
+            condition: condition!,
+            properties,
+          });
           console.info('レコードを更新しました');
         } finally {
           set(loadingState, false);
@@ -111,7 +116,7 @@ const Component: FC = () => {
   );
 
   const onEventRemove = (props: EventRemoveArg) => {
-    console.info('📅 イベントが削除されました', props);
+    process.env.NODE_ENV === 'development' && console.info('📅 イベントが削除されました', props);
   };
 
   return (

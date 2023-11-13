@@ -41,46 +41,64 @@ export const completeCalendarEvent = (eventInput: PluginCalendarEvent) => {
   });
 };
 
-export const convertEventIntoRecord = (
-  eventInput: PluginCalendarEvent,
-  condition: Plugin.Condition
-) => {
-  const { calendarEvent } = condition;
-  const start = eventInput.start ? convertCalendarDateIntoKintoneDate(eventInput.start) : null;
-  const end = eventInput.end ? convertCalendarDateIntoKintoneDate(eventInput.end) : null;
+export const getKintoneRecordFromCalendarEvent = (params: {
+  calendarEvent: PluginCalendarEvent;
+  condition: Plugin.Condition;
+  properties: kintoneAPI.FieldProperties;
+}) => {
+  const { calendarEvent, condition, properties } = params;
+  const { calendarEvent: calendarConfig } = condition;
+  let start = calendarEvent.start ? convertCalendarDateIntoKintoneDate(calendarEvent.start) : null;
+  let end = calendarEvent.end ? convertCalendarDateIntoKintoneDate(calendarEvent.end) : null;
+
+  const startProperty = properties[calendarConfig.startField];
+  const endProperty = properties[calendarConfig.endField];
+
+  if (startProperty.type === 'DATE') {
+    start = start?.split('T')[0] ?? null;
+  }
+  if (endProperty.type === 'DATE') {
+    end = end?.split('T')[0] ?? null;
+  }
 
   const record: Record<string, any> = {};
 
-  if (calendarEvent.titleField) {
-    record[calendarEvent.titleField] = { value: eventInput.title };
+  if (calendarConfig.titleField) {
+    record[calendarConfig.titleField] = { value: calendarEvent.title };
   }
-  if (calendarEvent.startField) {
-    record[calendarEvent.startField] = { value: start || '' };
+  if (calendarConfig.startField) {
+    record[calendarConfig.startField] = { value: start || '' };
   }
-  if (calendarEvent.endField) {
-    record[calendarEvent.endField] = { value: end || '' };
+  if (calendarConfig.endField) {
+    record[calendarConfig.endField] = { value: end || '' };
   }
-  if (condition.enablesAllDay && condition.allDayOption && calendarEvent.allDayField) {
-    record[calendarEvent.allDayField] = {
-      value: eventInput.allDay ? [condition.allDayOption] : [],
+  if (condition.enablesAllDay && condition.allDayOption && calendarConfig.allDayField) {
+    record[calendarConfig.allDayField] = {
+      value: calendarEvent.allDay ? [condition.allDayOption] : [],
     };
   }
-  if (condition.enablesNote && calendarEvent.noteField) {
-    record[calendarEvent.noteField] = { value: eventInput.note };
+  if (condition.enablesNote && calendarConfig.noteField) {
+    record[calendarConfig.noteField] = { value: calendarEvent.note };
   }
-  if (calendarEvent.categoryField) {
-    record[calendarEvent.categoryField] = { value: eventInput.category };
+  if (calendarConfig.categoryField) {
+    record[calendarConfig.categoryField] = { value: calendarEvent.category };
   }
 
-  console.log('♻ カレンダーイベントがkintoneレコードに変換されました', { eventInput, record });
+  process.env.NODE_ENV === 'development' &&
+    console.log('♻ カレンダーイベントがkintoneレコードに変換されました', { calendarEvent, record });
   return record;
 };
 
-export const convertRecordIntoEvent = (
-  condition: Plugin.Condition,
-  properties: kintoneAPI.FieldProperties,
-  record: kintoneAPI.RecordData
-): PluginCalendarEvent => {
+export const getCalendarEventFromKintoneRecord = (params: {
+  condition: Plugin.Condition;
+  properties: kintoneAPI.FieldProperties;
+  record: kintoneAPI.RecordData;
+}): PluginCalendarEvent => {
+  const { condition, properties, record } = params;
+
+  const startProperty = properties[condition.calendarEvent.startField];
+  const endProperty = properties[condition.calendarEvent.endField];
+
   const calendarEvent: PluginCalendarEvent = {
     id: record.$id.value as string | undefined,
     start: record[condition.calendarEvent.startField]?.value as string | undefined,
@@ -95,28 +113,36 @@ export const convertRecordIntoEvent = (
     ),
   };
 
-  console.log('🐇', { condition, record });
-
-  if (condition.enablesAllDay && condition.allDayOption) {
+  if (startProperty.type === 'DATE' || endProperty.type === 'DATE') {
+    calendarEvent.allDay = true;
+  } else if (condition.enablesAllDay && condition.allDayOption) {
     const options = record[condition.calendarEvent.allDayField].value as string[];
     calendarEvent.allDay = options.includes(condition.allDayOption);
-  } else if (
-    record[condition.calendarEvent.startField]?.type === 'DATE' ||
-    record[condition.calendarEvent.endField]?.type === 'DATE'
-  ) {
-    calendarEvent.allDay = true;
   }
+
+  process.env.NODE_ENV === 'development' &&
+    console.info('♻ kintoneレコードがカレンダーイベントに変換されました', {
+      record,
+      calendarEvent,
+    });
 
   return calendarEvent;
 };
 
-export const addNewRecord = async (
-  eventInput: PluginCalendarEvent,
-  condition: Plugin.Condition
-): Promise<PluginCalendarEvent> => {
-  const newEvent = { ...eventInput, title: eventInput.title || '（タイトルなし）' };
+export const addNewRecord = async (params: {
+  calendarEvent: PluginCalendarEvent;
+  condition: Plugin.Condition;
+  properties: kintoneAPI.FieldProperties;
+}): Promise<PluginCalendarEvent> => {
+  const { calendarEvent, condition, properties } = params;
 
-  const record = convertEventIntoRecord(newEvent, condition);
+  const newEvent = { ...calendarEvent, title: calendarEvent.title || '（タイトルなし）' };
+
+  const record = getKintoneRecordFromCalendarEvent({
+    calendarEvent: newEvent,
+    condition,
+    properties,
+  });
 
   const response = await addRecord({
     app: getAppId()!,
@@ -129,14 +155,19 @@ export const addNewRecord = async (
   return newEvent;
 };
 
-export const reschedule = async (eventInput: PluginCalendarEvent, condition: Plugin.Condition) => {
-  const { id } = eventInput;
+export const reschedule = async (params: {
+  calendarEvent: PluginCalendarEvent;
+  condition: Plugin.Condition;
+  properties: kintoneAPI.FieldProperties;
+}) => {
+  const { calendarEvent, condition, properties } = params;
+  const { id } = calendarEvent;
   if (!id) {
     throw 'スケジュールに紐づくレコードが存在しません、一覧を更新し、再度お試しください';
   }
 
   const app = getAppId()!;
-  const record = convertEventIntoRecord(eventInput, condition);
+  const record = getKintoneRecordFromCalendarEvent({ calendarEvent, condition, properties });
   return updateRecord({
     app,
     id,
@@ -171,11 +202,11 @@ export const getEventBackgroundColor = (
   return COLORS[0];
 };
 
-const convertCalendarDateIntoKintoneDate = (eventDate: DateInput) => {
+const convertCalendarDateIntoKintoneDate = (eventDate: DateInput): string | null => {
   if (typeof eventDate === 'string') {
     return eventDate;
   } else if (typeof eventDate === 'number') {
-    return DateTime.fromSeconds(eventDate);
+    return DateTime.fromSeconds(eventDate).toISO();
   } else if (Array.isArray(eventDate)) {
     return DateTime.local(eventDate[0], eventDate[1], eventDate[2]).toISO();
   } else if (typeof eventDate === 'object') {

@@ -6,7 +6,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
-import { loadingState, pluginConditionState } from '../../states/kintone';
+import { appPropertiesState, loadingState, pluginConditionState } from '../../states/kintone';
 import { calendarEventsState } from '../../states/calendar';
 import { addNewRecord, reschedule } from '../../actions';
 
@@ -20,9 +20,14 @@ const Component: FC<{ onDialogClose: () => void }> = ({ onDialogClose }) => {
         try {
           const currentProps = await snapshot.getPromise(dialogPropsState);
           const condition = await snapshot.getPromise(pluginConditionState);
+          const properties = await snapshot.getPromise(appPropertiesState);
 
           if (currentProps.new) {
-            const newEvent = await addNewRecord(currentProps.event, condition!);
+            const newEvent = await addNewRecord({
+              calendarEvent: currentProps.event,
+              condition: condition!,
+              properties,
+            });
             set(dialogPropsState, (current) =>
               produce(current, (draft) => {
                 draft.event = newEvent;
@@ -35,7 +40,11 @@ const Component: FC<{ onDialogClose: () => void }> = ({ onDialogClose }) => {
               })
             );
           } else {
-            await reschedule(currentProps.event, condition!);
+            await reschedule({
+              calendarEvent: currentProps.event,
+              condition: condition!,
+              properties,
+            });
             set(calendarEventsState, (current) =>
               produce(current, (draft) => {
                 const index = draft.findIndex((event) => event.id === currentProps.event.id);
@@ -46,6 +55,8 @@ const Component: FC<{ onDialogClose: () => void }> = ({ onDialogClose }) => {
 
           reset(dialogShownState);
           reset(dialogPropsState);
+        } catch (error) {
+          console.error(error);
         } finally {
           set(loadingState, false);
         }

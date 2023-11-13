@@ -2,7 +2,7 @@ import { getAllRecords } from '@/lib/kintone-rest-api';
 import { getAppId, getQuery } from '@lb-ribbit/kintone-xapp';
 import { FC, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { convertRecordIntoEvent } from '../../actions';
+import { getCalendarEventFromKintoneRecord } from '../../actions';
 import { calendarEventsState } from '../../states/calendar';
 import { appPropertiesState, loadingState, pluginConditionState } from '../../states/kintone';
 
@@ -40,7 +40,11 @@ const Component: FC = () => {
           fields,
           onAdvance: (thisStepData) => {
             const thisStepEvents = thisStepData.map((record) =>
-              convertRecordIntoEvent(condition, properties, record)
+              getCalendarEventFromKintoneRecord({
+                condition,
+                properties,
+                record,
+              })
             );
             setEvents((current) => [...current, ...thisStepEvents]);
           },

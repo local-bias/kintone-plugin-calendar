@@ -24,12 +24,19 @@ export const appFieldsState = selector<kintoneAPI.FieldProperty[]>({
   },
 });
 
-export const dateTimeFieldsState = selector<kintoneAPI.property.DateTime[]>({
+export const dateTimeFieldsState = selector<
+  (kintoneAPI.property.DateTime | kintoneAPI.property.Date)[]
+>({
   key: `${PREFIX}dateTimeFieldsState`,
   get: async ({ get }) => {
     const fields = get(appFieldsState);
 
-    return fields.filter((field) => field.type === 'DATETIME') as kintoneAPI.property.DateTime[];
+    const types: kintoneAPI.FieldPropertyType[] = ['DATETIME', 'DATE'];
+
+    return fields.filter((field) => types.includes(field.type)) as (
+      | kintoneAPI.property.DateTime
+      | kintoneAPI.property.Date
+    )[];
   },
 });
 
