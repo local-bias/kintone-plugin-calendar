@@ -15,14 +15,15 @@ export default {
         zh: '日历插件',
       },
       description: {
-        en: 'Implement a calendar using the open-source library fullcalendar as a scheduler.',
+        en: 'A calendar plugin that can be used as a scheduler using the open source library fullcalendar',
         ja: 'オープンソースライブラリであるfullcalendarを使用し、スケジューラーとして利用できるカレンダーを実装します',
-        zh: '使用开源库fullcalendar实现一个作为调度器可用的日历。',
+        zh: '使用开源库fullcalendar，实现可用作调度程序的日历',
       },
       icon: 'icon.png',
       homepage_url: {
         ja: hp,
         en: hp,
+        zh: hp,
       },
       desktop: {
         js: [`${commonCdn}/desktop.js`],
