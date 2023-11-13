@@ -1,12 +1,11 @@
-import React, { FC, FCX, memo } from 'react';
+import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { FormControlLabel, Switch } from '@mui/material';
 import { calendarEventCategoryState } from '../../states/kintone';
-import styled from '@emotion/styled';
 import { COLORS } from '../../static';
 import { displayingCategoriesState } from '../../states/sidebar';
 
-const Component: FCX<{ categories: string[] }> = memo(({ categories, className }) => {
+const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
   const displayingCategories = useRecoilValue(displayingCategoriesState);
 
   const onCategoryChange = useRecoilCallback(
@@ -25,7 +24,7 @@ const Component: FCX<{ categories: string[] }> = memo(({ categories, className }
   );
 
   return (
-    <div className={className}>
+    <div className='grid gap-2'>
       <h3>表示するカレンダー</h3>
       {categories.map((category, i) => (
         <FormControlLabel
@@ -37,9 +36,12 @@ const Component: FCX<{ categories: string[] }> = memo(({ categories, className }
             />
           }
           label={
-            <div className='switch-label'>
+            <div className='flex items-center gap-3'>
               {category}
-              <span style={{ backgroundColor: COLORS[i % COLORS.length] }}></span>
+              <span
+                style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                className='w-4 h-4 rounded-full'
+              ></span>
             </div>
           }
         />
@@ -48,24 +50,6 @@ const Component: FCX<{ categories: string[] }> = memo(({ categories, className }
   );
 });
 
-const StyledComponent = styled(Component)`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  .switch-label {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-
-    > span {
-      width: 1em;
-      height: 1em;
-      border-radius: 9999px;
-    }
-  }
-`;
-
 const Container: FC = () => {
   const categories = useRecoilValue(calendarEventCategoryState);
 
@@ -73,7 +57,7 @@ const Container: FC = () => {
     return null;
   }
 
-  return <StyledComponent categories={categories} />;
+  return <Component categories={categories} />;
 };
 
 export default Container;
