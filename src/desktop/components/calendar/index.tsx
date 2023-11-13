@@ -15,7 +15,7 @@ import allLocales from '@fullcalendar/core/locales-all';
 import { calendarEventsState, filteredCalendarEventsState } from '../../states/calendar';
 import { produce } from 'immer';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
-import { completeCalendarEvent, updateRecord } from '../../actions';
+import { completeCalendarEvent, reschedule } from '../../actions';
 import { loadingState, pluginConditionState } from '../../states/kintone';
 import { useSnackbar } from 'notistack';
 
@@ -101,7 +101,7 @@ const Component: FC = () => {
           });
 
           const condition = await snapshot.getPromise(pluginConditionState);
-          await updateRecord(newEvent, condition!);
+          await reschedule(newEvent, condition!);
           console.info('レコードを更新しました');
         } finally {
           set(loadingState, false);

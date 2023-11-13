@@ -6,9 +6,10 @@ import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { calendarEventsState } from '../../states/calendar';
 import { loadingState } from '../../states/kintone';
-import { kintoneClient } from '@/desktop/kintone-api';
 import { useSnackbar } from 'notistack';
 import styled from '@emotion/styled';
+import { deleteAllRecords } from '@konomi-app/kintone-utilities';
+import { GUEST_SPACE_ID } from '@/lib/global';
 
 const Component: FCX = ({ className }) => {
   const props = useRecoilValue(dialogPropsState);
@@ -29,7 +30,12 @@ const Component: FCX = ({ className }) => {
           reset(dialogShownState);
           reset(dialogPropsState);
           const app = getAppId()!;
-          await kintoneClient.record.deleteRecords({ app, ids: [eventId] });
+          await deleteAllRecords({
+            app,
+            ids: [Number(eventId)],
+            guestSpaceId: GUEST_SPACE_ID,
+            debug: process.env.NODE_ENV === 'development',
+          });
           enqueueSnackbar('レコードの削除が完了しました', { variant: 'success' });
         } finally {
           set(loadingState, false);

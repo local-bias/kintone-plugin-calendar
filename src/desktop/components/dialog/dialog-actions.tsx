@@ -8,7 +8,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { loadingState, pluginConditionState } from '../../states/kintone';
 import { calendarEventsState } from '../../states/calendar';
-import { addNewRecord, updateRecord } from '../../actions';
+import { addNewRecord, reschedule } from '../../actions';
 
 const Component: FC<{ onDialogClose: () => void }> = ({ onDialogClose }) => {
   const loading = useRecoilValue(loadingState);
@@ -35,7 +35,7 @@ const Component: FC<{ onDialogClose: () => void }> = ({ onDialogClose }) => {
               })
             );
           } else {
-            await updateRecord(currentProps.event, condition!);
+            await reschedule(currentProps.event, condition!);
             set(calendarEventsState, (current) =>
               produce(current, (draft) => {
                 const index = draft.findIndex((event) => event.id === currentProps.event.id);
