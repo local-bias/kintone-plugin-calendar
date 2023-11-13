@@ -15,7 +15,7 @@ import { storageState } from '../../../states/plugin';
 import ViewIdForm from './view-id';
 import { kintoneAPI } from '@konomi-app/kintone-utilities';
 
-type ContainerProps = { condition: kintone.plugin.Condition; index: number };
+type ContainerProps = { condition: Plugin.Condition; index: number };
 
 const Component: FCX<ContainerProps> = ({ className, condition, index }) => {
   const appFields = useRecoilValue(appFieldsState);

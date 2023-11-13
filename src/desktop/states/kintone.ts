@@ -4,7 +4,7 @@ import { atom, selector } from 'recoil';
 
 const PREFIX = 'kintone';
 
-export const pluginConditionState = atom<kintone.plugin.Condition | null>({
+export const pluginConditionState = atom<Plugin.Condition | null>({
   key: `${PREFIX}pluginConditionState`,
   default: null,
 });

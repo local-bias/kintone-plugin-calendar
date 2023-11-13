@@ -8,7 +8,7 @@ import Condition from './condition';
 import { LoaderWithLabel } from '@konomi-app/ui-react';
 
 type Props = Readonly<{
-  storage: kintone.plugin.Storage | null;
+  storage: Plugin.Config | null;
 }>;
 
 const Component: FCX<Props> = ({ className, storage }) => (

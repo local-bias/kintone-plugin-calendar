@@ -3,7 +3,7 @@ import { produce } from 'immer';
 /**
  * プラグインがアプリ単位で保存している設定情報を返却します
  */
-export const restoreStorage = (id: string): kintone.plugin.Storage => {
+export const restoreStorage = (id: string): Plugin.Config => {
   /** 復元した設定情報 */
   const config: Record<string, string> = kintone.plugin.app.getConfig(id);
 
@@ -35,11 +35,12 @@ export const storeStorage = (target: Record<string, any>, callback?: () => void)
 /**
  * プラグインの設定情報のひな形を返却します
  */
-const createConfig = (): kintone.plugin.Storage => ({
+const createConfig = (): Plugin.Config => ({
+  version: 1,
   conditions: [getNewCondition()],
 });
 
-export const getNewCondition = (): kintone.plugin.Condition => ({
+export const getNewCondition = (): Plugin.Condition => ({
   viewId: '',
   initialView: 'timeGridWeek',
   enablesAllDay: true,
@@ -57,12 +58,12 @@ export const getNewCondition = (): kintone.plugin.Condition => ({
   },
 });
 
-export const getUpdatedStorage = <T extends keyof kintone.plugin.Condition>(
-  storage: kintone.plugin.Storage | null,
+export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
+  storage: Plugin.Config | null,
   props: {
     conditionIndex: number;
     key: T;
-    value: kintone.plugin.Condition[T];
+    value: Plugin.Condition[T];
   }
 ) => {
   const { conditionIndex, key, value } = props;
@@ -74,14 +75,14 @@ export const getUpdatedStorage = <T extends keyof kintone.plugin.Condition>(
   });
 };
 
-export const getConditionField = <T extends keyof kintone.plugin.Condition>(
-  storage: kintone.plugin.Storage | null,
+export const getConditionField = <T extends keyof Plugin.Condition>(
+  storage: Plugin.Config | null,
   props: {
     conditionIndex: number;
     key: T;
-    defaultValue: NonNullable<kintone.plugin.Condition[T]>;
+    defaultValue: NonNullable<Plugin.Condition[T]>;
   }
-): NonNullable<kintone.plugin.Condition[T]> => {
+): NonNullable<Plugin.Condition[T]> => {
   const { conditionIndex, key, defaultValue } = props;
   if (!storage || !storage.conditions[conditionIndex]) {
     return defaultValue;

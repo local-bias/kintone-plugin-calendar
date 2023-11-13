@@ -44,7 +44,7 @@ export const completeCalendarEvent = (eventInput: PluginCalendarEvent) => {
 
 export const convertEventIntoRecord = (
   eventInput: PluginCalendarEvent,
-  condition: kintone.plugin.Condition
+  condition: Plugin.Condition
 ) => {
   const { calendarEvent } = condition;
   const start = eventInput.start ? convertCalendarDateIntoKintoneDate(eventInput.start) : null;
@@ -78,7 +78,7 @@ export const convertEventIntoRecord = (
 };
 
 export const convertRecordIntoEvent = (
-  condition: kintone.plugin.Condition,
+  condition: Plugin.Condition,
   properties: kintoneAPI.FieldProperties,
   record: kintoneAPI.RecordData
 ): PluginCalendarEvent => {
@@ -108,7 +108,7 @@ export const convertRecordIntoEvent = (
 
 export const addNewRecord = async (
   eventInput: PluginCalendarEvent,
-  condition: kintone.plugin.Condition
+  condition: Plugin.Condition
 ): Promise<PluginCalendarEvent> => {
   const newEvent = { ...eventInput, title: eventInput.title || '（タイトルなし）' };
 
@@ -124,7 +124,7 @@ export const addNewRecord = async (
 
 export const updateRecord = async (
   eventInput: PluginCalendarEvent,
-  condition: kintone.plugin.Condition
+  condition: Plugin.Condition
 ) => {
   const { id } = eventInput;
   if (!id) {
@@ -138,7 +138,7 @@ export const updateRecord = async (
 
 export const getEventBackgroundColor = (
   value: kintoneAPI.RecordData[string]['value'] | undefined,
-  condition: kintone.plugin.Condition,
+  condition: Plugin.Condition,
   properties: kintoneAPI.FieldProperties
 ) => {
   if (!value) {
