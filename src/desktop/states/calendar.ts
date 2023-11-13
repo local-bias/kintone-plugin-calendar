@@ -12,7 +12,8 @@ export const calendarEventsState = atom<PluginCalendarEvent[]>({
   effects: [
     ({ onSet }) => {
       onSet((newEvents) => {
-        console.debug('🐘 カレンダーイベントが更新されました', newEvents);
+        process.env.NODE_ENV === 'development' &&
+          console.debug('🐘 カレンダーイベントが更新されました', newEvents);
       });
     },
   ],
