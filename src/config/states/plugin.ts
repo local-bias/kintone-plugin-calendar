@@ -1,12 +1,11 @@
-import { PLUGIN_ID } from '@/lib/global';
-import { restoreStorage } from '@/lib/plugin';
+import { restorePluginConfig } from '@/lib/plugin';
 import { atom } from 'recoil';
 
 const PREFIX = 'plugin';
 
 export const storageState = atom<Plugin.Config>({
   key: `${PREFIX}storageState`,
-  default: restoreStorage(PLUGIN_ID),
+  default: restorePluginConfig(),
 });
 
 export const loadingState = atom<boolean>({
