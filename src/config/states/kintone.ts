@@ -3,6 +3,7 @@ import { ViewForResponse } from '@kintone/rest-api-client/lib/src/client/types';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { getFormFields, getViews, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { calendarAllDayState } from './plugin';
 
 const PREFIX = 'kintone';
 
@@ -103,5 +104,23 @@ export const customViewsState = selector({
       (acc, [name, view]) => ({ ...acc, [name]: view }),
       {}
     );
+  },
+});
+
+export const alldayOptionsState = selector<string[]>({
+  key: 'alldayOptionsState',
+  get: ({ get }) => {
+    const targetField = get(calendarAllDayState);
+    if (!targetField) {
+      return [];
+    }
+    const checkboxFields = get(checkboxFieldsState);
+
+    const field = checkboxFields.find((field) => field.code === targetField);
+    if (!field) {
+      return [];
+    }
+
+    return Object.keys(field.options);
   },
 });

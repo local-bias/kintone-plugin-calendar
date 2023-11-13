@@ -71,7 +71,7 @@ export const storeStorage = (target: Record<string, any>, callback?: () => void)
 };
 
 export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
-  storage: Plugin.Config | null,
+  storage: Plugin.Config,
   props: {
     conditionIndex: number;
     key: T;
@@ -80,15 +80,12 @@ export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
 ) => {
   const { conditionIndex, key, value } = props;
   return produce(storage, (draft) => {
-    if (!draft) {
-      return;
-    }
     draft.conditions[conditionIndex][key] = value;
   });
 };
 
 export const getConditionField = <T extends keyof Plugin.Condition>(
-  storage: Plugin.Config | null,
+  storage: Plugin.Config,
   props: {
     conditionIndex: number;
     key: T;
@@ -96,7 +93,7 @@ export const getConditionField = <T extends keyof Plugin.Condition>(
   }
 ): NonNullable<Plugin.Condition[T]> => {
   const { conditionIndex, key, defaultValue } = props;
-  if (!storage || !storage.conditions[conditionIndex]) {
+  if (!storage.conditions[conditionIndex]) {
     return defaultValue;
   }
   return storage.conditions[conditionIndex][key] ?? defaultValue;
