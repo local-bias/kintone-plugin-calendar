@@ -13,7 +13,7 @@ import Dialog from './dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
 
-const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, condition }) => (
+const Component: FCX<{ condition: Plugin.Condition }> = ({ className, condition }) => (
   <PluginErrorBoundary>
     <RecoilRoot
       initializeState={({ set }) => {
@@ -41,6 +41,7 @@ const Component: FCX<{ condition: kintone.plugin.Condition }> = ({ className, co
 
 const StyledComponent = styled(Component)`
   font-family: 'Noto Sans JP', 'Yu Gothic Medium', YuGothic, メイリオ;
+  background-color: #fff;
   color: #41525c;
 
   --fc-button-bg-color: #fff;
