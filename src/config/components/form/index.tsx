@@ -35,24 +35,27 @@ const Component: FC = () => (
     </PluginFormSection>
     <PluginFormSection>
       <PluginFormTitle>スケジュールの開始日時</PluginFormTitle>
-      <PluginFormDescription last>
+      <PluginFormDescription>
         スケジュールの開始日時として使用するフィールドを選択してください
+      </PluginFormDescription>
+      <PluginFormDescription last>
+        「日付」フィールドを設定した場合は、無条件で終日扱いとなります
       </PluginFormDescription>
       <FormScheduleStart />
     </PluginFormSection>
     <PluginFormSection>
       <PluginFormTitle>スケジュールの終了日付</PluginFormTitle>
-      <PluginFormDescription last>
+      <PluginFormDescription>
         スケジュールの終了日付として使用するフィールドを選択してください
+      </PluginFormDescription>
+      <PluginFormDescription last>
+        「日付」フィールドを設定した場合は、無条件で終日扱いとなります
       </PluginFormDescription>
       <FormScheduleEnd />
     </PluginFormSection>
     <PluginFormSection>
       <PluginFormTitle>終日設定</PluginFormTitle>
-      <PluginFormDescription>時刻を指定せず、終日の予定を有効にします</PluginFormDescription>
-      <PluginFormDescription last>
-        開始日付、終了日付に日付フィールドを使用している場合は、無条件で終日扱いとなります
-      </PluginFormDescription>
+      <PluginFormDescription last>時刻を指定せず、終日の予定を有効にします</PluginFormDescription>
       <RecoilSwitch state={enablesAllDayState} label='終日設定を有効にする' />
       <FormAllday />
     </PluginFormSection>

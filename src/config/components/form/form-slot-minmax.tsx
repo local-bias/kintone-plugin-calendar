@@ -25,7 +25,6 @@ const Component: FC = () => {
 
   return (
     <div>
-      <h3>表示時間帯の設定</h3>
       <TextField
         label='開始'
         select
