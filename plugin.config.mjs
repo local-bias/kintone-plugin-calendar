@@ -7,7 +7,7 @@ export default {
   manifest: {
     base: {
       manifest_version: 1,
-      version: '0.6.0',
+      version: '0.7.0',
       type: 'APP',
       name: {
         en: 'calendar plugin',
