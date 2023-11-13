@@ -3,7 +3,7 @@ import { RecoilRoot } from 'recoil';
 import { SnackbarProvider } from 'notistack';
 
 import { ErrorBoundary } from '@/common/components/error-boundary';
-
+import Announcement from './components/announcement';
 import Form from './components/form';
 import Footer from './components/footer';
 import { LoaderWithLabel } from '@konomi-app/ui-react';
@@ -13,6 +13,7 @@ const Component: FC = () => (
   <Suspense fallback={<LoaderWithLabel label='画面の描画を待機しています' />}>
     <RecoilRoot>
       <ErrorBoundary>
+        <Announcement />
         <SnackbarProvider maxSnack={1}>
           <Suspense fallback={<LoaderWithLabel label='設定情報を取得しています' />}>
             <Form />
