@@ -1,18 +1,6 @@
 import { KintoneRestAPIClient } from '@kintone/rest-api-client';
-import { ViewForParameter } from '@kintone/rest-api-client/lib/src/client/types';
 import { kintoneAPI } from '@konomi-app/kintone-utilities';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
-
-/** kintoneアプリに初期状態で存在するフィールドタイプ */
-const DEFAULT_DEFINED_FIELDS: kintoneAPI.FieldPropertyType[] = [
-  'RECORD_NUMBER',
-  'UPDATED_TIME',
-  'CREATOR',
-  'CREATED_TIME',
-  'CATEGORY',
-  'MODIFIER',
-  'STATUS',
-];
 
 /** REST APIクライアント(シングルトン) */
 export const kintoneClient = new KintoneRestAPIClient();
@@ -29,11 +17,6 @@ export const getFieldProperties = async (
   const { properties } = await kintoneClient.app.getFormFields({ app });
 
   return properties;
-};
-
-export const getUserDefinedFields = async (): Promise<kintoneAPI.FieldProperties> => {
-  const properties = await getFieldProperties();
-  return omitFieldProperties(properties, DEFAULT_DEFINED_FIELDS);
 };
 
 /** サブテーブルをばらしてフィールドを返却します */

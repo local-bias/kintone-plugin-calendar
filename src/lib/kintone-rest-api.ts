@@ -1,5 +1,16 @@
-import { Record } from '@kintone/rest-api-client/lib/src/client/types';
+import { kintoneAPI } from '@konomi-app/kintone-utilities';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
+
+/** kintoneアプリに初期状態で存在するフィールドタイプ */
+export const PREDEFINED_FIELDS: kintoneAPI.FieldPropertyType[] = [
+  'RECORD_NUMBER',
+  'UPDATED_TIME',
+  'CREATOR',
+  'CREATED_TIME',
+  'CATEGORY',
+  'MODIFIER',
+  'STATUS',
+];
 
 const END_POINT = '/k/v1/records';
 
@@ -12,16 +23,18 @@ type GetProps = Readonly<
     totalCount: boolean;
     query: string;
     onGetTotal: (total: number) => void;
-    onAdvance: (thisStepData: Record[], loadedData: Record[]) => void;
+    onAdvance: (thisStepData: kintoneAPI.RecordData[], loadedData: kintoneAPI.RecordData[]) => void;
   }>
 >;
 
-type GetMethod = (props?: GetProps) => Promise<Record[]>;
+type GetMethod = (props?: GetProps) => Promise<kintoneAPI.RecordData[]>;
 
 interface CursorProps {
   id: string;
-  onAdvance: ((thisStepData: Record[], loadedData: Record[]) => void) | null;
-  loadedData?: Record[];
+  onAdvance:
+    | ((thisStepData: kintoneAPI.RecordData[], loadedData: kintoneAPI.RecordData[]) => void)
+    | null;
+  loadedData?: kintoneAPI.RecordData[];
 }
 
 export const getAllRecords: GetMethod = async (props = {}) => {
@@ -42,11 +55,11 @@ const getRecordsByCursorId = async ({
   id,
   onAdvance,
   loadedData = [],
-}: CursorProps): Promise<Record[]> => {
+}: CursorProps): Promise<kintoneAPI.RecordData[]> => {
   const response = await kintone.api(kintone.api.url(`${END_POINT}/cursor`, true), 'GET', { id });
 
-  const thisStepData: Record[] = response.records;
-  const newRecords: Record[] = [...loadedData, ...thisStepData];
+  const thisStepData: kintoneAPI.RecordData[] = response.records;
+  const newRecords: kintoneAPI.RecordData[] = [...loadedData, ...thisStepData];
 
   if (onAdvance) {
     onAdvance(thisStepData, loadedData);

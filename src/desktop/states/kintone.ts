@@ -1,5 +1,7 @@
-import { getUserDefinedFields } from '@/desktop/kintone-api';
-import { kintoneAPI } from '@konomi-app/kintone-utilities';
+import { GUEST_SPACE_ID } from '@/lib/global';
+import { PREDEFINED_FIELDS } from '@/lib/kintone-rest-api';
+import { getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
+import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { atom, selector } from 'recoil';
 
 const PREFIX = 'kintone';
@@ -21,7 +23,24 @@ export const kintoneRecordsState = atom<kintoneAPI.RecordData[]>({
 
 export const appPropertiesState = selector<kintoneAPI.FieldProperties>({
   key: `${PREFIX}appPropertiesState`,
-  get: () => getUserDefinedFields(),
+  get: async () => {
+    const { properties } = await getFormFields({
+      app: getAppId()!,
+      guestSpaceId: GUEST_SPACE_ID,
+      debug: process.env.NODE_ENV === 'development',
+    });
+
+    const filtered = Object.entries(properties).reduce<kintoneAPI.FieldProperties>(
+      (acc, [key, property]) => {
+        if (PREDEFINED_FIELDS.includes(property.type)) {
+          return acc;
+        }
+        return { ...acc, [key]: property };
+      },
+      {}
+    );
+    return filtered;
+  },
 });
 
 export const calendarEventCategoryState = selector<string[] | null>({
