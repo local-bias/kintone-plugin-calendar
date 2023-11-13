@@ -2,6 +2,7 @@ import React from 'react';
 import { restorePluginConfig } from '@/lib/plugin';
 import { VIEW_ROOT_ID } from '@/lib/static';
 import { createRoot } from 'react-dom/client';
+import { css } from '@emotion/css';
 
 import App from './components';
 import { listener } from '@/lib/listener';
@@ -18,6 +19,19 @@ listener.add(['app.record.index.show'], (event) => {
   if (!found) {
     return event;
   }
+
+  document.body.classList.add(css`
+    .gaia-mobile-v2-pagelayout-contents {
+      width: auto;
+      height: auto;
+      transform: none;
+      transition: none;
+    }
+    .gaia-mobile-v2-navigationpanel,
+    .gaia-mobile-v2-viewpanel-footer {
+      display: none;
+    }
+  `);
 
   createRoot(root).render(<App condition={found} />);
 
