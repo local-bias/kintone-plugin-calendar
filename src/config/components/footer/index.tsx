@@ -1,63 +1,62 @@
-import React, { FC, FCX, useCallback } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
-import styled from '@emotion/styled';
-import { useSnackbar } from 'notistack';
-import { Button } from '@mui/material';
+import { getViews, storeStorage, updateViews } from '@konomi-app/kintone-utilities';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import { Button, CircularProgress } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import React, { FC, useCallback } from 'react';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 
-import { storeStorage } from '@/lib/plugin';
-import { loadingState, storageState } from '../states/plugin';
-import { produce } from 'immer';
-import { VIEW_ROOT_ID } from '@/lib/static';
-import { getViews, updateViews } from '@konomi-app/kintone-utilities';
+import { PluginFooter } from '@konomi-app/kintone-utilities-react';
+import { loadingState, storageState } from '../../states/plugin';
+
+import ExportButton from './export-button';
+import ImportButton from './import-button';
+import ResetButton from './reset-button';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { produce } from 'immer';
+import { VIEW_ROOT_ID } from '@/lib/static';
 
 type Props = {
   onSaveButtonClick: () => void;
   onBackButtonClick: () => void;
 };
 
-const Component: FCX<Props> = ({ className, onSaveButtonClick, onBackButtonClick }) => {
+const Component: FC<Props> = ({ onSaveButtonClick, onBackButtonClick }) => {
   const loading = useRecoilValue(loadingState);
 
   return (
-    <div {...{ className }}>
-      <Button
-        variant='contained'
-        color='primary'
-        disabled={loading}
-        onClick={onSaveButtonClick}
-        startIcon={<SaveIcon />}
-      >
-        設定を保存
-      </Button>
-      <Button
-        variant='contained'
-        color='inherit'
-        disabled={loading}
-        onClick={onBackButtonClick}
-        startIcon={<SettingsBackupRestoreIcon />}
-      >
-        プラグイン一覧へ戻る
-      </Button>
-    </div>
+    <PluginFooter className='py-2'>
+      <div className='flex items-center gap-4'>
+        <Button
+          variant='contained'
+          color='primary'
+          disabled={loading}
+          onClick={onSaveButtonClick}
+          startIcon={loading ? <CircularProgress color='inherit' size={20} /> : <SaveIcon />}
+        >
+          設定を保存
+        </Button>
+        <Button
+          variant='contained'
+          color='inherit'
+          disabled={loading}
+          onClick={onBackButtonClick}
+          startIcon={
+            loading ? <CircularProgress color='inherit' size={20} /> : <SettingsBackupRestoreIcon />
+          }
+        >
+          プラグイン一覧へ戻る
+        </Button>
+      </div>
+      <div className='flex items-center gap-4'>
+        <ExportButton />
+        <ImportButton />
+        <ResetButton />
+      </div>
+    </PluginFooter>
   );
 };
-
-const StyledComponent = styled(Component)`
-  position: sticky;
-  bottom: 0px;
-  margin-top: 20px;
-  background-color: #fff;
-  border-top: 1px solid #eee;
-  z-index: 10;
-
-  button {
-    margin: 8px;
-  }
-`;
 
 const Container: FC = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -112,7 +111,7 @@ const Container: FC = () => {
     []
   );
 
-  return <StyledComponent {...{ onSaveButtonClick, onBackButtonClick }} />;
+  return <Component {...{ onSaveButtonClick, onBackButtonClick }} />;
 };
 
 export default Container;
