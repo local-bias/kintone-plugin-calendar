@@ -1,10 +1,11 @@
-import { getAllRecords } from '@/lib/kintone-rest-api';
 import { getAppId, getQuery } from '@lb-ribbit/kintone-xapp';
 import { FC, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { getCalendarEventFromKintoneRecord } from '../../actions';
 import { calendarEventsState } from '../../states/calendar';
 import { appPropertiesState, loadingState, pluginConditionState } from '../../states/kintone';
+import { getAllRecords } from '@konomi-app/kintone-utilities';
+import { GUEST_SPACE_ID } from '@/lib/global';
 
 const Component: FC = () => {
   const condition = useRecoilValue(pluginConditionState);
@@ -28,7 +29,7 @@ const Component: FC = () => {
           condition.calendarEvent.allDayField,
           condition.calendarEvent.noteField,
           condition.calendarEvent.endField,
-        ];
+        ].filter((field) => field);
 
         if (condition.calendarEvent.categoryField) {
           fields.push(condition.calendarEvent.categoryField);
@@ -38,16 +39,18 @@ const Component: FC = () => {
           app,
           query,
           fields,
-          onAdvance: (thisStepData) => {
-            const thisStepEvents = thisStepData.map((record) =>
+          onStep: ({ records }) => {
+            const calendarEvents = records.map((record) =>
               getCalendarEventFromKintoneRecord({
                 condition,
                 properties,
                 record,
               })
             );
-            setEvents((current) => [...current, ...thisStepEvents]);
+            setEvents(calendarEvents);
           },
+          guestSpaceId: GUEST_SPACE_ID,
+          debug: process.env.NODE_ENV === 'development',
         });
       } catch (error) {
         console.error('レコードの取得に失敗しました', error);
