@@ -24,7 +24,7 @@ const Component: FC = () => {
     <FullCalendar
       locale='ja'
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-      initialView='timeGridWeek'
+      initialView={pluginCondition?.initialView ?? 'timeGridWeek'}
       views={{
         timeGridThreeDay: {
           type: 'timeGrid',

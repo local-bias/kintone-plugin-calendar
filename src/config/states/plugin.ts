@@ -82,6 +82,7 @@ export const getConditionPropertyState = <T extends keyof Plugin.Condition>(prop
   conditionPropertyState(property) as unknown as RecoilState<Plugin.Condition[T]>;
 
 export const viewIdState = getConditionPropertyState('viewId');
+export const initialViewState = getConditionPropertyState('initialView');
 export const enablesAllDayState = getConditionPropertyState('enablesAllDay');
 export const alldayOptionState = getConditionPropertyState('allDayOption');
 export const enablesNoteState = getConditionPropertyState('enablesNote');

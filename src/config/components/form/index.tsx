@@ -15,6 +15,7 @@ import FormNote from './form-note';
 import FormSlotMinmax from './form-slot-minmax';
 import FormCategory from './form-category';
 import FormView from './form-view';
+import FormInitialView from './form-initial-view';
 
 const Component: FC = () => (
   <div className='p-4'>
@@ -70,25 +71,34 @@ const Component: FC = () => (
       <RecoilSwitch state={enablesNoteState} label='スケジュールの備考を有効にする' />
       <FormNote />
     </PluginFormSection>
-    <PluginFormSection>
-      <PluginFormTitle>表示時間帯の設定</PluginFormTitle>
-      <PluginFormDescription last>
-        カレンダーに表示する時間帯の上限と下限を設定します。
-      </PluginFormDescription>
-      <FormSlotMinmax />
-    </PluginFormSection>
-    <PluginFormSection>
-      <PluginFormTitle>カテゴリー設定</PluginFormTitle>
-      <PluginFormDescription>
-        カレンダーのカテゴリーとして使用するフィールドを設定します
-      </PluginFormDescription>
-      <PluginFormDescription>カレンダーはカテゴリーに応じて色分けされます</PluginFormDescription>
-      <PluginFormDescription last>
-        使用できるフィールドタイプは、チェックボックス、ラジオボタン、ドロップダウンです
-      </PluginFormDescription>
-      <FormCategory />
-    </PluginFormSection>
-
+    <details className='mt-8'>
+      <summary className='font-bold text-lg mb-4 cursor-pointer'>高度な設定</summary>
+      <PluginFormSection>
+        <PluginFormTitle>初期表示するカレンダーの種類</PluginFormTitle>
+        <PluginFormDescription last>
+          初期表示するカレンダーの種類を選択してください
+        </PluginFormDescription>
+        <FormInitialView />
+      </PluginFormSection>
+      <PluginFormSection>
+        <PluginFormTitle>表示時間帯の設定</PluginFormTitle>
+        <PluginFormDescription last>
+          カレンダーに表示する時間帯の上限と下限を設定します。
+        </PluginFormDescription>
+        <FormSlotMinmax />
+      </PluginFormSection>
+      <PluginFormSection>
+        <PluginFormTitle>カテゴリー設定</PluginFormTitle>
+        <PluginFormDescription>
+          カレンダーのカテゴリーとして使用するフィールドを設定します
+        </PluginFormDescription>
+        <PluginFormDescription>カレンダーはカテゴリーに応じて色分けされます</PluginFormDescription>
+        <PluginFormDescription last>
+          使用できるフィールドタイプは、チェックボックス、ラジオボタン、ドロップダウンです
+        </PluginFormDescription>
+        <FormCategory />
+      </PluginFormSection>
+    </details>
     <DeleteButton />
   </div>
 );
