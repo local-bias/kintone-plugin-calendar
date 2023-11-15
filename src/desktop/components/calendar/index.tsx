@@ -124,11 +124,23 @@ const Component: FC = () => {
       locale='ja'
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       initialView='timeGridWeek'
+      views={{
+        timeGridThreeDay: {
+          type: 'timeGrid',
+          duration: { days: 3 },
+          buttonText: '3日',
+        },
+        timeGridFiveDay: {
+          type: 'timeGrid',
+          duration: { days: 5 },
+          buttonText: '5日',
+        },
+      }}
       locales={allLocales}
       headerToolbar={{
         left: 'prev,next today',
         center: '',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        right: 'dayGridMonth,timeGridWeek,timeGridFiveDay,timeGridThreeDay,timeGridDay',
       }}
       events={calendarEvents}
       allDaySlot={pluginCondition?.enablesAllDay}
