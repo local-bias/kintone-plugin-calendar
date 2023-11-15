@@ -28,9 +28,7 @@ const Component: FCX<{ condition: Plugin.Condition }> = ({ className, condition 
           <Dialog />
           <div className={className}>
             <Sidebar />
-            <div className='calendar'>
-              <Calendar />
-            </div>
+            <Calendar />
           </div>
           <Fab />
         </ThemeProvider>
@@ -78,12 +76,6 @@ const StyledComponent = styled(Component)`
   }
 
   padding: 1rem;
-  display: flex;
-  gap: 1rem;
-
-  .calendar {
-    flex: 1;
-  }
 
   .fc-event-time,
   .fc-event-title-container {

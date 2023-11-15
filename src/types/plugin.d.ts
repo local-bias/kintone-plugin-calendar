@@ -12,7 +12,12 @@ declare namespace Plugin {
     version: 1;
     conditions: {
       viewId: string;
-      initialView: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay';
+      initialView:
+        | 'dayGridMonth'
+        | 'timeGridWeek'
+        | 'timeGridDay'
+        | 'timeGridFiveDay'
+        | 'timeGridThreeDay';
       enablesAllDay: boolean;
       allDayOption: string;
       enablesNote: boolean;
