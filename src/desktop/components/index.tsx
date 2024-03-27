@@ -26,7 +26,7 @@ const Component: FCX<{ condition: Plugin.Condition }> = ({ className, condition 
             <Observer />
           </Suspense>
           <Dialog />
-          <div className={className}>
+          <div className={`🐸 ${className}`}>
             <Sidebar />
             <Calendar />
           </div>

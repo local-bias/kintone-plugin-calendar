@@ -33,7 +33,7 @@ const Component: FCX = ({ className }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Dialog open={open} onClose={onDialogClose} maxWidth='sm' fullWidth className={className}>
-        <DialogContent className='content'>
+        <DialogContent className='🐸 content'>
           <FixedButtons />
           <DialogInputs />
         </DialogContent>
