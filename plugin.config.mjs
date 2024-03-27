@@ -1,9 +1,13 @@
-const hp = 'https://konomi.app/';
-const commonCdn = 'https://kintone-plugin.konomi.app/common';
+//@ts-check
+const hp = 'https://konomi.app';
+const cdn = 'https://kintone-plugin.konomi.app';
+const key = 'calendar';
 const localhost = 'https://127.0.0.1:8487';
 
-/** @type {import('./src/types/plugin-config').PluginConfig} */
-export default {
+/** @satisfies { import('@konomi-app/kintone-utilities').PluginConfig } */
+export default /** @type { const } */ ({
+  id: `ribbit-kintone-plugin-${key}`,
+  pluginReleasePageUrl: `https://ribbit.konomi.app/kintone-plugin/`,
   manifest: {
     base: {
       manifest_version: 1,
@@ -20,38 +24,39 @@ export default {
         zh: '使用开源库fullcalendar，实现可用作调度程序的日历',
       },
       icon: 'icon.png',
-      homepage_url: {
-        ja: hp,
-        en: hp,
-        zh: hp,
+      homepage_url: { ja: hp, en: hp },
+      desktop: { js: [`${cdn}/common/desktop.js`], css: [`${cdn}/common/desktop.css`] },
+      mobile: { js: [`${cdn}/common/desktop.js`], css: [`${cdn}/common/desktop.css`] },
+      config: {
+        html: 'config.html',
+        js: [`${cdn}/common/config.js`],
+        css: [`${cdn}/common/config.css`],
+        required_params: [],
       },
-      desktop: {
-        js: [`${commonCdn}/desktop.js`],
-        css: [
-          'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap',
-        ],
-      },
-      mobile: { js: [`${commonCdn}/desktop.js`], css: [] },
-      config: { html: 'config.html', js: [`${commonCdn}/config.js`], css: [], required_params: [] },
     },
     dev: {
       desktop: {
-        js: [`${localhost}/dist/dev/desktop/index.js`],
+        js: [`${localhost}/dist/dev/desktop.js`],
         css: [`${localhost}/dist/dev/desktop.css`],
       },
       mobile: {
-        js: [`${localhost}/dist/dev/desktop/index.js`],
+        js: [`${localhost}/dist/dev/desktop.js`],
         css: [`${localhost}/dist/dev/desktop.css`],
       },
       config: {
-        js: [`${localhost}/dist/dev/config/index.js`],
+        js: [`${localhost}/dist/dev/config.js`],
         css: [`${localhost}/dist/dev/config.css`],
       },
     },
     prod: {
-      desktop: { js: [`desktop.js`], css: [`desktop.css`] },
-      mobile: { js: [`desktop.js`], css: [`desktop.css`] },
-      config: { js: [`config.js`], css: [`config.css`] },
+      desktop: { js: [`${cdn}/${key}/desktop.js`], css: [`${cdn}/${key}/desktop.css`] },
+      mobile: { js: [`${cdn}/${key}/desktop.js`], css: [`${cdn}/${key}/desktop.css`] },
+      config: { js: [`${cdn}/${key}/config.js`], css: [`${cdn}/${key}/config.css`] },
+    },
+    standalone: {
+      desktop: { js: ['desktop.js'], css: ['desktop.css'] },
+      mobile: { js: ['desktop.js'], css: ['desktop.css'] },
+      config: { js: ['config.js'], css: ['config.css'] },
     },
   },
-};
+});
