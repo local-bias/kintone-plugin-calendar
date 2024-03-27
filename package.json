@@ -38,7 +38,6 @@
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "5.15.14",
     "@mui/x-date-pickers": "^7.0.0",
-    "date-fns": "^3.6.0",
     "hamburger-react": "^2.5.0",
     "immer": "10.0.4",
     "luxon": "3.4.4",
