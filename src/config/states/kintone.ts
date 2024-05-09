@@ -1,7 +1,7 @@
-import { selector } from 'recoil';
+import { atom, selector } from 'recoil';
 import { ViewForResponse } from '@kintone/rest-api-client/lib/src/client/types';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
-import { getFormFields, getViews, kintoneAPI } from '@konomi-app/kintone-utilities';
+import { getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { calendarAllDayState } from './plugin';
 
@@ -86,18 +86,9 @@ export const selectableFieldsState = selector<
   },
 });
 
-const allAppViewsState = selector<Record<string, kintoneAPI.view.Response>>({
-  key: 'allAppViewsState',
-  get: async () => {
-    const app = getAppId()!;
-    const { views } = await getViews({
-      app,
-      preview: true,
-      guestSpaceId: GUEST_SPACE_ID,
-      debug: process.env.NODE_ENV === 'development',
-    });
-    return views;
-  },
+export const allAppViewsState = atom<Record<string, kintoneAPI.view.Response>>({
+  key: `${PREFIX}allAppViewsState`,
+  default: {},
 });
 
 export const customViewsState = selector({

@@ -7,7 +7,7 @@ import React, { FC, useCallback } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 
 import { PluginFooter } from '@konomi-app/kintone-utilities-react';
-import { loadingState, storageState } from '../../states/plugin';
+import { loadingCountState, loadingState, storageState } from '../../states/plugin';
 
 import ExportButton from './export-button';
 import ImportButton from './import-button';
@@ -66,7 +66,7 @@ const Container: FC = () => {
   const onSaveButtonClick = useRecoilCallback(
     ({ set, snapshot }) =>
       async () => {
-        set(loadingState, true);
+        set(loadingCountState, (c) => c + 1);
         try {
           const storage = await snapshot.getPromise(storageState);
 
@@ -82,7 +82,7 @@ const Container: FC = () => {
             for (const condition of storage?.conditions || []) {
               for (const view of Object.values(draft)) {
                 if (view.id === condition.viewId && view.type === 'CUSTOM') {
-                  view.html = `<div id='${VIEW_ROOT_ID}'></div>`;
+                  view.html = `<div id='${VIEW_ROOT_ID}' class="🐸"></div>`;
                   view.pager = false;
                 }
               }
@@ -105,7 +105,7 @@ const Container: FC = () => {
             ),
           });
         } finally {
-          set(loadingState, false);
+          set(loadingCountState, (c) => c - 1);
         }
       },
     []

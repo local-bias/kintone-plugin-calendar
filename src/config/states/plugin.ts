@@ -9,9 +9,14 @@ export const storageState = atom<Plugin.Config>({
   default: restorePluginConfig(),
 });
 
-export const loadingState = atom<boolean>({
+export const loadingCountState = atom<number>({
+  key: `${PREFIX}loadingCountState`,
+  default: 0,
+});
+
+export const loadingState = selector<boolean>({
   key: `${PREFIX}loadingState`,
-  default: false,
+  get: ({ get }) => get(loadingCountState) > 0,
 });
 
 export const tabIndexState = atom<number>({
