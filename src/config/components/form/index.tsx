@@ -16,13 +16,17 @@ import FormSlotMinmax from './form-slot-minmax';
 import FormCategory from './form-category';
 import FormView from './form-view';
 import FormInitialView from './form-initial-view';
+import CreateNewView from './create-new-view';
 
 const Component: FC = () => (
   <div className='p-4'>
     <PluginFormSection>
       <PluginFormTitle>テーブルを表示する一覧の設定</PluginFormTitle>
       <PluginFormDescription last>カレンダーを表示する一覧を選択してください</PluginFormDescription>
-      <FormView />
+      <div className='flex items-center gap-8'>
+        <FormView />
+        <CreateNewView />
+      </div>
     </PluginFormSection>
     <PluginFormSection>
       <PluginFormTitle>スケジュールのタイトル</PluginFormTitle>
