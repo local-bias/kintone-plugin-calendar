@@ -1,14 +1,15 @@
 import React, { FCX } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { Fab, Tooltip } from '@mui/material';
+import { Fab, IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { calendarEventsState } from '../../states/calendar';
 import { loadingState } from '../../states/kintone';
 import { useSnackbar } from 'notistack';
 import styled from '@emotion/styled';
-import { deleteAllRecords } from '@konomi-app/kintone-utilities';
+import { deleteAllRecords, isMobile } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 
 const Component: FCX = ({ className }) => {
@@ -47,11 +48,20 @@ const Component: FCX = ({ className }) => {
   return (
     <div className={className}>
       {!props.new && (
-        <Tooltip title='このイベントを削除する'>
-          <Fab className='icon' color='inherit' size='small' onClick={onRemoveButtonClick}>
-            <DeleteIcon />
-          </Fab>
-        </Tooltip>
+        <>
+          <Tooltip title='このイベントの詳細'>
+            <a href={`${location.pathname}show${isMobile() ? '?' : '#'}record=${props.event.id}`}>
+              <IconButton className='icon' color='inherit' size='small'>
+                <InsertDriveFileIcon />
+              </IconButton>
+            </a>
+          </Tooltip>
+          <Tooltip title='このイベントを削除する'>
+            <IconButton className='icon' color='inherit' size='small' onClick={onRemoveButtonClick}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       )}
     </div>
   );
@@ -61,6 +71,15 @@ const StyledComponent = styled(Component)`
   position: absolute;
   right: 1rem;
   top: 1rem;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #0009;
+  a {
+    color: #0009;
+  }
 
   .icon {
     box-shadow: none;
