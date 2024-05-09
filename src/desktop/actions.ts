@@ -85,7 +85,10 @@ export const getKintoneRecordFromCalendarEvent = (params: {
   }
 
   process.env.NODE_ENV === 'development' &&
-    console.log('♻ カレンダーイベントがkintoneレコードに変換されました', { calendarEvent, record });
+    console.log('♻ カレンダーイベントがkintoneレコードに変換されました', {
+      calendarEvent,
+      record,
+    });
   return record;
 };
 
@@ -186,11 +189,12 @@ export const getEventBackgroundColor = (
     return COLORS[0];
   }
 
-  const keyProperty = properties[condition.calendarEvent.categoryField];
+  const keyProperty: kintoneAPI.FieldProperty | undefined =
+    properties[condition.calendarEvent.categoryField];
   if (
-    keyProperty.type === 'CHECK_BOX' ||
-    keyProperty.type === 'DROP_DOWN' ||
-    keyProperty.type === 'RADIO_BUTTON'
+    keyProperty?.type === 'CHECK_BOX' ||
+    keyProperty?.type === 'DROP_DOWN' ||
+    keyProperty?.type === 'RADIO_BUTTON'
   ) {
     const index = Object.values(keyProperty.options).findIndex((option) => option.label === value);
     if (index === -1) {
