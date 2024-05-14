@@ -6,9 +6,14 @@ import { PluginCalendarEvent } from '../../../states/calendar';
 import { DateTimePicker } from '@/lib/components/datetime-picker';
 import { DateTime } from 'luxon';
 import { dateInputToDateTime, dateTimeToDateInput } from '@/desktop/actions';
+import { hasEndTimeState, hasStartTimeState } from '@/desktop/states/plugin';
+import { DatePicker } from '@/lib/components/date-picker';
 
 const Component: FC<{ start: PluginCalendarEvent['start']; end: PluginCalendarEvent['end'] }> =
   memo((props) => {
+    const hasStartTime = useRecoilValue(hasStartTimeState);
+    const hasEndTime = useRecoilValue(hasEndTimeState);
+
     const onStartChange = useRecoilCallback(
       ({ set }) =>
         (date: DateTime | null) => {
@@ -39,18 +44,34 @@ const Component: FC<{ start: PluginCalendarEvent['start']; end: PluginCalendarEv
 
     return (
       <div>
-        <DateTimePicker
-          ampm={false}
-          label='開始日時'
-          value={props.start ? dateInputToDateTime(props.start) : DateTime.local()}
-          onChange={onStartChange}
-        />
-        <DateTimePicker
-          ampm={false}
-          label='終了日時'
-          value={props.end ? dateInputToDateTime(props.end) : DateTime.local()}
-          onChange={onEndChange}
-        />
+        {hasStartTime ? (
+          <DateTimePicker
+            ampm={false}
+            label='開始日時'
+            value={props.start ? dateInputToDateTime(props.start) : DateTime.local()}
+            onChange={onStartChange}
+          />
+        ) : (
+          <DatePicker
+            label='開始日'
+            value={props.start ? dateInputToDateTime(props.start) : DateTime.local()}
+            onChange={onStartChange}
+          />
+        )}
+        {hasEndTime ? (
+          <DateTimePicker
+            ampm={false}
+            label='終了日時'
+            value={props.end ? dateInputToDateTime(props.end) : DateTime.local()}
+            onChange={onEndChange}
+          />
+        ) : (
+          <DatePicker
+            label='終了日'
+            value={props.end ? dateInputToDateTime(props.end) : DateTime.local()}
+            onChange={onEndChange}
+          />
+        )}
       </div>
     );
   });
