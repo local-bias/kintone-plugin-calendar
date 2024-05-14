@@ -205,7 +205,7 @@ export const getEventBackgroundColor = (
     if (index === -1) {
       return colors[0];
     }
-    return colors[index % (colors.length - 1)];
+    return colors[index % colors.length];
   }
 
   return colors[0];

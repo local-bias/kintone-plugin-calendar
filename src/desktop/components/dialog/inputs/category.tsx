@@ -57,7 +57,7 @@ const Component: FC<{ category?: string; categories: string[] }> = memo(
                   height: '1em',
                   marginRight: '0.5em',
                   borderRadius: '9999px',
-                  backgroundColor: colors[i % (colors.length - 1)],
+                  backgroundColor: colors[i % colors.length],
                 }}
               ></span>
               {category}
