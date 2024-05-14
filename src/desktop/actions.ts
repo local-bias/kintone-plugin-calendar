@@ -147,6 +147,8 @@ export const addNewRecord = async (params: {
     properties,
   });
 
+  process.env.NODE_ENV === 'development' && console.info('レコードを追加します', record);
+
   const response = await addRecord({
     app: getAppId()!,
     record,
