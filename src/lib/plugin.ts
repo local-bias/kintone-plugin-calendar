@@ -1,6 +1,7 @@
 import { restoreStorage } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
 import { PLUGIN_ID } from './global';
+import { DEFAULT_COLORS } from '@/desktop/static';
 
 export const getNewCondition = (): Plugin.Condition => ({
   viewId: '',
@@ -10,6 +11,7 @@ export const getNewCondition = (): Plugin.Condition => ({
   enablesNote: false,
   slotMinTime: '0:00:00',
   slotMaxTime: '24:00:00',
+  colors: DEFAULT_COLORS,
   calendarEvent: {
     titleField: '',
     startField: '',
@@ -24,7 +26,7 @@ export const getNewCondition = (): Plugin.Condition => ({
  * プラグインの設定情報のひな形を返却します
  */
 export const createConfig = (): Plugin.Config => ({
-  version: 1,
+  version: 2,
   conditions: [getNewCondition()],
 });
 
@@ -33,18 +35,21 @@ export const createConfig = (): Plugin.Config => ({
  * @param anyConfig 保存されている設定情報
  * @returns 新しいバージョンの設定情報
  */
-export const migrateConfig = (anyConfig: Plugin.AnyConfig): Plugin.Config => {
-  const { version } = anyConfig;
+export const migrateConfig = (config: Plugin.AnyConfig): Plugin.Config => {
+  const { version } = config;
   switch (version) {
     case undefined:
     case 1:
       return {
-        //@ts-ignore
-        version: 1,
-        ...anyConfig,
+        version: 2,
+        conditions: config.conditions.map((condition) => ({
+          ...condition,
+          colors: DEFAULT_COLORS,
+        })),
       };
+    case 2:
     default:
-      return anyConfig;
+      return config;
   }
 };
 

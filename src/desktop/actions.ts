@@ -4,9 +4,9 @@ import { getAppId } from '@lb-ribbit/kintone-xapp';
 
 import { PluginCalendarEvent } from './states/calendar';
 import { DateInput } from '@fullcalendar/core';
-import { COLORS } from './static';
 import { addRecord, kintoneAPI, updateRecord } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { getSortedOptions } from '@/lib/utils';
 
 export const getDefaultStartDate = (): Date => {
   const now = DateTime.local();
@@ -187,8 +187,9 @@ export const getEventBackgroundColor = (
   condition: Plugin.Condition,
   properties: kintoneAPI.FieldProperties
 ) => {
+  const { colors } = condition;
   if (!value) {
-    return COLORS[0];
+    return colors[0];
   }
 
   const keyProperty: kintoneAPI.FieldProperty | undefined =
@@ -198,14 +199,16 @@ export const getEventBackgroundColor = (
     keyProperty?.type === 'DROP_DOWN' ||
     keyProperty?.type === 'RADIO_BUTTON'
   ) {
-    const index = Object.values(keyProperty.options).findIndex((option) => option.label === value);
+    const index = getSortedOptions(keyProperty.options).findIndex(
+      (option) => option.label === value
+    );
     if (index === -1) {
-      return COLORS[0];
+      return colors[0];
     }
-    return COLORS[index % (COLORS.length - 1)];
+    return colors[index % (colors.length - 1)];
   }
 
-  return COLORS[0];
+  return colors[0];
 };
 
 const convertCalendarDateIntoKintoneDate = (eventDate: DateInput): string | null => {

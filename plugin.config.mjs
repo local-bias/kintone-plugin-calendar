@@ -11,7 +11,7 @@ export default /** @type { const } */ ({
   manifest: {
     base: {
       manifest_version: 1,
-      version: '0.9.0',
+      version: '0.11.0',
       type: 'APP',
       name: {
         en: 'calendar plugin',

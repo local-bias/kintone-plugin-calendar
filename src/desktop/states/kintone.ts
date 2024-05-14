@@ -1,5 +1,6 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { PREDEFINED_FIELDS } from '@/lib/kintone-rest-api';
+import { getSortedOptions } from '@/lib/utils';
 import { getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { atom, selector } from 'recoil';
@@ -64,6 +65,6 @@ export const calendarEventCategoryState = selector<string[] | null>({
       return null;
     }
 
-    return Object.keys(categoryProperty.options ?? {});
+    return getSortedOptions(categoryProperty.options ?? {}).map((option) => option.label);
   },
 });

@@ -17,6 +17,7 @@ import FormCategory from './form-category';
 import FormView from './form-view';
 import FormInitialView from './form-initial-view';
 import CreateNewView from './create-new-view';
+import FormColors from './form-colors';
 
 const Component: FC = () => (
   <div className='p-4'>
@@ -101,6 +102,16 @@ const Component: FC = () => (
           使用できるフィールドタイプは、チェックボックス、ラジオボタン、ドロップダウンです
         </PluginFormDescription>
         <FormCategory />
+      </PluginFormSection>
+      <PluginFormSection>
+        <PluginFormTitle>スケジュールの色</PluginFormTitle>
+        <PluginFormDescription>
+          カレンダーに登録するスケジュールの色を設定します。
+        </PluginFormDescription>
+        <PluginFormDescription last>
+          カテゴリーを使用しない場合、スケジュールは必ず１つ目の色になります
+        </PluginFormDescription>
+        <FormColors />
       </PluginFormSection>
     </details>
     <DeleteButton />

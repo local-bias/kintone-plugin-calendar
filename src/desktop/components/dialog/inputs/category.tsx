@@ -9,10 +9,13 @@ import {
   pluginConditionState,
 } from '../../../states/kintone';
 import { getEventBackgroundColor } from '../../../actions';
-import { COLORS } from '../../../static';
+import { DEFAULT_COLORS } from '../../../static';
 
 const Component: FC<{ category?: string; categories: string[] }> = memo(
   ({ category, categories }) => {
+    const condition = useRecoilValue(pluginConditionState);
+    const colors = condition?.colors ?? DEFAULT_COLORS;
+
     const onCategoryChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> =
       useRecoilCallback(
         ({ set, snapshot }) =>
@@ -54,7 +57,7 @@ const Component: FC<{ category?: string; categories: string[] }> = memo(
                   height: '1em',
                   marginRight: '0.5em',
                   borderRadius: '9999px',
-                  backgroundColor: COLORS[i % (COLORS.length - 1)],
+                  backgroundColor: colors[i % (colors.length - 1)],
                 }}
               ></span>
               {category}

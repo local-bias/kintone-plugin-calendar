@@ -1,12 +1,14 @@
 import React, { FC, memo } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { FormControlLabel, Switch } from '@mui/material';
-import { calendarEventCategoryState } from '../../states/kintone';
-import { COLORS } from '../../static';
+import { calendarEventCategoryState, pluginConditionState } from '../../states/kintone';
+import { DEFAULT_COLORS } from '../../static';
 import { displayingCategoriesState } from '../../states/sidebar';
 
 const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
   const displayingCategories = useRecoilValue(displayingCategoriesState);
+  const condition = useRecoilValue(pluginConditionState);
+  const colors = condition?.colors ?? DEFAULT_COLORS;
 
   const onCategoryChange = useRecoilCallback(
     ({ set }) =>
@@ -39,7 +41,7 @@ const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
             <div className='flex items-center gap-3'>
               {category}
               <span
-                style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                style={{ backgroundColor: colors[i % colors.length] }}
                 className='w-4 h-4 rounded-full'
               ></span>
             </div>
