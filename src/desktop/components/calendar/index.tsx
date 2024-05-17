@@ -40,7 +40,7 @@ const Component: FC = () => {
       locales={allLocales}
       headerToolbar={{
         left: 'prev,next today',
-        center: '',
+        center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridFiveDay,timeGridThreeDay,timeGridDay',
       }}
       events={calendarEvents}
