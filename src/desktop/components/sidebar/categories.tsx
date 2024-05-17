@@ -27,7 +27,7 @@ const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
 
   return (
     <div className='grid gap-2'>
-      <h3>表示するカレンダー</h3>
+      <h3>表示するカテゴリー</h3>
       {categories.map((category, i) => (
         <FormControlLabel
           key={i}
