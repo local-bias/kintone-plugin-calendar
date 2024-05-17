@@ -16,7 +16,7 @@ const Component: FC = () => {
           <MenuIcon />
         </Fab>
       </div>
-      <Drawer anchor='left' open={open} onClose={toggle}>
+      <Drawer anchor='left' open={open} onClose={toggle} className='🐸'>
         <div className='p-8'>
           <Suspense fallback={null}>
             <Categories />
