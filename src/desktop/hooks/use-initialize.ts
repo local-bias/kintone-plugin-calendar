@@ -1,10 +1,10 @@
-import { getAppId, getQuery } from '@lb-ribbit/kintone-xapp';
-import { FC, useEffect } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { getAppId } from '@lb-ribbit/kintone-xapp';
+import { useEffect } from 'react';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { getCalendarEventFromKintoneRecord } from '../actions';
 import { calendarEventsState } from '../states/calendar';
 import { appPropertiesState, loadingState, pluginConditionState } from '../states/kintone';
-import { getAllRecords } from '@konomi-app/kintone-utilities';
+import { getAllRecordsWithId, getQueryCondition } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 
 export const useInitialize = () => {
@@ -16,9 +16,7 @@ export const useInitialize = () => {
         try {
           set(loadingState, true);
           const app = getAppId()!;
-          const query = (getQuery() || '')
-            .replace(/limit [0-9]+/g, '')
-            .replace(/offset [0-9]+/g, '');
+          const query = getQueryCondition() || '';
           const fields = [
             '$id',
             condition.calendarEvent.titleField,
@@ -34,20 +32,18 @@ export const useInitialize = () => {
 
           const properties = await snapshot.getPromise(appPropertiesState);
 
-          await getAllRecords({
+          const onStep: Parameters<typeof getAllRecordsWithId>[0]['onStep'] = ({ records }) => {
+            const calendarEvents = records.map((record) =>
+              getCalendarEventFromKintoneRecord({ condition, properties, record })
+            );
+            set(calendarEventsState, calendarEvents);
+          };
+
+          await getAllRecordsWithId({
             app,
-            query,
+            condition: query,
             fields,
-            onStep: ({ records }) => {
-              const calendarEvents = records.map((record) =>
-                getCalendarEventFromKintoneRecord({
-                  condition,
-                  properties,
-                  record,
-                })
-              );
-              set(calendarEventsState, calendarEvents);
-            },
+            onStep,
             guestSpaceId: GUEST_SPACE_ID,
             debug: process.env.NODE_ENV === 'development',
           });
