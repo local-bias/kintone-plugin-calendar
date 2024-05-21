@@ -8,34 +8,26 @@ import { jaJP } from '@mui/material/locale';
 import { SnackbarProvider } from 'notistack';
 
 import { pluginConditionState } from '../states/kintone';
-import Observer from './observer';
+import { useInitialize } from '../hooks/use-initialize';
 import Dialog from './dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
+import { LoaderWithLabel } from '@konomi-app/ui-react';
 
-const Component: FCX<{ condition: Plugin.Condition }> = ({ className, condition }) => (
-  <PluginErrorBoundary>
-    <RecoilRoot
-      initializeState={({ set }) => {
-        set(pluginConditionState, condition);
-      }}
-    >
-      <SnackbarProvider maxSnack={1}>
-        <ThemeProvider theme={createTheme({}, jaJP)}>
-          <Suspense fallback={null}>
-            <Observer />
-          </Suspense>
-          <Dialog />
-          <div className={`🐸 ${className}`}>
-            <Sidebar />
-            <Calendar />
-          </div>
-          <Fab />
-        </ThemeProvider>
-      </SnackbarProvider>
-    </RecoilRoot>
-  </PluginErrorBoundary>
-);
+const Component: FCX = ({ className }) => {
+  useInitialize();
+
+  return (
+    <>
+      <Dialog />
+      <div className={`🐸 ${className}`}>
+        <Sidebar />
+        <Calendar />
+      </div>
+      <Fab />
+    </>
+  );
+};
 
 const StyledComponent = styled(Component)`
   font-family: 'Noto Sans JP', 'Yu Gothic Medium', YuGothic, メイリオ;
@@ -83,4 +75,22 @@ const StyledComponent = styled(Component)`
   }
 `;
 
-export default StyledComponent;
+const Container: FC<{ condition: Plugin.Condition }> = ({ condition }) => (
+  <PluginErrorBoundary>
+    <RecoilRoot
+      initializeState={({ set }) => {
+        set(pluginConditionState, condition);
+      }}
+    >
+      <Suspense fallback={<LoaderWithLabel label='読み込み中' />}>
+        <SnackbarProvider maxSnack={1}>
+          <ThemeProvider theme={createTheme({}, jaJP)}>
+            <StyledComponent />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </Suspense>
+    </RecoilRoot>
+  </PluginErrorBoundary>
+);
+
+export default Container;
