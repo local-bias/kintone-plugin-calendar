@@ -1,6 +1,8 @@
 import { EventInput } from '@fullcalendar/core';
 import { atom, selector } from 'recoil';
 import { displayingCategoriesState } from './sidebar';
+import { hasEndTimeState, hasStartTimeState } from './plugin';
+import { getNextDay } from '@/lib/calendar';
 
 export type PluginCalendarEvent = EventInput & { note?: string; category?: string };
 
@@ -24,11 +26,30 @@ export const filteredCalendarEventsState = selector<PluginCalendarEvent[]>({
   get: ({ get }) => {
     const allEvents = get(calendarEventsState);
     const categories = get(displayingCategoriesState);
+    const hasEndTime = get(hasEndTimeState);
+    const hasStartTime = get(hasStartTimeState);
 
     if (!categories) {
+      if (!hasEndTime && !hasStartTime) {
+        return allEvents.map((event) => ({
+          ...event,
+          end: event.end ? getNextDay(event.end) : undefined,
+        }));
+      }
       return allEvents;
     }
 
-    return allEvents.filter((event) => !event.category || categories.includes(event.category));
+    const filtered = allEvents.filter(
+      (event) => !event.category || categories.includes(event.category)
+    );
+
+    console.log({ hasEndTime, hasStartTime });
+    if (!hasEndTime && !hasStartTime) {
+      return filtered.map((event) => ({
+        ...event,
+        end: event.end ? getNextDay(event.end) : undefined,
+      }));
+    }
+    return filtered;
   },
 });

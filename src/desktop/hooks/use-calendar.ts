@@ -12,6 +12,8 @@ import { useSnackbar } from 'notistack';
 import { appPropertiesState, loadingState, pluginConditionState } from '../states/kintone';
 import { completeCalendarEvent, reschedule } from '../actions';
 import { produce } from 'immer';
+import { getPrevDay } from '@/lib/calendar';
+import { nanoid } from 'nanoid';
 
 export const useCalendar = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -19,13 +21,13 @@ export const useCalendar = () => {
   const onCalendarDateSelect = useRecoilCallback(
     ({ set }) =>
       async (props: DateSelectArg) => {
-        const temporaryKey = Math.random().toString();
+        const temporaryKey = nanoid();
 
         const completed = completeCalendarEvent({
           id: temporaryKey,
           allDay: props.allDay,
           start: props.start,
-          end: props.end,
+          end: props.end ? getPrevDay(props.end) : undefined,
         });
 
         set(calendarEventsState, (current) => produce(current, (draft) => [...draft, completed]));
@@ -95,7 +97,7 @@ export const useCalendar = () => {
           const newEvent = {
             ...targetEvent,
             start: changed.start || targetEvent.start,
-            end: changed.end || targetEvent.end,
+            end: getPrevDay(changed.end || targetEvent.end!),
           };
           set(calendarEventsState, (current) => {
             const newEvents = [...current];

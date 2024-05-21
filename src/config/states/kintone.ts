@@ -31,7 +31,7 @@ export const dateTimeFieldsState = selector<
   get: async ({ get }) => {
     const fields = get(appFieldsState);
 
-    const types: kintoneAPI.FieldPropertyType[] = ['DATETIME', 'DATE'];
+    const types: kintoneAPI.FieldPropertyType[] = ['DATE'];
 
     return fields.filter((field) => types.includes(field.type)) as (
       | kintoneAPI.property.DateTime

@@ -8,34 +8,27 @@ import { jaJP } from '@mui/material/locale';
 import { SnackbarProvider } from 'notistack';
 
 import { pluginConditionState } from '../states/kintone';
-import Observer from './observer';
+import { useObserver } from './observer';
 import Dialog from './dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
 
-const Component: FCX<{ condition: Plugin.Condition }> = ({ className, condition }) => (
-  <PluginErrorBoundary>
-    <RecoilRoot
-      initializeState={({ set }) => {
-        set(pluginConditionState, condition);
-      }}
-    >
-      <SnackbarProvider maxSnack={1}>
-        <ThemeProvider theme={createTheme({}, jaJP)}>
-          <Suspense fallback={null}>
-            <Observer />
-          </Suspense>
-          <Dialog />
-          <div className={`🐸 ${className}`}>
-            <Sidebar />
-            <Calendar />
-          </div>
-          <Fab />
-        </ThemeProvider>
-      </SnackbarProvider>
-    </RecoilRoot>
-  </PluginErrorBoundary>
-);
+const Component: FCX = ({ className }) => {
+  useObserver();
+
+  return (
+    <div>
+      <Dialog />
+      <div className={`🐸 ${className}`}>
+        <Sidebar />
+        <Suspense fallback={null}>
+          <Calendar />
+        </Suspense>
+      </div>
+      <Fab />
+    </div>
+  );
+};
 
 const StyledComponent = styled(Component)`
   font-family: 'Noto Sans JP', 'Yu Gothic Medium', YuGothic, メイリオ;
@@ -83,4 +76,20 @@ const StyledComponent = styled(Component)`
   }
 `;
 
-export default StyledComponent;
+const Container: FC<{ condition: Plugin.Condition }> = ({ condition }) => (
+  <PluginErrorBoundary>
+    <RecoilRoot
+      initializeState={({ set }) => {
+        set(pluginConditionState, condition);
+      }}
+    >
+      <SnackbarProvider maxSnack={1}>
+        <ThemeProvider theme={createTheme({}, jaJP)}>
+          <StyledComponent />
+        </ThemeProvider>
+      </SnackbarProvider>
+    </RecoilRoot>
+  </PluginErrorBoundary>
+);
+
+export default Container;
