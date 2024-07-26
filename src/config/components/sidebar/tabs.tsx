@@ -22,7 +22,7 @@ const Component: FC = () => {
 
   const onTabChange = useRecoilCallback(
     ({ set }) =>
-      (_: any, index: number) => {
+      (_: unknown, index: number) => {
         set(tabIndexState, index);
       },
     []

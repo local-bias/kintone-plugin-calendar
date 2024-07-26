@@ -96,7 +96,7 @@ export const customViewsState = selector({
   get: async ({ get }) => {
     const allViews = get(allAppViewsState);
 
-    const filtered = Object.entries(allViews).filter(([_, view]) => view.type === 'CUSTOM');
+    const filtered = Object.entries(allViews).filter(([, view]) => view.type === 'CUSTOM');
 
     return filtered.reduce<Record<string, ViewForResponse>>(
       (acc, [name, view]) => ({ ...acc, [name]: view }),
