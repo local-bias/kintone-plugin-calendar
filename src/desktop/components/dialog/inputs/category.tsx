@@ -8,7 +8,7 @@ import {
   calendarEventCategoryState,
   pluginConditionState,
 } from '../../../states/kintone';
-import { getEventBackgroundColor } from '../../../actions';
+import { getEventColors } from '../../../actions';
 import { DEFAULT_COLORS } from '../../../static';
 
 const Component: FC<{ category?: string; categories: string[] }> = memo(
@@ -26,11 +26,15 @@ const Component: FC<{ category?: string; categories: string[] }> = memo(
             set(dialogPropsState, (current) =>
               produce(current, (draft) => {
                 draft.event.category = props.target.value;
-                draft.event.backgroundColor = getEventBackgroundColor(
-                  props.target.value,
+                const colors = getEventColors({
+                  value: props.target.value,
                   condition,
-                  properties
-                );
+                  properties,
+                });
+                draft.event.color = colors.color;
+                draft.event.backgroundColor = colors.backgroundColor;
+                draft.event.borderColor = colors.borderColor;
+                draft.event.textColor = colors.textColor;
               })
             );
           },
