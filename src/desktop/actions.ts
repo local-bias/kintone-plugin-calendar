@@ -1,10 +1,9 @@
 import { produce } from 'immer';
 import { DateTime } from 'luxon';
-import { getAppId } from '@lb-ribbit/kintone-xapp';
 
 import { PluginCalendarEvent } from './states/calendar';
 import { DateInput } from '@fullcalendar/core';
-import { addRecord, kintoneAPI, updateRecord } from '@konomi-app/kintone-utilities';
+import { addRecord, getAppId, kintoneAPI, updateRecord } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { getSortedOptions } from '@/lib/utils';
 

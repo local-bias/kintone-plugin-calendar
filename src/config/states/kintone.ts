@@ -1,7 +1,6 @@
 import { atom, selector } from 'recoil';
 import { ViewForResponse } from '@kintone/rest-api-client/lib/src/client/types';
-import { getAppId } from '@lb-ribbit/kintone-xapp';
-import { getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
+import { getAppId, getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { calendarAllDayState } from './plugin';
 
