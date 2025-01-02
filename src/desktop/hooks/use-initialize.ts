@@ -1,10 +1,9 @@
-import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { useEffect } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { getCalendarEventFromKintoneRecord } from '../actions';
 import { calendarEventsState } from '../states/calendar';
 import { appPropertiesState, loadingState, pluginConditionState } from '../states/kintone';
-import { getAllRecordsWithId, getQueryCondition } from '@konomi-app/kintone-utilities';
+import { getAllRecordsWithId, getAppId, getQueryCondition } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 
 export const useInitialize = () => {
