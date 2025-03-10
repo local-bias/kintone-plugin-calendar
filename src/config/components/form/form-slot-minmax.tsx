@@ -60,7 +60,7 @@ const Component: FC = () => {
           '22',
           '23',
           '24',
-        ].map((hour, i) => (
+        ].map((hour) => (
           <MenuItem key={`slotMinTime-${hour}`} value={hour}>
             {hour}時
           </MenuItem>

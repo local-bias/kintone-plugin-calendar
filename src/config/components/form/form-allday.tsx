@@ -48,7 +48,7 @@ const Component: FC = () => {
         sx={{ width: '350px' }}
         value={alldayOption}
       >
-        {alldayOptions.map((code, i) => (
+        {alldayOptions.map((code) => (
           <MenuItem key={`allDayOptions-${code}`} value={code}>
             {code}
           </MenuItem>

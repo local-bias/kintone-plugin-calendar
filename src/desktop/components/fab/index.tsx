@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
-import { CircularProgress, Fab, Tooltip } from '@mui/material';
+import { Fab, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import styled from '@emotion/styled';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { completeCalendarEvent, getDefaultEndDate, getDefaultStartDate } from '../../actions';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';

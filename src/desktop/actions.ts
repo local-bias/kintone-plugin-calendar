@@ -1,10 +1,9 @@
 import { produce } from 'immer';
 import { DateTime } from 'luxon';
-import { getAppId } from '@lb-ribbit/kintone-xapp';
 
 import { PluginCalendarEvent } from './states/calendar';
 import { DateInput } from '@fullcalendar/core';
-import { addRecord, kintoneAPI, updateRecord } from '@konomi-app/kintone-utilities';
+import { addRecord, getAppId, kintoneAPI, updateRecord } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { getSortedOptions } from '@/lib/utils';
 
@@ -102,6 +101,12 @@ export const getCalendarEventFromKintoneRecord = (params: {
   const startProperty = properties[condition.calendarEvent.startField];
   const endProperty = properties[condition.calendarEvent.endField];
 
+  const colors = getEventColors({
+    value: record[condition.calendarEvent.categoryField]?.value,
+    condition,
+    properties,
+  });
+
   const calendarEvent: PluginCalendarEvent = {
     id: record.$id.value as string | undefined,
     start: record[condition.calendarEvent.startField]?.value as string | undefined,
@@ -109,11 +114,7 @@ export const getCalendarEventFromKintoneRecord = (params: {
     title: record[condition.calendarEvent.titleField]?.value as string | undefined,
     note: record[condition.calendarEvent.noteField]?.value as string | undefined,
     category: record[condition.calendarEvent.categoryField]?.value as string | undefined,
-    backgroundColor: getEventBackgroundColor(
-      record[condition.calendarEvent.categoryField]?.value,
-      condition,
-      properties
-    ),
+    ...colors,
   };
 
   if (startProperty.type === 'DATE' || endProperty.type === 'DATE') {
@@ -182,7 +183,52 @@ export const reschedule = async (params: {
   });
 };
 
-export const getEventBackgroundColor = (
+const getForegroundColor = (backgroundColor: string) => {
+  try {
+    const hex = backgroundColor.substring(1);
+    const [r, g, b] = [
+      parseInt(hex.substring(0, 2), 16),
+      parseInt(hex.substring(2, 4), 16),
+      parseInt(hex.substring(4, 6), 16),
+    ];
+    const brightness = r * 0.299 + g * 0.587 + b * 0.114;
+    return brightness > 186 ? '#000000' : '#ffffff';
+  } catch (error) {
+    console.log('failed to get foreground color', error);
+    return '#ffffff';
+  }
+};
+
+const getEventForegroundColor = (
+  value: kintoneAPI.RecordData[string]['value'] | undefined,
+  condition: Plugin.Condition,
+  properties: kintoneAPI.FieldProperties
+) => {
+  const { colors } = condition;
+  if (!value) {
+    return getForegroundColor(colors[0]);
+  }
+
+  const keyProperty: kintoneAPI.FieldProperty | undefined =
+    properties[condition.calendarEvent.categoryField];
+  if (
+    keyProperty?.type === 'CHECK_BOX' ||
+    keyProperty?.type === 'DROP_DOWN' ||
+    keyProperty?.type === 'RADIO_BUTTON'
+  ) {
+    const index = getSortedOptions(keyProperty.options).findIndex(
+      (option) => option.label === value
+    );
+    if (index === -1) {
+      return colors[0];
+    }
+    return getForegroundColor(colors[index % colors.length]);
+  }
+
+  return getForegroundColor(colors[0]);
+};
+
+const getEventBackgroundColor = (
   value: kintoneAPI.RecordData[string]['value'] | undefined,
   condition: Plugin.Condition,
   properties: kintoneAPI.FieldProperties
@@ -209,6 +255,24 @@ export const getEventBackgroundColor = (
   }
 
   return colors[0];
+};
+
+export const getEventColors = (params: {
+  value: kintoneAPI.RecordData[string]['value'] | undefined;
+  condition: Plugin.Condition;
+  properties: kintoneAPI.FieldProperties;
+}): Pick<PluginCalendarEvent, 'backgroundColor' | 'borderColor' | 'textColor' | 'color'> => {
+  const { value, condition, properties } = params;
+
+  const background = getEventBackgroundColor(value, condition, properties);
+  const foreground = getEventForegroundColor(value, condition, properties);
+
+  return {
+    color: `${foreground}aa`,
+    backgroundColor: background,
+    borderColor: `${foreground}22`,
+    textColor: foreground,
+  };
 };
 
 const convertCalendarDateIntoKintoneDate = (eventDate: DateInput): string | null => {

@@ -61,20 +61,6 @@ export const restorePluginConfig = (): Plugin.Config => {
   return migrateConfig(config);
 };
 
-/**
- * アプリにプラグインの設定情報を保存します
- * @param target 保存する設定情報
- * @param callback 実行完了後イベント
- */
-export const storeStorage = (target: Record<string, any>, callback?: () => void): void => {
-  const converted = Object.entries(target).reduce(
-    (acc, [key, value]) => ({ ...acc, [key]: JSON.stringify(value) }),
-    {}
-  );
-
-  kintone.plugin.app.setConfig(converted, callback);
-};
-
 export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
   storage: Plugin.Config,
   props: {

@@ -1,4 +1,6 @@
-import manifest from '../../plugin/manifest.json';
+import meta from 'plugin.config.mjs';
+
+const manifest = meta.manifest.base;
 
 export const PLUGIN_KEY = 'calendar';
 export const PLUGIN_NAME = manifest.name.ja;

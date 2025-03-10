@@ -2,7 +2,7 @@ import React, { FC, Suspense, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import Categories from './categories';
-import { Drawer, Fab, Tooltip } from '@mui/material';
+import { Drawer, Fab } from '@mui/material';
 
 const Component: FC = () => {
   const [open, setOpen] = useState(false);

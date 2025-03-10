@@ -1,4 +1,4 @@
-import { getViews, storeStorage, updateViews } from '@konomi-app/kintone-utilities';
+import { getAppId, getViews, storeStorage, updateViews } from '@konomi-app/kintone-utilities';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import { Button, CircularProgress } from '@mui/material';
@@ -12,7 +12,6 @@ import { loadingCountState, loadingState, storageState } from '../../states/plug
 import ExportButton from './export-button';
 import ImportButton from './import-button';
 import ResetButton from './reset-button';
-import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { produce } from 'immer';
 import { VIEW_ROOT_ID } from '@/lib/static';

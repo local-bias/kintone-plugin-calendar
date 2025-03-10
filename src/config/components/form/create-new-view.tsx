@@ -23,7 +23,7 @@ const Component: FC = () => {
 
           let viewName = '📆 カレンダー';
           let counter = 1;
-          while (views.some(([key, value]) => key === viewName)) {
+          while (views.some(([key]) => key === viewName)) {
             viewName = `📆 カレンダー (${counter})`;
             counter++;
           }

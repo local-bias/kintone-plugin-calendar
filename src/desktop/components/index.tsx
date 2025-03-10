@@ -8,25 +8,24 @@ import { jaJP } from '@mui/material/locale';
 import { SnackbarProvider } from 'notistack';
 
 import { pluginConditionState } from '../states/kintone';
-import { useObserver } from './observer';
+import { useInitialize } from '../hooks/use-initialize';
 import Dialog from './dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
+import { LoaderWithLabel } from '@konomi-app/ui-react';
 
 const Component: FCX = ({ className }) => {
-  useObserver();
+  useInitialize();
 
   return (
-    <div>
+    <>
       <Dialog />
       <div className={`🐸 ${className}`}>
         <Sidebar />
-        <Suspense fallback={null}>
-          <Calendar />
-        </Suspense>
+        <Calendar />
       </div>
       <Fab />
-    </div>
+    </>
   );
 };
 
@@ -83,11 +82,13 @@ const Container: FC<{ condition: Plugin.Condition }> = ({ condition }) => (
         set(pluginConditionState, condition);
       }}
     >
-      <SnackbarProvider maxSnack={1}>
-        <ThemeProvider theme={createTheme({}, jaJP)}>
-          <StyledComponent />
-        </ThemeProvider>
-      </SnackbarProvider>
+      <Suspense fallback={<LoaderWithLabel label='読み込み中' />}>
+        <SnackbarProvider maxSnack={1}>
+          <ThemeProvider theme={createTheme({}, jaJP)}>
+            <StyledComponent />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </Suspense>
     </RecoilRoot>
   </PluginErrorBoundary>
 );

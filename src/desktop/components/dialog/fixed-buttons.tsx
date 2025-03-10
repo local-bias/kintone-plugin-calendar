@@ -1,15 +1,14 @@
 import React, { FCX } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { Fab, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import { getAppId } from '@lb-ribbit/kintone-xapp';
 import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { calendarEventsState } from '../../states/calendar';
 import { loadingState } from '../../states/kintone';
 import { useSnackbar } from 'notistack';
 import styled from '@emotion/styled';
-import { deleteAllRecords, isMobile } from '@konomi-app/kintone-utilities';
+import { deleteAllRecords, getAppId, isMobile } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 
 const Component: FCX = ({ className }) => {
