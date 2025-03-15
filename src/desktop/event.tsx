@@ -1,11 +1,11 @@
-import React from 'react';
+import { listener } from '@/lib/listener';
 import { restorePluginConfig } from '@/lib/plugin';
 import { VIEW_ROOT_ID } from '@/lib/static';
-import { createRoot } from 'react-dom/client';
 import { css } from '@emotion/css';
-
+import { createRoot } from 'react-dom/client';
 import App from './components';
-import { listener } from '@/lib/listener';
+import { store } from '@/lib/store';
+import { pluginConditionAtom } from './states/kintone';
 
 listener.add(['app.record.index.show'], (event) => {
   const config = restorePluginConfig();
@@ -19,6 +19,8 @@ listener.add(['app.record.index.show'], (event) => {
   if (!found) {
     return event;
   }
+
+  store.set(pluginConditionAtom, found);
 
   document.body.classList.add(css`
     .gaia-mobile-v2-pagelayout-contents {
@@ -34,7 +36,7 @@ listener.add(['app.record.index.show'], (event) => {
     }
   `);
 
-  createRoot(root).render(<App condition={found} />);
+  createRoot(root).render(<App />);
 
   return event;
 });
