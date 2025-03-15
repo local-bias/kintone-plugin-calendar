@@ -1,14 +1,9 @@
-import { selector } from 'recoil';
-import { appPropertiesState, pluginConditionState } from './kintone';
+import { derive } from 'jotai-derive';
+import { appPropertiesAtom, pluginConditionAtom } from './kintone';
 
-const PREFIX = 'plugin';
-
-export const hasStartTimeState = selector<boolean>({
-  key: `${PREFIX}hasStartTimeState`,
-  get: ({ get }) => {
-    const condition = get(pluginConditionState);
-    const properties = get(appPropertiesState);
-
+export const hasStartTimeAtom = derive(
+  [pluginConditionAtom, appPropertiesAtom],
+  (condition, properties) => {
     if (!condition?.calendarEvent.startField) {
       return false;
     }
@@ -19,15 +14,12 @@ export const hasStartTimeState = selector<boolean>({
     }
 
     return startField.type === 'DATETIME';
-  },
-});
+  }
+);
 
-export const hasEndTimeState = selector<boolean>({
-  key: `${PREFIX}hasEndTimeState`,
-  get: ({ get }) => {
-    const condition = get(pluginConditionState);
-    const properties = get(appPropertiesState);
-
+export const hasEndTimeAtom = derive(
+  [pluginConditionAtom, appPropertiesAtom],
+  (condition, properties) => {
     if (!condition?.calendarEvent.endField) {
       return false;
     }
@@ -38,5 +30,5 @@ export const hasEndTimeState = selector<boolean>({
     }
 
     return endField.type === 'DATETIME';
-  },
-});
+  }
+);
