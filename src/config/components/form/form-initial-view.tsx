@@ -2,8 +2,9 @@ import React, { FC } from 'react';
 import { useRecoilValue, useRecoilCallback } from 'recoil';
 import { MenuItem, TextField } from '@mui/material';
 import { initialViewState } from '../../states/plugin';
+import { PluginCondition } from '@/schema/plugin-config';
 
-const VIEW_LIST: { label: string; viewType: Plugin.Condition['initialView'] }[] = [
+const VIEW_LIST: { label: string; viewType: PluginCondition['initialView'] }[] = [
   { label: '日単位、１ヶ月のカレンダー', viewType: 'dayGridMonth' },
   { label: '時間単位、１週間のカレンダー', viewType: 'timeGridWeek' },
   { label: '時間単位、5日間のカレンダー', viewType: 'timeGridFiveDay' },
@@ -17,7 +18,7 @@ const Container: FC = () => {
   const onChange = useRecoilCallback(
     ({ set }) =>
       (e: React.ChangeEvent<HTMLInputElement>) => {
-        set(initialViewState, e.target.value as Plugin.Condition['initialView']);
+        set(initialViewState, e.target.value as PluginCondition['initialView']);
       },
     []
   );
