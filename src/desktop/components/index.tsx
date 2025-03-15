@@ -1,18 +1,17 @@
 import { PluginErrorBoundary } from '@/lib/components/error-boundary';
+import { store } from '@/lib/store';
 import styled from '@emotion/styled';
-import React, { FC, FCX, Suspense } from 'react';
-import { RecoilRoot } from 'recoil';
-import Calendar from './calendar';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { LoaderWithLabel } from '@konomi-app/ui-react';
 import { jaJP } from '@mui/material/locale';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Provider } from 'jotai';
 import { SnackbarProvider } from 'notistack';
-
-import { pluginConditionState } from '../states/kintone';
+import { FC, FCX, Suspense } from 'react';
 import { useInitialize } from '../hooks/use-initialize';
+import Calendar from './calendar';
 import Dialog from './dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
-import { LoaderWithLabel } from '@konomi-app/ui-react';
 
 const Component: FCX = ({ className }) => {
   useInitialize();
@@ -75,13 +74,9 @@ const StyledComponent = styled(Component)`
   }
 `;
 
-const Container: FC<{ condition: Plugin.Condition }> = ({ condition }) => (
-  <PluginErrorBoundary>
-    <RecoilRoot
-      initializeState={({ set }) => {
-        set(pluginConditionState, condition);
-      }}
-    >
+const Container: FC = () => (
+  <Provider store={store}>
+    <PluginErrorBoundary>
       <Suspense fallback={<LoaderWithLabel label='読み込み中' />}>
         <SnackbarProvider maxSnack={1}>
           <ThemeProvider theme={createTheme({}, jaJP)}>
@@ -89,8 +84,8 @@ const Container: FC<{ condition: Plugin.Condition }> = ({ condition }) => (
           </ThemeProvider>
         </SnackbarProvider>
       </Suspense>
-    </RecoilRoot>
-  </PluginErrorBoundary>
+    </PluginErrorBoundary>
+  </Provider>
 );
 
 export default Container;
