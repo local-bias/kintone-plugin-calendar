@@ -1,45 +1,48 @@
-import React, { FC, memo } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { MenuItem, TextField } from '@mui/material';
 import { produce } from 'immer';
-import { dialogPropsState } from '../../../states/dialog';
-import {
-  appPropertiesState,
-  calendarEventCategoryState,
-  pluginConditionState,
-} from '../../../states/kintone';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import React, { FC, memo } from 'react';
 import { getEventColors } from '../../../actions';
+import { dialogPropsAtom } from '../../../states/dialog';
+import {
+  appPropertiesAtom,
+  calendarEventCategoryAtom,
+  pluginConditionAtom,
+} from '../../../states/kintone';
 import { DEFAULT_COLORS } from '../../../static';
+
+const handleCategoryChangeAtom = atom(
+  null,
+  async (get, set, event: React.ChangeEvent<HTMLInputElement>) => {
+    const category = event.target.value;
+    const condition = get(pluginConditionAtom);
+    const properties = await get(appPropertiesAtom);
+    if (!condition) {
+      return;
+    }
+
+    set(dialogPropsAtom, (current) =>
+      produce(current, (draft) => {
+        draft.event.category = category;
+        const colors = getEventColors({
+          value: category,
+          condition,
+          properties,
+        });
+        draft.event.color = colors.color;
+        draft.event.backgroundColor = colors.backgroundColor;
+        draft.event.borderColor = colors.borderColor;
+        draft.event.textColor = colors.textColor;
+      })
+    );
+  }
+);
 
 const Component: FC<{ category?: string; categories: string[] }> = memo(
   ({ category, categories }) => {
-    const condition = useRecoilValue(pluginConditionState);
+    const condition = useAtomValue(pluginConditionAtom);
     const colors = condition?.colors ?? DEFAULT_COLORS;
-
-    const onCategoryChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> =
-      useRecoilCallback(
-        ({ set, snapshot }) =>
-          async (props) => {
-            const condition = (await snapshot.getPromise(pluginConditionState))!;
-            const properties = await snapshot.getPromise(appPropertiesState);
-
-            set(dialogPropsState, (current) =>
-              produce(current, (draft) => {
-                draft.event.category = props.target.value;
-                const colors = getEventColors({
-                  value: props.target.value,
-                  condition,
-                  properties,
-                });
-                draft.event.color = colors.color;
-                draft.event.backgroundColor = colors.backgroundColor;
-                draft.event.borderColor = colors.borderColor;
-                draft.event.textColor = colors.textColor;
-              })
-            );
-          },
-        []
-      );
+    const onCategoryChange = useSetAtom(handleCategoryChangeAtom);
 
     return (
       <div>
@@ -74,8 +77,8 @@ const Component: FC<{ category?: string; categories: string[] }> = memo(
 );
 
 const Container: FC = () => {
-  const props = useRecoilValue(dialogPropsState);
-  const categories = useRecoilValue(calendarEventCategoryState);
+  const props = useAtomValue(dialogPropsAtom);
+  const categories = useAtomValue(calendarEventCategoryAtom);
 
   if (!categories) {
     return null;
