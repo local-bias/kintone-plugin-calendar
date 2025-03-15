@@ -1,8 +1,3 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-const PREFIX = 'sidebar';
-
-export const displayingCategoriesState = atom<string[] | null>({
-  key: `${PREFIX}displayingCategoriesState`,
-  default: null,
-});
+export const displayingCategoriesAtom = atom<string[] | null>(null);
