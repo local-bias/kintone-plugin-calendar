@@ -4,8 +4,9 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { PluginConditionTabs } from '@konomi-app/kintone-utilities-react';
 import { conditionsState, tabIndexState } from '../../states/plugin';
 import { customViewsState } from '@/config/states/kintone';
+import { PluginCondition } from '@/schema/plugin-config';
 
-const TabLabel: FC<{ condition: Plugin.Condition }> = ({ condition }) => {
+const TabLabel: FC<{ condition: PluginCondition }> = ({ condition }) => {
   const allViews = useRecoilValue(customViewsState);
 
   const view = Object.values(allViews).find((view) => view.id === condition.viewId);
