@@ -1,11 +1,17 @@
-import { produce } from 'immer';
-import { DateTime } from 'luxon';
-
-import { PluginCalendarEvent } from './states/calendar';
-import { DateInput } from '@fullcalendar/core';
-import { addRecord, getAppId, kintoneAPI, updateRecord } from '@konomi-app/kintone-utilities';
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { getSortedOptions } from '@/lib/utils';
+import { PluginCondition } from '@/schema/plugin-config';
+import { DateInput } from '@fullcalendar/core';
+import {
+  addRecord,
+  AddRecordParams,
+  getAppId,
+  kintoneAPI,
+  updateRecord,
+} from '@konomi-app/kintone-utilities';
+import { produce } from 'immer';
+import { DateTime } from 'luxon';
+import { PluginCalendarEvent } from './states/calendar';
 
 export const getDefaultStartDate = (): Date => {
   const now = DateTime.local();
@@ -42,7 +48,7 @@ export const completeCalendarEvent = (eventInput: PluginCalendarEvent) => {
 
 export const getKintoneRecordFromCalendarEvent = (params: {
   calendarEvent: PluginCalendarEvent;
-  condition: Plugin.Condition;
+  condition: PluginCondition;
   properties: kintoneAPI.FieldProperties;
 }) => {
   const { calendarEvent, condition, properties } = params;
@@ -60,10 +66,10 @@ export const getKintoneRecordFromCalendarEvent = (params: {
     end = end?.split('T')[0] ?? null;
   }
 
-  const record: Record<string, any> = {};
+  const record: AddRecordParams['record'] = {};
 
-  if (calendarConfig.titleField) {
-    record[calendarConfig.titleField] = { value: calendarEvent.title };
+  if (calendarConfig.inputTitleField) {
+    record[calendarConfig.inputTitleField] = { value: calendarEvent.title ?? '' };
   }
   if (calendarConfig.startField) {
     record[calendarConfig.startField] = { value: start || '' };
@@ -77,10 +83,10 @@ export const getKintoneRecordFromCalendarEvent = (params: {
     };
   }
   if (condition.enablesNote && calendarConfig.noteField) {
-    record[calendarConfig.noteField] = { value: calendarEvent.note };
+    record[calendarConfig.noteField] = { value: calendarEvent.note ?? '' };
   }
   if (calendarConfig.categoryField) {
-    record[calendarConfig.categoryField] = { value: calendarEvent.category };
+    record[calendarConfig.categoryField] = { value: calendarEvent.category ?? '' };
   }
 
   process.env.NODE_ENV === 'development' &&
@@ -92,7 +98,7 @@ export const getKintoneRecordFromCalendarEvent = (params: {
 };
 
 export const getCalendarEventFromKintoneRecord = (params: {
-  condition: Plugin.Condition;
+  condition: PluginCondition;
   properties: kintoneAPI.FieldProperties;
   record: kintoneAPI.RecordData;
 }): PluginCalendarEvent => {
@@ -111,7 +117,7 @@ export const getCalendarEventFromKintoneRecord = (params: {
     id: record.$id.value as string | undefined,
     start: record[condition.calendarEvent.startField]?.value as string | undefined,
     end: record[condition.calendarEvent.endField]?.value as string | undefined,
-    title: record[condition.calendarEvent.titleField]?.value as string | undefined,
+    title: record[condition.calendarEvent.inputTitleField]?.value as string | undefined,
     note: record[condition.calendarEvent.noteField]?.value as string | undefined,
     category: record[condition.calendarEvent.categoryField]?.value as string | undefined,
     ...colors,
@@ -135,7 +141,7 @@ export const getCalendarEventFromKintoneRecord = (params: {
 
 export const addNewRecord = async (params: {
   calendarEvent: PluginCalendarEvent;
-  condition: Plugin.Condition;
+  condition: PluginCondition;
   properties: kintoneAPI.FieldProperties;
 }): Promise<PluginCalendarEvent> => {
   const { calendarEvent, condition, properties } = params;
@@ -163,7 +169,7 @@ export const addNewRecord = async (params: {
 
 export const reschedule = async (params: {
   calendarEvent: PluginCalendarEvent;
-  condition: Plugin.Condition;
+  condition: PluginCondition;
   properties: kintoneAPI.FieldProperties;
 }) => {
   const { calendarEvent, condition, properties } = params;
@@ -201,7 +207,7 @@ const getForegroundColor = (backgroundColor: string) => {
 
 const getEventForegroundColor = (
   value: kintoneAPI.RecordData[string]['value'] | undefined,
-  condition: Plugin.Condition,
+  condition: PluginCondition,
   properties: kintoneAPI.FieldProperties
 ) => {
   const { colors } = condition;
@@ -230,7 +236,7 @@ const getEventForegroundColor = (
 
 const getEventBackgroundColor = (
   value: kintoneAPI.RecordData[string]['value'] | undefined,
-  condition: Plugin.Condition,
+  condition: PluginCondition,
   properties: kintoneAPI.FieldProperties
 ) => {
   const { colors } = condition;
@@ -259,7 +265,7 @@ const getEventBackgroundColor = (
 
 export const getEventColors = (params: {
   value: kintoneAPI.RecordData[string]['value'] | undefined;
-  condition: Plugin.Condition;
+  condition: PluginCondition;
   properties: kintoneAPI.FieldProperties;
 }): Pick<PluginCalendarEvent, 'backgroundColor' | 'borderColor' | 'textColor' | 'color'> => {
   const { value, condition, properties } = params;
