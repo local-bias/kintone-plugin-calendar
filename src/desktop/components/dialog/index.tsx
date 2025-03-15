@@ -1,41 +1,37 @@
 import styled from '@emotion/styled';
 import { Dialog, DialogContent } from '@mui/material';
-import React, { FCX } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { dialogPropsState, dialogShownState } from '../../states/dialog';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { calendarEventsState } from '../../states/calendar';
-
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { FCX, Suspense } from 'react';
+import { calendarEventsAtom } from '../../states/calendar';
+import { dialogPropsAtom, dialogShownAtom } from '../../states/dialog';
 import FooterActions from './dialog-actions';
-import DialogInputs from './inputs';
 import FixedButtons from './fixed-buttons';
+import DialogInputs from './inputs';
+
+const handleDialogCloseAtom = atom(null, async (get, set) => {
+  const currentProps = await get(dialogPropsAtom);
+
+  if (currentProps.new) {
+    set(calendarEventsAtom, (current) => current.filter(({ id }) => id !== currentProps.event.id));
+  }
+  set(dialogShownAtom, false);
+  set(dialogPropsAtom, { new: false, event: {} });
+});
 
 const Component: FCX = ({ className }) => {
-  const open = useRecoilValue(dialogShownState);
-
-  const onDialogClose = useRecoilCallback(
-    ({ reset, set, snapshot }) =>
-      async () => {
-        const currentProps = await snapshot.getPromise(dialogPropsState);
-
-        if (currentProps.new) {
-          set(calendarEventsState, (current) =>
-            current.filter(({ id }) => id !== currentProps.event.id)
-          );
-        }
-        reset(dialogShownState);
-        reset(dialogPropsState);
-      },
-    []
-  );
+  const open = useAtomValue(dialogShownAtom);
+  const onDialogClose = useSetAtom(handleDialogCloseAtom);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Dialog open={open} onClose={onDialogClose} maxWidth='sm' fullWidth className={className}>
         <DialogContent className='🐸 content'>
-          <FixedButtons />
-          <DialogInputs />
+          <Suspense>
+            <FixedButtons />
+            <DialogInputs />
+          </Suspense>
         </DialogContent>
         <FooterActions onDialogClose={onDialogClose} />
       </Dialog>
