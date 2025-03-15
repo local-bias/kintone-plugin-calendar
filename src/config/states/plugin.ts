@@ -1,10 +1,11 @@
 import { getUpdatedStorage, restorePluginConfig } from '@/lib/plugin';
+import { PluginCondition, PluginConfig } from '@/schema/plugin-config';
 import { produce } from 'immer';
 import { RecoilState, atom, selector, selectorFamily } from 'recoil';
 
 const PREFIX = 'plugin';
 
-export const storageState = atom<Plugin.Config>({
+export const storageState = atom<PluginConfig>({
   key: `${PREFIX}storageState`,
   default: restorePluginConfig(),
 });
@@ -24,7 +25,7 @@ export const tabIndexState = atom<number>({
   default: 0,
 });
 
-export const conditionsState = selector<Plugin.Condition[]>({
+export const conditionsState = selector<PluginCondition[]>({
   key: `${PREFIX}conditionsState`,
   get: ({ get }) => {
     const storage = get(storageState);
@@ -33,8 +34,8 @@ export const conditionsState = selector<Plugin.Condition[]>({
 });
 
 const conditionPropertyState = selectorFamily<
-  Plugin.Condition[keyof Plugin.Condition],
-  keyof Plugin.Condition
+  PluginCondition[keyof PluginCondition],
+  keyof PluginCondition
 >({
   key: `${PREFIX}conditionPropertyState`,
   get:
@@ -52,15 +53,15 @@ const conditionPropertyState = selectorFamily<
         getUpdatedStorage(current, {
           conditionIndex,
           key,
-          value: newValue as Plugin.Condition[keyof Plugin.Condition],
+          value: newValue as PluginCondition[keyof PluginCondition],
         })
       );
     },
 });
 
 export const calendarEventState = selectorFamily<
-  Plugin.Condition['calendarEvent'][keyof Plugin.Condition['calendarEvent']],
-  keyof Plugin.Condition['calendarEvent']
+  PluginCondition['calendarEvent'][keyof PluginCondition['calendarEvent']],
+  keyof PluginCondition['calendarEvent']
 >({
   key: `${PREFIX}calendarEventState`,
   get:
@@ -77,14 +78,14 @@ export const calendarEventState = selectorFamily<
       set(storageState, (current) =>
         produce(current, (draft) => {
           draft.conditions[conditionIndex].calendarEvent[key] =
-            newValue as Plugin.Condition['calendarEvent'][keyof Plugin.Condition['calendarEvent']];
+            newValue as PluginCondition['calendarEvent'][keyof PluginCondition['calendarEvent']];
         })
       );
     },
 });
 
-export const getConditionPropertyState = <T extends keyof Plugin.Condition>(property: T) =>
-  conditionPropertyState(property) as unknown as RecoilState<Plugin.Condition[T]>;
+export const getConditionPropertyState = <T extends keyof PluginCondition>(property: T) =>
+  conditionPropertyState(property) as unknown as RecoilState<PluginCondition[T]>;
 
 export const viewIdState = getConditionPropertyState('viewId');
 export const initialViewState = getConditionPropertyState('initialView');
@@ -94,7 +95,7 @@ export const enablesNoteState = getConditionPropertyState('enablesNote');
 export const slotMinTimeState = getConditionPropertyState('slotMinTime');
 export const slotMaxTimeState = getConditionPropertyState('slotMaxTime');
 
-export const calendarTitleState = calendarEventState('titleField');
+export const calendarTitleState = calendarEventState('inputTitleField');
 export const calendarStartState = calendarEventState('startField');
 export const calendarEndState = calendarEventState('endField');
 export const calendarAllDayState = calendarEventState('allDayField');
