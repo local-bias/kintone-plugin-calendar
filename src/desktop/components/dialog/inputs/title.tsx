@@ -1,39 +1,28 @@
-import React, { FC, memo } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { TextField } from '@mui/material';
-import { produce } from 'immer';
-import { dialogPropsState } from '../../../states/dialog';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import React, { FC } from 'react';
+import { dialogEventTitleAtom } from '../../../states/dialog';
 
-const Component: FC<{ title?: string }> = memo(({ title }) => {
-  const onTitleChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> =
-    useRecoilCallback(
-      ({ set }) =>
-        (props) => {
-          set(dialogPropsState, (current) =>
-            produce(current, (draft) => {
-              draft.event.title = props.target.value;
-            })
-          );
-        },
-      []
-    );
+const handleTitleChangeAtom = atom(
+  null,
+  (_, set, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    set(dialogEventTitleAtom, event.target.value);
+  }
+);
+
+const DialogEventTitleInput: FC = () => {
+  const title = useAtomValue(dialogEventTitleAtom);
+  const onTitleChange = useSetAtom(handleTitleChangeAtom);
 
   return (
-    <div>
-      <TextField
-        variant='outlined'
-        color='primary'
-        label='イベントのタイトル'
-        value={title || ''}
-        onChange={onTitleChange}
-      />
-    </div>
+    <TextField
+      variant='outlined'
+      color='primary'
+      label='イベントのタイトル'
+      value={title || ''}
+      onChange={onTitleChange}
+    />
   );
-});
-
-const Container: FC = () => {
-  const props = useRecoilValue(dialogPropsState);
-  return <Component title={props.event.title} />;
 };
 
-export default Container;
+export default DialogEventTitleInput;
