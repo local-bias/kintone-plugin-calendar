@@ -11,7 +11,7 @@ const Component: FC = () => {
 
   return (
     <div>
-      <div className='fixed right-4 md:right-8 bottom-20 z-10'>
+      <div className='!fixed right-4 md:right-8 bottom-20 z-10'>
         <Fab variant='circular' size='large' color='primary' onClick={toggle}>
           <MenuIcon />
         </Fab>
