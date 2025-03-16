@@ -1,24 +1,24 @@
-import React, { FC } from 'react';
-import { useRecoilValue } from 'recoil';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import allLocales from '@fullcalendar/core/locales-all';
-import { filteredCalendarEventsState } from '../../states/calendar';
-import { pluginConditionState } from '../../states/kintone';
 import { useCalendar } from '@/desktop/hooks/use-calendar';
+import allLocales from '@fullcalendar/core/locales-all';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { FC } from 'react';
+import {
+  filteredCalendarEventsAtom,
+  handleCalendarDateSelectAtom,
+  handleCalendarEventAddAtom,
+} from '../../states/calendar';
+import { pluginConditionAtom } from '../../states/kintone';
 
 const Component: FC = () => {
-  const calendarEvents = useRecoilValue(filteredCalendarEventsState);
-  const pluginCondition = useRecoilValue(pluginConditionState);
-  const {
-    onCalendarDateSelect,
-    onCalendarEventAdd,
-    onCalendarEventClick,
-    onCalendarEventChange,
-    onCalendarEventRemove,
-  } = useCalendar();
+  const calendarEvents = useAtomValue(filteredCalendarEventsAtom);
+  const pluginCondition = useAtomValue(pluginConditionAtom);
+  const onCalendarDateSelect = useSetAtom(handleCalendarDateSelectAtom);
+  const onCalendarEventAdd = useSetAtom(handleCalendarEventAddAtom);
+  const { onCalendarEventClick, onCalendarEventChange, onCalendarEventRemove } = useCalendar();
 
   return (
     <FullCalendar
