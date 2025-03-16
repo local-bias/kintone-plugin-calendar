@@ -1,23 +1,23 @@
 import { TextField } from '@mui/material';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import React, { FC, memo } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { dialogPropsState } from '../../../states/dialog';
-import { produce } from 'immer';
-import { pluginConditionState } from '../../../states/kintone';
+import { dialogEventNoteAtom } from '../../../states/dialog';
+import { pluginConditionAtom } from '../../../states/kintone';
+
+const enablesNoteAtom = atom((get) => {
+  const condition = get(pluginConditionAtom);
+  return condition?.enablesNote ?? false;
+});
+
+const handleNoteChangeAtom = atom(
+  null,
+  async (get, set, event: React.ChangeEvent<HTMLInputElement>) => {
+    set(dialogEventNoteAtom, event.target.value);
+  }
+);
 
 const Component: FC<{ value: string }> = memo((props) => {
-  const onNoteChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> =
-    useRecoilCallback(
-      ({ set }) =>
-        (props) => {
-          set(dialogPropsState, (current) =>
-            produce(current, (draft) => {
-              draft.event.note = props.target.value;
-            })
-          );
-        },
-      []
-    );
+  const onNoteChange = useSetAtom(handleNoteChangeAtom);
 
   return (
     <div className='full'>
@@ -27,13 +27,13 @@ const Component: FC<{ value: string }> = memo((props) => {
 });
 
 const Container: FC = () => {
-  const props = useRecoilValue(dialogPropsState);
-  const condition = useRecoilValue(pluginConditionState);
+  const note = useAtomValue(dialogEventNoteAtom);
+  const enablesNote = useAtomValue(enablesNoteAtom);
 
-  if (!condition?.enablesNote) {
+  if (!enablesNote) {
     return null;
   }
-  return <Component value={props.event.note || ''} />;
+  return <Component value={note || ''} />;
 };
 
 export default Container;
