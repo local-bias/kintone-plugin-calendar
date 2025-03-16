@@ -1,15 +1,16 @@
-import React, { FCX, Suspense } from 'react';
 import styled from '@emotion/styled';
-
-import Title from './title';
-import StartEnd from './start-end';
-import Note from './note';
-import Category from './category';
 import { Skeleton } from '@mui/material';
+import { FCX, Suspense } from 'react';
+import Category from './category';
+import Note from './note';
+import StartEnd from './start-end';
+import Title from './title';
 
 const Component: FCX = ({ className }) => (
   <div className={className}>
-    <Title />
+    <div>
+      <Title />
+    </div>
     <StartEnd />
     <Note />
     <Suspense fallback={<Skeleton variant='text' />}>
