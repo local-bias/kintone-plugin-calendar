@@ -1,29 +1,30 @@
-import React, { FC, memo } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { FormControlLabel, Switch } from '@mui/material';
-import { calendarEventCategoryState, pluginConditionState } from '../../states/kintone';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { FC, memo } from 'react';
+import { calendarEventCategoryAtom, pluginConditionAtom } from '../../states/kintone';
+import { displayingCategoriesAtom } from '../../states/sidebar';
 import { DEFAULT_COLORS } from '../../static';
-import { displayingCategoriesState } from '../../states/sidebar';
+
+const handleCategoryChangeAtom = atom(
+  null,
+  async (get, set, category: string, checked: boolean) => {
+    const categories = (await get(calendarEventCategoryAtom)) ?? [];
+    set(displayingCategoriesAtom, (current) => {
+      const newArray = current === null ? categories : [...current];
+
+      if (checked) {
+        return [...newArray, category];
+      }
+      return newArray.filter((c) => c !== category);
+    });
+  }
+);
 
 const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
-  const displayingCategories = useRecoilValue(displayingCategoriesState);
-  const condition = useRecoilValue(pluginConditionState);
+  const displayingCategories = useAtomValue(displayingCategoriesAtom);
+  const onCategoryChange = useSetAtom(handleCategoryChangeAtom);
+  const condition = useAtomValue(pluginConditionAtom);
   const colors = condition?.colors ?? DEFAULT_COLORS;
-
-  const onCategoryChange = useRecoilCallback(
-    ({ set }) =>
-      async (category: string, checked: boolean) => {
-        set(displayingCategoriesState, (current) => {
-          const newArray = current === null ? categories : [...current];
-
-          if (checked) {
-            return [...newArray, category];
-          }
-          return newArray.filter((c) => c !== category);
-        });
-      },
-    []
-  );
 
   return (
     <div className='grid gap-2'>
@@ -53,7 +54,7 @@ const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
 });
 
 const Container: FC = () => {
-  const categories = useRecoilValue(calendarEventCategoryState);
+  const categories = useAtomValue(calendarEventCategoryAtom);
 
   if (!categories) {
     return null;
