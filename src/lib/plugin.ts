@@ -1,9 +1,12 @@
+import { DEFAULT_COLORS } from '@/desktop/static';
+import { AnyPluginConfig, PluginCondition, PluginConfig } from '@/schema/plugin-config';
 import { restoreStorage } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
+import { nanoid } from 'nanoid';
 import { PLUGIN_ID } from './global';
-import { DEFAULT_COLORS } from '@/desktop/static';
 
-export const getNewCondition = (): Plugin.Condition => ({
+export const getNewCondition = (): PluginCondition => ({
+  id: nanoid(),
   viewId: '',
   initialView: 'timeGridWeek',
   enablesAllDay: true,
@@ -12,8 +15,10 @@ export const getNewCondition = (): Plugin.Condition => ({
   slotMinTime: '0:00:00',
   slotMaxTime: '24:00:00',
   colors: DEFAULT_COLORS,
+  daysOfWeek: [1, 2, 3, 4, 5],
   calendarEvent: {
-    titleField: '',
+    inputTitleField: '',
+    displayTitleField: '',
     startField: '',
     endField: '',
     allDayField: '',
@@ -25,8 +30,9 @@ export const getNewCondition = (): Plugin.Condition => ({
 /**
  * プラグインの設定情報のひな形を返却します
  */
-export const createConfig = (): Plugin.Config => ({
-  version: 2,
+export const createConfig = (): PluginConfig => ({
+  version: 3,
+  common: {},
   conditions: [getNewCondition()],
 });
 
@@ -35,38 +41,55 @@ export const createConfig = (): Plugin.Config => ({
  * @param anyConfig 保存されている設定情報
  * @returns 新しいバージョンの設定情報
  */
-export const migrateConfig = (config: Plugin.AnyConfig): Plugin.Config => {
+export const migrateConfig = (config: AnyPluginConfig): PluginConfig => {
   const { version } = config;
   switch (version) {
     case undefined:
-    case 1:
-      return {
+    case 1: {
+      return migrateConfig({
         version: 2,
         conditions: config.conditions.map((condition) => ({
           ...condition,
           colors: DEFAULT_COLORS,
         })),
-      };
-    case 2:
-    default:
+      });
+    }
+    case 2: {
+      return migrateConfig({
+        version: 3,
+        common: {},
+        conditions: config.conditions.map((condition) => ({
+          ...condition,
+          id: nanoid(),
+          daysOfWeek: [1, 2, 3, 4, 5],
+          calendarEvent: {
+            ...condition.calendarEvent,
+            inputTitleField: condition.calendarEvent.titleField,
+            displayTitleField: '',
+          },
+        })),
+      });
+    }
+    default: {
       return config;
+    }
   }
 };
 
 /**
  * プラグインの設定情報を復元します
  */
-export const restorePluginConfig = (): Plugin.Config => {
-  const config = restoreStorage<Plugin.AnyConfig>(PLUGIN_ID) ?? createConfig();
+export const restorePluginConfig = (): PluginConfig => {
+  const config = restoreStorage<AnyPluginConfig>(PLUGIN_ID) ?? createConfig();
   return migrateConfig(config);
 };
 
-export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
-  storage: Plugin.Config,
+export const getUpdatedStorage = <T extends keyof PluginCondition>(
+  storage: PluginConfig,
   props: {
     conditionIndex: number;
     key: T;
-    value: Plugin.Condition[T];
+    value: PluginCondition[T];
   }
 ) => {
   const { conditionIndex, key, value } = props;
@@ -75,14 +98,14 @@ export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
   });
 };
 
-export const getConditionField = <T extends keyof Plugin.Condition>(
-  storage: Plugin.Config,
+export const getConditionField = <T extends keyof PluginCondition>(
+  storage: PluginConfig,
   props: {
     conditionIndex: number;
     key: T;
-    defaultValue: NonNullable<Plugin.Condition[T]>;
+    defaultValue: NonNullable<PluginCondition[T]>;
   }
-): NonNullable<Plugin.Condition[T]> => {
+): NonNullable<PluginCondition[T]> => {
   const { conditionIndex, key, defaultValue } = props;
   if (!storage.conditions[conditionIndex]) {
     return defaultValue;
