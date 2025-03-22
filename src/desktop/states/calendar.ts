@@ -1,6 +1,6 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { DateSelectArg, EventInput } from '@fullcalendar/core';
-import { deleteAllRecords, getAppId } from '@konomi-app/kintone-utilities';
+import { deleteAllRecords, getAppId, getYuruChara } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
 import { atom } from 'jotai';
 import { enqueueSnackbar } from 'notistack';
@@ -9,7 +9,11 @@ import { dialogPropsAtom, dialogShownAtom } from './dialog';
 import { loadingAtom } from './kintone';
 import { displayingCategoriesAtom } from './sidebar';
 
-export type PluginCalendarEvent = EventInput & { note?: string; category?: string };
+export type PluginCalendarEvent = EventInput & {
+  note?: string;
+  category?: string;
+  __quickSearch?: string;
+};
 
 export const calendarEventsAtom = atom<PluginCalendarEvent[]>([]);
 
@@ -40,15 +44,16 @@ export const textFilteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) 
     return allEvents;
   }
 
-  const searchWords = searchInput.split(/\s+/).filter((word) => word.length > 0);
+  const searchWords = searchInput
+    .split(/\s+/)
+    .filter((word) => word.length > 0)
+    .map((word) => getYuruChara(word.trim()));
   if (searchWords.length === 0) {
     return allEvents;
   }
 
   return allEvents.filter((event) => {
-    const title = event.title || '';
-    const note = event.note || '';
-    return searchWords.every((word) => title.includes(word) || note.includes(word));
+    return searchWords.every((word) => event.__quickSearch && event.__quickSearch.includes(word));
   });
 });
 
@@ -60,6 +65,7 @@ export const handleCalendarDateSelectAtom = atom(null, (get, set, props: DateSel
     allDay: props.allDay,
     start: props.start,
     end: props.end,
+    __quickSearch: '',
   });
 
   set(calendarEventsAtom, (current) => produce(current, (draft) => [...draft, completed]));
@@ -83,6 +89,7 @@ export const handleTemporaryEventAddAtom = atom(null, (_, set) => {
     title: '',
     start: getDefaultStartDate(),
     end: getDefaultEndDate(),
+    __quickSearch: '',
   });
 
   set(calendarEventsAtom, (current) => produce(current, (draft) => [...draft, completed]));
