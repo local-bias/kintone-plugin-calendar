@@ -9,6 +9,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { FC } from 'react';
 import {
+  fullcalendarRefAtom,
   handleCalendarDateSelectAtom,
   handleCalendarEventAddAtom,
   textFilteredCalendarEventsAtom,
@@ -17,6 +18,7 @@ import { pluginConditionAtom } from '../../states/kintone';
 import DayHeader from './day-header';
 
 const FullCalendarRoot: FC = () => {
+  const setFullcalendarRef = useSetAtom(fullcalendarRefAtom);
   const calendarEvents = useAtomValue(textFilteredCalendarEventsAtom);
   const pluginCondition = useAtomValue(pluginConditionAtom);
   const onCalendarDateSelect = useSetAtom(handleCalendarDateSelectAtom);
@@ -25,6 +27,7 @@ const FullCalendarRoot: FC = () => {
 
   return (
     <FullCalendar
+      ref={setFullcalendarRef}
       locale={jaJP}
       locales={allLocales}
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

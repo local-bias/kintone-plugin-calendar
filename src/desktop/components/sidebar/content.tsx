@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import Categories from './categories';
 import SidebarSearchInput from './search-input';
+import SidebarDatePicker from './date-picker';
 
 export default function SidebarContent() {
   // const toggle = useSetAtom(toggleSidebarExpandedAtom);
@@ -19,6 +20,7 @@ export default function SidebarContent() {
         <PanelLeft className='w-5 h-5' />
       </Button> */}
       <SidebarSearchInput />
+      <SidebarDatePicker />
       <div>
         <Suspense fallback={null}>
           <Categories />
