@@ -1,127 +1,79 @@
-import { useRecoilCallback } from 'recoil';
-import {
-  DateSelectArg,
-  EventAddArg,
-  EventChangeArg,
-  EventClickArg,
-  EventRemoveArg,
-} from '@fullcalendar/core';
-import { calendarEventsState } from '../states/calendar';
-import { dialogPropsState, dialogShownState } from '../states/dialog';
-import { useSnackbar } from 'notistack';
-import { appPropertiesState, loadingState, pluginConditionState } from '../states/kintone';
-import { completeCalendarEvent, reschedule } from '../actions';
-import { produce } from 'immer';
+import { EventChangeArg, EventClickArg, EventRemoveArg } from '@fullcalendar/core';
+import { atom, useSetAtom } from 'jotai';
+import { enqueueSnackbar } from 'notistack';
+import { reschedule } from '../actions';
+import { calendarEventsAtom } from '../states/calendar';
+import { dialogPropsAtom, dialogShownAtom } from '../states/dialog';
+import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from '../states/kintone';
+import { isDev } from '@/lib/global';
+
+const handleCalendarEventDeleteAtom = atom(null, (get, set, props: EventRemoveArg) => {
+  console.info('📅 イベントが削除されました', props);
+});
+
+const handleCalendarEventClickAtom = atom(null, (get, set, props: EventClickArg) => {
+  const calendarEvents = get(calendarEventsAtom);
+  const foundEvent = calendarEvents.find(
+    (event) => event.id && props.event.id && event.id === props.event.id
+  );
+  if (!foundEvent) {
+    enqueueSnackbar('クリックしたイベントの取得に失敗しました', { variant: 'error' });
+    return;
+  }
+  set(dialogPropsAtom, {
+    new: false,
+    event: foundEvent,
+  });
+  set(dialogShownAtom, true);
+});
+
+const handleCalendarEventChangeAtom = atom(null, async (get, set, props: EventChangeArg) => {
+  set(loadingAtom, true);
+
+  try {
+    const changed = props.event;
+
+    const properties = await get(appPropertiesAtom);
+    const events = get(calendarEventsAtom);
+    let index = 0;
+    const targetEvent = events.find(({ id }, i) => {
+      index = i;
+      return id === props.event.id;
+    });
+    if (!targetEvent) {
+      console.warn('更新対象レコードに紐づくカレンダーイベントの取得に失敗しました');
+      return;
+    }
+
+    console.log({ changed, targetEvent });
+
+    const newEvent = {
+      ...targetEvent,
+      start: changed.start || targetEvent.start,
+      end: changed.end || targetEvent.end,
+    };
+    set(calendarEventsAtom, (current) => {
+      const newEvents = [...current];
+      newEvents[index] = newEvent;
+      return newEvents;
+    });
+
+    const condition = get(pluginConditionAtom);
+    await reschedule({
+      calendarEvent: newEvent,
+      condition: condition!,
+      properties,
+    });
+    isDev && console.info('レコードを更新しました');
+  } finally {
+    set(loadingAtom, false);
+  }
+});
 
 export const useCalendar = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const onCalendarEventRemove = useSetAtom(handleCalendarEventDeleteAtom);
+  const onCalendarEventClick = useSetAtom(handleCalendarEventClickAtom);
+  const onCalendarEventChange = useSetAtom(handleCalendarEventChangeAtom);
 
-  const onCalendarDateSelect = useRecoilCallback(
-    ({ set }) =>
-      async (props: DateSelectArg) => {
-        const temporaryKey = Math.random().toString();
-
-        const completed = completeCalendarEvent({
-          id: temporaryKey,
-          allDay: props.allDay,
-          start: props.start,
-          end: props.end,
-        });
-
-        set(calendarEventsState, (current) => produce(current, (draft) => [...draft, completed]));
-        set(dialogPropsState, {
-          new: true,
-          event: completed,
-        });
-        set(dialogShownState, true);
-      },
-    []
-  );
-
-  const onCalendarEventAdd = useRecoilCallback(
-    () => (props: EventAddArg) => {
-      console.info('📅 イベントが追加されました', props);
-    },
-    []
-  );
-
-  const onCalendarEventRemove = useRecoilCallback(
-    () => (props: EventRemoveArg) => {
-      process.env.NODE_ENV === 'development' && console.info('📅 イベントが削除されました', props);
-    },
-    []
-  );
-
-  const onCalendarEventClick = useRecoilCallback(
-    ({ set, snapshot }) =>
-      async (props: EventClickArg) => {
-        const calendarEvents = await snapshot.getPromise(calendarEventsState);
-        const foundEvent = calendarEvents.find(
-          (event) => event.id && props.event.id && event.id === props.event.id
-        );
-        if (!foundEvent) {
-          enqueueSnackbar('クリックしたイベントの取得に失敗しました', { variant: 'error' });
-          return;
-        }
-        set(dialogPropsState, {
-          new: false,
-          event: foundEvent,
-        });
-        set(dialogShownState, true);
-      },
-    []
-  );
-
-  const onCalendarEventChange = useRecoilCallback(
-    ({ set, snapshot }) =>
-      async (props: EventChangeArg) => {
-        set(loadingState, true);
-
-        try {
-          const changed = props.event;
-
-          const properties = await snapshot.getPromise(appPropertiesState);
-          const events = await snapshot.getPromise(calendarEventsState);
-          let index = 0;
-          const targetEvent = events.find(({ id }, i) => {
-            index = i;
-            return id === props.event.id;
-          });
-          if (!targetEvent) {
-            console.warn('更新対象レコードに紐づくカレンダーイベントの取得に失敗しました');
-            return;
-          }
-
-          const newEvent = {
-            ...targetEvent,
-            start: changed.start || targetEvent.start,
-            end: changed.end || targetEvent.end,
-          };
-          set(calendarEventsState, (current) => {
-            const newEvents = [...current];
-            newEvents[index] = newEvent;
-            return newEvents;
-          });
-
-          const condition = await snapshot.getPromise(pluginConditionState);
-          await reschedule({
-            calendarEvent: newEvent,
-            condition: condition!,
-            properties,
-          });
-          console.info('レコードを更新しました');
-        } finally {
-          set(loadingState, false);
-        }
-      },
-    []
-  );
-
-  return {
-    onCalendarDateSelect,
-    onCalendarEventAdd,
-    onCalendarEventClick,
-    onCalendarEventChange,
-    onCalendarEventRemove,
-  };
+  return { onCalendarEventClick, onCalendarEventChange, onCalendarEventRemove };
 };
