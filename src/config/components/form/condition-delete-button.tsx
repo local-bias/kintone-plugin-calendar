@@ -1,25 +1,25 @@
-import React, { FC, memo } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { produce } from 'immer';
+import { pluginConditionsAtom, selectedConditionIdAtom } from '@/config/states/plugin';
 import { PluginConditionDeleteButton } from '@konomi-app/kintone-utilities-react';
-import { storageState, tabIndexState } from '../../states/plugin';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { RESET } from 'jotai/utils';
+import { enqueueSnackbar } from 'notistack';
+import { FC, memo } from 'react';
+
+const handleConditionDeleteAtom = atom(null, (get, set) => {
+  const selectedConditionId = get(selectedConditionIdAtom);
+  set(pluginConditionsAtom, (prev) =>
+    prev.filter((condition) => condition.id !== selectedConditionId)
+  );
+  set(selectedConditionIdAtom, RESET);
+  enqueueSnackbar('設定を削除しました', { variant: 'success' });
+});
 
 const Container: FC = () => {
-  const index = useRecoilValue(tabIndexState);
-
-  const onClick = useRecoilCallback(
-    ({ set }) =>
-      async () => {
-        set(storageState, (_, _storage = _!) =>
-          produce(_storage, (draft) => {
-            draft.conditions.splice(index, 1);
-          })
-        );
-        set(tabIndexState, (i) => (i === 0 ? i : i - 1));
-      },
-    [index]
-  );
-
+  const conditions = useAtomValue(pluginConditionsAtom);
+  const onClick = useSetAtom(handleConditionDeleteAtom);
+  if (conditions.length < 2) {
+    return null;
+  }
   return <PluginConditionDeleteButton {...{ onClick }} />;
 };
 
