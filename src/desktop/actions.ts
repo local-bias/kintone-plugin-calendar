@@ -6,6 +6,7 @@ import {
   addRecord,
   AddRecordParams,
   getAppId,
+  getYuruChara,
   kintoneAPI,
   updateRecord,
 } from '@konomi-app/kintone-utilities';
@@ -120,6 +121,15 @@ export const getCalendarEventFromKintoneRecord = (params: {
     title: record[condition.calendarEvent.inputTitleField]?.value as string | undefined,
     note: record[condition.calendarEvent.noteField]?.value as string | undefined,
     category: record[condition.calendarEvent.categoryField]?.value as string | undefined,
+    __quickSearch: getYuruChara(
+      [
+        record[condition.calendarEvent.inputTitleField]?.value,
+        record[condition.calendarEvent.noteField]?.value,
+        record[condition.calendarEvent.categoryField]?.value,
+      ]
+        .filter(Boolean)
+        .join('_$$_')
+    ),
     ...colors,
   };
 

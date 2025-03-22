@@ -38,9 +38,11 @@ const Component: FCX = ({ className }) => {
 };
 
 const StyledComponent = styled(Component)`
-  font-family: 'Noto Sans JP', 'Yu Gothic Medium', YuGothic, メイリオ;
+  font-family: 'Yu Gothic Medium', YuGothic, 'Noto Sans JP', メイリオ;
   background-color: #fff;
-  color: #41525c;
+  color: hsl(var(--ribbit-foreground));
+  border-color: hsl(var(--ribbit-border) / 0.7);
+  --fc-border-color: hsl(var(--ribbit-border) / 0.7);
 
   --fc-button-bg-color: #fff;
   --fc-button-hover-bg-color: #d2e3fc;
@@ -48,7 +50,18 @@ const StyledComponent = styled(Component)`
   --fc-button-border-color: transparent;
   --fc-button-hover-border-color: transparent;
   --fc-button-active-border-color: transparent;
-  --fc-button-text-color: #41525c;
+  --fc-button-text-color: hsl(var(--ribbit-foreground));
+  --fc-non-business-color: #6b728011;
+
+  --fc-event-bg-color: #dbeafe;
+  --fc-event-border-color: #dbeafe;
+  --fc-event-text-color: #075985;
+  --fc-event-hover-bg-color: #93c5fd;
+  --fc-event-hover-border-color: #93c5fd;
+  --fc-event-hover-text-color: #075985;
+  --fc-event-active-bg-color: #93c5fd;
+  --fc-event-active-border-color: #93c5fd;
+  --fc-event-active-text-color: #075985;
 
   .fc .fc-scrollgrid,
   .fc .fc-timegrid-slot-minor {
@@ -56,16 +69,38 @@ const StyledComponent = styled(Component)`
   }
 
   .fc-toolbar-title {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.125rem !important;
+    font-weight: 500 !important;
   }
 
   .fc-button {
-    transition: all 250ms ease;
+    transition: all 250ms ease !important;
   }
 
   .fc .fc-button:focus {
     box-shadow: none !important;
+  }
+
+  .fc {
+    .fc-col-header-cell-cushion,
+    .fc-daygrid-day-number {
+      color: hsl(var(--ribbit-foreground) / 0.7) !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+    }
+    .fc-timegrid-slot-label-cushion,
+    .fc-timegrid-axis-cushion {
+      color: hsl(var(--ribbit-foreground) / 0.5) !important;
+      font-weight: 500 !important;
+      font-size: 12px !important;
+      line-height: 1.5 !important;
+    }
+    .fc-day.fc-day-sat {
+      background-color: #f1f8ff88 !important;
+    }
+    .fc-day.fc-day-sun {
+      background-color: #fff1f288 !important;
+    }
   }
 
   .fc-today-button {

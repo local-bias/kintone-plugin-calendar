@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import App from './components';
 import { store } from '@/lib/store';
 import { pluginConditionAtom } from './states/kintone';
+import { isDev } from '@/lib/global';
 
 listener.add(['app.record.index.show'], (event) => {
   const config = restorePluginConfig();
@@ -20,6 +21,9 @@ listener.add(['app.record.index.show'], (event) => {
     return event;
   }
 
+  if (isDev) {
+    console.log('pluginCondition', found);
+  }
   store.set(pluginConditionAtom, found);
 
   document.body.classList.add(css`

@@ -1,23 +1,25 @@
-import React, { FC } from 'react';
-import DeleteButton from './condition-delete-button';
+import { JotaiSwitch } from '@/components/jotai/switch';
+import { enablesAllDayState, enablesNoteState } from '@/config/states/plugin';
 import {
   PluginFormDescription,
   PluginFormSection,
   PluginFormTitle,
-  RecoilSwitch,
 } from '@konomi-app/kintone-utilities-react';
-import { enablesAllDayState, enablesNoteState } from '@/config/states/plugin';
-import FormScheduleTitle from './form-schedule-title';
-import FormScheduleStart from './form-schedule-start';
-import FormScheduleEnd from './form-schedule-end';
-import FormAllday from './form-allday';
-import FormNote from './form-note';
-import FormSlotMinmax from './form-slot-minmax';
-import FormCategory from './form-category';
-import FormView from './form-view';
-import FormInitialView from './form-initial-view';
+import { FC } from 'react';
+import DeleteButton from './condition-delete-button';
 import CreateNewView from './create-new-view';
+import FormAllday from './form-allday';
+import FormCategory from './form-category';
 import FormColors from './form-colors';
+import DaysOfWeekForm from './form-days-of-week';
+import FormInitialView from './form-initial-view';
+import FormNote from './form-note';
+import FormScheduleEnd from './form-schedule-end';
+import FormScheduleStart from './form-schedule-start';
+import FormScheduleTitle from './form-schedule-title';
+import FormSlotMinmax from './form-slot-minmax';
+import FormView from './form-view';
+import FirstDayForm from './form-first-day';
 
 const Component: FC = () => (
   <div className='p-4'>
@@ -62,7 +64,7 @@ const Component: FC = () => (
     <PluginFormSection>
       <PluginFormTitle>終日設定</PluginFormTitle>
       <PluginFormDescription last>時刻を指定せず、終日の予定を有効にします</PluginFormDescription>
-      <RecoilSwitch state={enablesAllDayState} label='終日設定を有効にする' />
+      <JotaiSwitch atom={enablesAllDayState} label='終日設定を有効にする' />
       <FormAllday />
     </PluginFormSection>
     <PluginFormSection>
@@ -73,7 +75,7 @@ const Component: FC = () => (
       <PluginFormDescription last>
         使用できるフィールドタイプは、文字列１行フィールド、文字列複数行フィールド、リッチテキストです
       </PluginFormDescription>
-      <RecoilSwitch state={enablesNoteState} label='スケジュールの備考を有効にする' />
+      <JotaiSwitch atom={enablesNoteState} label='スケジュールの備考を有効にする' />
       <FormNote />
     </PluginFormSection>
     <details className='mt-8'>
@@ -91,6 +93,22 @@ const Component: FC = () => (
           カレンダーに表示する時間帯の上限と下限を設定します。
         </PluginFormDescription>
         <FormSlotMinmax />
+      </PluginFormSection>
+      <PluginFormSection>
+        <PluginFormTitle>営業日の設定</PluginFormTitle>
+        <PluginFormDescription>カレンダーで営業日とする曜日を設定します</PluginFormDescription>
+        <PluginFormDescription last>
+          チェックを外した曜日は、カレンダー上でグレーアウトされます
+        </PluginFormDescription>
+        <DaysOfWeekForm />
+      </PluginFormSection>
+      <PluginFormSection>
+        <PluginFormTitle>週の始まりの曜日</PluginFormTitle>
+        <PluginFormDescription>1週間の始まりとする曜日を設定します</PluginFormDescription>
+        <PluginFormDescription last>
+          ここで設定した曜日が、週表示、月表示時の左端の曜日となります
+        </PluginFormDescription>
+        <FirstDayForm />
       </PluginFormSection>
       <PluginFormSection>
         <PluginFormTitle>カテゴリー設定</PluginFormTitle>

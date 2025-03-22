@@ -1,20 +1,17 @@
-import React, { FC } from 'react';
-import { useRecoilValue, useRecoilCallback } from 'recoil';
 import { MenuItem, TextField } from '@mui/material';
-import { customViewsState } from '../../states/kintone';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import React, { FC } from 'react';
+import { customViewsAtom } from '../../states/kintone';
 import { viewIdState } from '../../states/plugin';
 
-const Container: FC = () => {
-  const viewId = useRecoilValue(viewIdState);
-  const views = useRecoilValue(customViewsState);
+const handleViewIdChangeAtom = atom(null, (_, set, event: React.ChangeEvent<HTMLInputElement>) => {
+  set(viewIdState, event.target.value);
+});
 
-  const onViewIdChange = useRecoilCallback(
-    ({ set }) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        set(viewIdState, e.target.value);
-      },
-    []
-  );
+const Container: FC = () => {
+  const viewId = useAtomValue(viewIdState);
+  const views = useAtomValue(customViewsAtom);
+  const onViewIdChange = useSetAtom(handleViewIdChangeAtom);
 
   return (
     <TextField

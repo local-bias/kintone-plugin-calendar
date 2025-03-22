@@ -1,103 +1,111 @@
-import { getUpdatedStorage, restorePluginConfig } from '@/lib/plugin';
+import { restorePluginConfig } from '@/lib/plugin';
 import { PluginCondition, PluginConfig } from '@/schema/plugin-config';
 import { produce } from 'immer';
-import { RecoilState, atom, selector, selectorFamily } from 'recoil';
+import { atom } from 'jotai';
+import { atomWithDefault } from 'jotai/utils';
+import { SetStateAction } from 'react';
 
-const PREFIX = 'plugin';
+export const pluginConfigAtom = atom<PluginConfig>(restorePluginConfig());
 
-export const storageState = atom<PluginConfig>({
-  key: `${PREFIX}storageState`,
-  default: restorePluginConfig(),
-});
+export const loadingCountAtom = atom<number>(0);
 
-export const loadingCountState = atom<number>({
-  key: `${PREFIX}loadingCountState`,
-  default: 0,
-});
+/**
+ * 読み込み中かどうか
+ *
+ * この状態は読み取り専用です。読み込み状態を変更する場合は`loadingCountAtom`を使用してください。
+ *
+ * @see loadingCountAtom
+ */
+export const loadingAtom = atom<boolean>((get) => get(loadingCountAtom) > 0);
 
-export const loadingState = selector<boolean>({
-  key: `${PREFIX}loadingState`,
-  get: ({ get }) => get(loadingCountState) > 0,
-});
+export const tabIndexAtom = atom<number>(0);
 
-export const tabIndexState = atom<number>({
-  key: `${PREFIX}tabIndexState`,
-  default: 0,
-});
-
-export const conditionsState = selector<PluginCondition[]>({
-  key: `${PREFIX}conditionsState`,
-  get: ({ get }) => {
-    const storage = get(storageState);
+// export const conditionsAtom = focusAtom(pluginConfigAtom, (optic) => optic.prop('conditions'));
+export const pluginConditionsAtom = atom(
+  (get) => {
+    const storage = get(pluginConfigAtom);
     return storage?.conditions ?? [];
   },
+  (_, set, newValue: SetStateAction<PluginCondition[]>) => {
+    set(pluginConfigAtom, (current) => ({
+      ...current,
+      conditions: typeof newValue === 'function' ? newValue(current.conditions) : newValue,
+    }));
+  }
+);
+
+export const selectedConditionIdAtom = atomWithDefault<string>((get) => {
+  const config = get(pluginConfigAtom);
+  return config.conditions[0].id;
 });
 
-const conditionPropertyState = selectorFamily<
-  PluginCondition[keyof PluginCondition],
-  keyof PluginCondition
->({
-  key: `${PREFIX}conditionPropertyState`,
-  get:
-    (key) =>
-    ({ get }) => {
-      const conditionIndex = get(tabIndexState);
-      const storage = get(storageState);
-      return storage.conditions[conditionIndex][key];
+export const selectedConditionAtom = atom(
+  (get) => {
+    const conditions = get(pluginConditionsAtom);
+    const selectedConditionId = get(selectedConditionIdAtom);
+    return conditions.find((condition) => condition.id === selectedConditionId) ?? conditions[0]!;
+  },
+  (get, set, newValue: SetStateAction<PluginCondition>) => {
+    const selectedConditionId = get(selectedConditionIdAtom);
+    const conditions = get(pluginConditionsAtom);
+    const index = conditions.findIndex((condition) => condition.id === selectedConditionId);
+    if (index === -1) {
+      return;
+    }
+    set(pluginConfigAtom, (current) =>
+      produce(current, (draft) => {
+        draft.conditions[index] =
+          typeof newValue === 'function' ? newValue(draft.conditions[index]) : newValue;
+      })
+    );
+  }
+);
+
+export const getConditionPropertyAtom = <T extends keyof PluginCondition>(property: T) =>
+  atom(
+    (get) => {
+      return get(selectedConditionAtom)[property];
     },
-  set:
-    (key) =>
-    ({ get, set }, newValue) => {
-      const conditionIndex = get(tabIndexState);
-      set(storageState, (current) =>
-        getUpdatedStorage(current, {
-          conditionIndex,
-          key,
-          value: newValue as PluginCondition[keyof PluginCondition],
+    (_, set, newValue: SetStateAction<PluginCondition[T]>) => {
+      set(selectedConditionAtom, (condition) =>
+        produce(condition, (draft) => {
+          draft[property] = typeof newValue === 'function' ? newValue(draft[property]) : newValue;
         })
       );
-    },
-});
+    }
+  );
 
-export const calendarEventState = selectorFamily<
-  PluginCondition['calendarEvent'][keyof PluginCondition['calendarEvent']],
-  keyof PluginCondition['calendarEvent']
->({
-  key: `${PREFIX}calendarEventState`,
-  get:
-    (key) =>
-    ({ get }) => {
-      const conditionIndex = get(tabIndexState);
-      const storage = get(storageState);
-      return storage.conditions[conditionIndex].calendarEvent[key];
+export const getCalendarEventAtom = <T extends keyof PluginCondition['calendarEvent']>(
+  property: T
+) =>
+  atom(
+    (get) => {
+      return get(selectedConditionAtom).calendarEvent[property];
     },
-  set:
-    (key) =>
-    ({ get, set }, newValue) => {
-      const conditionIndex = get(tabIndexState);
-      set(storageState, (current) =>
-        produce(current, (draft) => {
-          draft.conditions[conditionIndex].calendarEvent[key] =
-            newValue as PluginCondition['calendarEvent'][keyof PluginCondition['calendarEvent']];
+    (_, set, newValue: SetStateAction<PluginCondition['calendarEvent'][T]>) => {
+      set(selectedConditionAtom, (condition) =>
+        produce(condition, (draft) => {
+          draft.calendarEvent[property] =
+            typeof newValue === 'function' ? newValue(draft.calendarEvent[property]) : newValue;
         })
       );
-    },
-});
+    }
+  );
 
-export const getConditionPropertyState = <T extends keyof PluginCondition>(property: T) =>
-  conditionPropertyState(property) as unknown as RecoilState<PluginCondition[T]>;
+export const viewIdState = getConditionPropertyAtom('viewId');
+export const initialViewState = getConditionPropertyAtom('initialView');
+export const enablesAllDayState = getConditionPropertyAtom('enablesAllDay');
+export const alldayOptionState = getConditionPropertyAtom('allDayOption');
+export const enablesNoteState = getConditionPropertyAtom('enablesNote');
+export const slotMinTimeState = getConditionPropertyAtom('slotMinTime');
+export const slotMaxTimeState = getConditionPropertyAtom('slotMaxTime');
+export const colorsAtom = getConditionPropertyAtom('colors');
+export const daysOfWeekAtom = getConditionPropertyAtom('daysOfWeek');
+export const firstDayAtom = getConditionPropertyAtom('firstDay');
 
-export const viewIdState = getConditionPropertyState('viewId');
-export const initialViewState = getConditionPropertyState('initialView');
-export const enablesAllDayState = getConditionPropertyState('enablesAllDay');
-export const alldayOptionState = getConditionPropertyState('allDayOption');
-export const enablesNoteState = getConditionPropertyState('enablesNote');
-export const slotMinTimeState = getConditionPropertyState('slotMinTime');
-export const slotMaxTimeState = getConditionPropertyState('slotMaxTime');
-
-export const calendarTitleState = calendarEventState('inputTitleField');
-export const calendarStartState = calendarEventState('startField');
-export const calendarEndState = calendarEventState('endField');
-export const calendarAllDayState = calendarEventState('allDayField');
-export const calendarNoteState = calendarEventState('noteField');
-export const calendarCategoryState = calendarEventState('categoryField');
+export const calendarTitleState = getCalendarEventAtom('inputTitleField');
+export const calendarStartState = getCalendarEventAtom('startField');
+export const calendarEndState = getCalendarEventAtom('endField');
+export const calendarAllDayState = getCalendarEventAtom('allDayField');
+export const calendarNoteState = getCalendarEventAtom('noteField');
+export const calendarCategoryState = getCalendarEventAtom('categoryField');

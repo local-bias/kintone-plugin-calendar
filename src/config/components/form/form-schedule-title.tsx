@@ -1,22 +1,21 @@
-import { stringFieldsState } from '@/config/states/kintone';
+import { JotaiFieldSelect } from '@/components/jotai/field-select';
+import { stringFieldsAtom } from '@/config/states/kintone';
 import { calendarTitleState } from '@/config/states/plugin';
-import { RecoilFieldSelect } from '@konomi-app/kintone-utilities-react';
-import React, { FC } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { FC } from 'react';
+
+const handleTitleChangeAtom = atom(null, (_, set, code: string) => {
+  set(calendarTitleState, code);
+});
 
 const Component: FC = () => {
-  const title = useRecoilValue(calendarTitleState);
-  const onChange = useRecoilCallback(
-    ({ set }) =>
-      (code: string) => {
-        set(calendarTitleState, code);
-      },
-    []
-  );
+  const title = useAtomValue(calendarTitleState);
+  const onChange = useSetAtom(handleTitleChangeAtom);
 
   return (
-    <RecoilFieldSelect
-      state={stringFieldsState}
+    <JotaiFieldSelect
+      //@ts-expect-error 型定義不足
+      fieldPropertiesAtom={stringFieldsAtom}
       onChange={onChange}
       fieldCode={title}
       placeholder='フィールドを選択してください'
