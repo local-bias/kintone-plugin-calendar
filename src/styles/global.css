@@ -37,6 +37,12 @@
 }
 
 @layer plugin {
+  .🐸,
+  .🐸 * {
+    border: 0 solid hsl(var(--ribbit-border));
+    box-sizing: border-box;
+  }
+
   .🐸 {
     h1,
     h2,
