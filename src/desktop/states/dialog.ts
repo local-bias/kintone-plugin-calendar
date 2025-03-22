@@ -1,9 +1,9 @@
 import { produce } from 'immer';
 import { atom } from 'jotai';
+import { SetStateAction } from 'react';
 import { addNewRecord, reschedule } from '../actions';
 import { calendarEventsAtom, PluginCalendarEvent } from './calendar';
 import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from './kintone';
-import { focusAtom } from 'jotai-optics';
 
 export const dialogShownAtom = atom<boolean>(false);
 
@@ -11,9 +11,41 @@ export const dialogPropsAtom = atom<{ new: boolean; event: PluginCalendarEvent }
   new: false,
   event: {},
 });
-export const dialogEventAtom = focusAtom(dialogPropsAtom, (o) => o.prop('event'));
-export const dialogEventTitleAtom = focusAtom(dialogEventAtom, (o) => o.prop('title'));
-export const dialogEventNoteAtom = focusAtom(dialogEventAtom, (o) => o.prop('note'));
+// export const dialogEventAtom = focusAtom(dialogPropsAtom, (o) => o.prop('event'));
+export const dialogEventAtom = atom(
+  (get) => get(dialogPropsAtom).event,
+  (get, set, newValue: SetStateAction<PluginCalendarEvent>) => {
+    set(dialogPropsAtom, (current) =>
+      produce(current, (draft) => {
+        draft.event = typeof newValue === 'function' ? newValue(draft.event) : newValue;
+      })
+    );
+  }
+);
+
+// export const dialogEventTitleAtom = focusAtom(dialogEventAtom, (o) => o.prop('title'));
+export const dialogEventTitleAtom = atom(
+  (get) => get(dialogEventAtom).title,
+  (get, set, newValue: SetStateAction<string | undefined>) => {
+    set(dialogEventAtom, (current) =>
+      produce(current, (draft) => {
+        draft.title = typeof newValue === 'function' ? newValue(draft.title) : newValue;
+      })
+    );
+  }
+);
+
+// export const dialogEventNoteAtom = focusAtom(dialogEventAtom, (o) => o.prop('note'));
+export const dialogEventNoteAtom = atom(
+  (get) => get(dialogEventAtom).note,
+  (get, set, newValue: SetStateAction<string | undefined>) => {
+    set(dialogEventAtom, (current) =>
+      produce(current, (draft) => {
+        draft.note = typeof newValue === 'function' ? newValue(draft.note) : newValue;
+      })
+    );
+  }
+);
 
 export const handleDialogSubmitAtom = atom(null, async (get, set) => {
   set(loadingAtom, true);

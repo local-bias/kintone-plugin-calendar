@@ -1,4 +1,5 @@
 import { useCalendar } from '@/desktop/hooks/use-calendar';
+import { getSlotTime } from '@/lib/calendar';
 import allLocales from '@fullcalendar/core/locales-all';
 import jaJP from '@fullcalendar/core/locales/ja';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -8,13 +9,14 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { FC } from 'react';
 import {
-  textFilteredCalendarEventsAtom,
   handleCalendarDateSelectAtom,
   handleCalendarEventAddAtom,
+  textFilteredCalendarEventsAtom,
 } from '../../states/calendar';
 import { pluginConditionAtom } from '../../states/kintone';
+import DayHeader from './day-header';
 
-const Component: FC = () => {
+const FullCalendarRoot: FC = () => {
   const calendarEvents = useAtomValue(textFilteredCalendarEventsAtom);
   const pluginCondition = useAtomValue(pluginConditionAtom);
   const onCalendarDateSelect = useSetAtom(handleCalendarDateSelectAtom);
@@ -27,6 +29,11 @@ const Component: FC = () => {
       locales={allLocales}
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       initialView={pluginCondition?.initialView ?? 'timeGridWeek'}
+      businessHours={{
+        daysOfWeek: pluginCondition?.daysOfWeek,
+        startTime: '00:00',
+        endTime: '24:00',
+      }}
       views={{
         timeGridThreeDay: {
           type: 'timeGrid',
@@ -39,6 +46,7 @@ const Component: FC = () => {
           buttonText: '5日',
         },
       }}
+      firstDay={pluginCondition?.firstDay}
       headerToolbar={{
         left: 'title',
         center: '',
@@ -50,9 +58,17 @@ const Component: FC = () => {
       editable
       selectable
       selectMirror
-      slotMinTime={pluginCondition?.slotMinTime || '0:00:00'}
-      slotMaxTime={pluginCondition?.slotMaxTime || '24:00:00'}
+      slotMinTime={getSlotTime(pluginCondition?.slotMinTime || '0')}
+      slotMaxTime={getSlotTime(pluginCondition?.slotMaxTime || '24')}
       themeSystem='normal'
+      nowIndicator
+      slotLabelContent={(props) => <span className='text-foreground/50'>{props.text}</span>}
+      allDayContent={(props) => <span className='text-foreground/50'>{props.text}</span>}
+      dayHeaderContent={DayHeader}
+      // slotLaneContent={(props) => <pre>{JSON.stringify(props, null, 2)}</pre>}
+      // weekNumberContent={(props) => <pre>{JSON.stringify(props, null, 2)}</pre>}
+      // moreLinkContent={(props) => <pre>{JSON.stringify(props, null, 2)}</pre>}
+      // eventContent={CalendarEvent}
       select={onCalendarDateSelect}
       eventClick={onCalendarEventClick}
       eventChange={onCalendarEventChange}
@@ -64,12 +80,12 @@ const Component: FC = () => {
   );
 };
 
-const CalendarContainer: FC = () => {
+const FullCalendarContainer: FC = () => {
   return (
-    <div className='p-4'>
-      <Component />
+    <div className='p-2 md:p-4'>
+      <FullCalendarRoot />
     </div>
   );
 };
 
-export default CalendarContainer;
+export default FullCalendarContainer;
