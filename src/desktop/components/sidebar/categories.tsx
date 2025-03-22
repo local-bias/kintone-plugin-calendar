@@ -27,19 +27,20 @@ const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
   const colors = condition?.colors ?? DEFAULT_COLORS;
 
   return (
-    <div className='grid gap-2'>
+    <div className='grid gap-2 px-2'>
       <h3>表示するカテゴリー</h3>
       {categories.map((category, i) => (
         <FormControlLabel
           key={i}
           control={
             <Switch
+              size='small'
               checked={displayingCategories === null || displayingCategories.includes(category)}
               onChange={(_, checked) => onCategoryChange(category, checked)}
             />
           }
           label={
-            <div className='flex items-center gap-3'>
+            <div className='ml-2 flex items-center gap-1'>
               {category}
               <span
                 style={{ backgroundColor: colors[i % colors.length] }}

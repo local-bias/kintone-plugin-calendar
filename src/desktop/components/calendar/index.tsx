@@ -1,5 +1,6 @@
 import { useCalendar } from '@/desktop/hooks/use-calendar';
 import allLocales from '@fullcalendar/core/locales-all';
+import jaJP from '@fullcalendar/core/locales/ja';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
@@ -7,14 +8,14 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { FC } from 'react';
 import {
-  filteredCalendarEventsAtom,
+  textFilteredCalendarEventsAtom,
   handleCalendarDateSelectAtom,
   handleCalendarEventAddAtom,
 } from '../../states/calendar';
 import { pluginConditionAtom } from '../../states/kintone';
 
 const Component: FC = () => {
-  const calendarEvents = useAtomValue(filteredCalendarEventsAtom);
+  const calendarEvents = useAtomValue(textFilteredCalendarEventsAtom);
   const pluginCondition = useAtomValue(pluginConditionAtom);
   const onCalendarDateSelect = useSetAtom(handleCalendarDateSelectAtom);
   const onCalendarEventAdd = useSetAtom(handleCalendarEventAddAtom);
@@ -22,7 +23,8 @@ const Component: FC = () => {
 
   return (
     <FullCalendar
-      locale='ja'
+      locale={jaJP}
+      locales={allLocales}
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       initialView={pluginCondition?.initialView ?? 'timeGridWeek'}
       views={{
@@ -37,11 +39,11 @@ const Component: FC = () => {
           buttonText: '5日',
         },
       }}
-      locales={allLocales}
       headerToolbar={{
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridFiveDay,timeGridThreeDay,timeGridDay',
+        left: 'title',
+        center: '',
+        right:
+          'dayGridMonth,timeGridWeek,timeGridFiveDay,timeGridThreeDay,timeGridDay today prev,next',
       }}
       events={calendarEvents}
       allDaySlot={pluginCondition?.enablesAllDay}
@@ -57,8 +59,17 @@ const Component: FC = () => {
       eventAdd={onCalendarEventAdd}
       eventRemove={onCalendarEventRemove}
       height='auto'
+      handleWindowResize
     />
   );
 };
 
-export default Component;
+const CalendarContainer: FC = () => {
+  return (
+    <div className='p-4'>
+      <Component />
+    </div>
+  );
+};
+
+export default CalendarContainer;

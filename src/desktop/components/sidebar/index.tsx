@@ -1,34 +1,27 @@
-import React, { FC, Suspense, useState } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
+import { useIsMobile } from '@/desktop/hooks/use-mobile';
+import { sidebarExpandedAtom } from '@/desktop/states/sidebar';
+import { cn } from '@/lib/utils';
+import { useAtomValue } from 'jotai';
+import SidebarContent from './content';
 
-import Categories from './categories';
-import { Drawer, Fab } from '@mui/material';
-
-const Component: FC = () => {
-  const [open, setOpen] = useState(false);
-
-  const toggle = () => setOpen((prev) => !prev);
+export default function CalendarSidebar() {
+  const isMobile = useIsMobile();
+  const expanded = useAtomValue(sidebarExpandedAtom);
 
   return (
-    <div>
-      <div className='!fixed right-4 md:right-8 bottom-20 z-10'>
-        <Fab variant='circular' size='large' color='primary' onClick={toggle}>
-          <MenuIcon />
-        </Fab>
+    <div
+      className={cn('border-r w-8 bg-white', {
+        hidden: isMobile,
+        'w-64': expanded,
+      })}
+    >
+      <div
+        className={cn('p-4 sticky top-12 min-h-[calc(100svh-240px)]', {
+          'top-0': isMobile,
+        })}
+      >
+        <SidebarContent />
       </div>
-      <Drawer anchor='left' open={open} onClose={toggle} className='🐸'>
-        <div className='p-8'>
-          <Suspense fallback={null}>
-            <Categories />
-          </Suspense>
-        </div>
-      </Drawer>
     </div>
   );
-};
-
-const Container: FC = () => {
-  return <Component />;
-};
-
-export default Container;
+}

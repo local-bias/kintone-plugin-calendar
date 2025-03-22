@@ -12,16 +12,25 @@ import Calendar from './calendar';
 import Dialog from './dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
+import { useIsMobile } from '../hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const Component: FCX = ({ className }) => {
   useInitialize();
+  const isMobile = useIsMobile();
 
   return (
     <>
       <Dialog />
-      <div className={`🐸 ${className}`}>
-        <Sidebar />
-        <Calendar />
+      <div className='🐸'>
+        <div
+          className={cn(`grid grid-cols-[auto_1fr] ${className}`, {
+            'grid-cols-1': isMobile,
+          })}
+        >
+          <Sidebar />
+          <Calendar />
+        </div>
       </div>
       <Fab />
     </>
@@ -46,6 +55,11 @@ const StyledComponent = styled(Component)`
     border-style: none;
   }
 
+  .fc-toolbar-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
   .fc-button {
     transition: all 250ms ease;
   }
@@ -65,8 +79,6 @@ const StyledComponent = styled(Component)`
       background-color: #fff;
     }
   }
-
-  padding: 1rem;
 
   .fc-event-time,
   .fc-event-title-container {

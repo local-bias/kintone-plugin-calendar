@@ -13,7 +13,15 @@ export type PluginCalendarEvent = EventInput & { note?: string; category?: strin
 
 export const calendarEventsAtom = atom<PluginCalendarEvent[]>([]);
 
-export const filteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) => {
+export const searchInputAtom = atom<string>('');
+export const handleSearchInputChangeAtom = atom(
+  null,
+  (_, set, event: React.ChangeEvent<HTMLInputElement>) => {
+    set(searchInputAtom, event.target.value);
+  }
+);
+
+export const categoryFilteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) => {
   const allEvents = get(calendarEventsAtom);
   const categories = get(displayingCategoriesAtom);
 
@@ -22,6 +30,26 @@ export const filteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) => {
   }
 
   return allEvents.filter((event) => !event.category || categories.includes(event.category));
+});
+
+export const textFilteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) => {
+  const allEvents = get(categoryFilteredCalendarEventsAtom);
+  const searchInput = get(searchInputAtom);
+
+  if (!searchInput) {
+    return allEvents;
+  }
+
+  const searchWords = searchInput.split(/\s+/).filter((word) => word.length > 0);
+  if (searchWords.length === 0) {
+    return allEvents;
+  }
+
+  return allEvents.filter((event) => {
+    const title = event.title || '';
+    const note = event.note || '';
+    return searchWords.every((word) => title.includes(word) || note.includes(word));
+  });
 });
 
 export const handleCalendarDateSelectAtom = atom(null, (get, set, props: DateSelectArg) => {
