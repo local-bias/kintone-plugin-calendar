@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import { useRecoilValue, useRecoilCallback } from 'recoil';
-import { MenuItem, TextField } from '@mui/material';
-import { initialViewState } from '../../states/plugin';
 import { PluginCondition } from '@/schema/plugin-config';
+import { MenuItem, TextField } from '@mui/material';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import React, { FC } from 'react';
+import { initialViewState } from '../../states/plugin';
 
 const VIEW_LIST: { label: string; viewType: PluginCondition['initialView'] }[] = [
   { label: '日単位、１ヶ月のカレンダー', viewType: 'dayGridMonth' },
@@ -12,16 +12,13 @@ const VIEW_LIST: { label: string; viewType: PluginCondition['initialView'] }[] =
   { label: '時間単位、１日のカレンダー', viewType: 'timeGridDay' },
 ];
 
-const Container: FC = () => {
-  const initialView = useRecoilValue(initialViewState);
+const handleViewChangeAtom = atom(null, (_, set, event: React.ChangeEvent<HTMLInputElement>) => {
+  set(initialViewState, event.target.value as PluginCondition['initialView']);
+});
 
-  const onChange = useRecoilCallback(
-    ({ set }) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        set(initialViewState, e.target.value as PluginCondition['initialView']);
-      },
-    []
-  );
+const Container: FC = () => {
+  const initialView = useAtomValue(initialViewState);
+  const onChange = useSetAtom(handleViewChangeAtom);
 
   return (
     <TextField

@@ -1,27 +1,28 @@
-import React, { FC } from 'react';
-import { TextField, MenuItem } from '@mui/material';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { slotMaxTimeState, slotMinTimeState } from '@/config/states/plugin';
+import { MenuItem, TextField } from '@mui/material';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import React, { FC } from 'react';
+
+const HOURS = Array.from({ length: 25 }, (_, i) => String(i));
+
+const handleSlotMinTimeChangeAtom = atom(
+  null,
+  (_, set, event: React.ChangeEvent<HTMLInputElement>) => {
+    set(slotMinTimeState, event.target.value);
+  }
+);
+const handleSlotMaxTimeChangeAtom = atom(
+  null,
+  (_, set, event: React.ChangeEvent<HTMLInputElement>) => {
+    set(slotMaxTimeState, event.target.value);
+  }
+);
 
 const Component: FC = () => {
-  const slotMinTime = useRecoilValue(slotMinTimeState);
-  const slotMaxTime = useRecoilValue(slotMaxTimeState);
-
-  const onSlotMinTimeChange = useRecoilCallback(
-    ({ set }) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        set(slotMinTimeState, `${e.target.value}:00:00`);
-      },
-    []
-  );
-
-  const onSlotMaxTimeChange = useRecoilCallback(
-    ({ set }) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        set(slotMaxTimeState, `${e.target.value}:00:00`);
-      },
-    []
-  );
+  const slotMinTime = useAtomValue(slotMinTimeState);
+  const slotMaxTime = useAtomValue(slotMaxTimeState);
+  const onSlotMinTimeChange = useSetAtom(handleSlotMinTimeChangeAtom);
+  const onSlotMaxTimeChange = useSetAtom(handleSlotMaxTimeChangeAtom);
 
   return (
     <div>
@@ -34,33 +35,7 @@ const Component: FC = () => {
         sx={{ width: '150px', marginRight: '1rem' }}
         value={(slotMinTime || '0:').split(':')[0]}
       >
-        {[
-          '0',
-          '1',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7',
-          '8',
-          '9',
-          '10',
-          '11',
-          '12',
-          '13',
-          '14',
-          '15',
-          '16',
-          '17',
-          '18',
-          '19',
-          '20',
-          '21',
-          '22',
-          '23',
-          '24',
-        ].map((hour) => (
+        {HOURS.map((hour) => (
           <MenuItem key={`slotMinTime-${hour}`} value={hour}>
             {hour}時
           </MenuItem>
@@ -75,33 +50,7 @@ const Component: FC = () => {
         sx={{ width: '150px' }}
         value={(slotMaxTime || '24:').split(':')[0]}
       >
-        {[
-          '0',
-          '1',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7',
-          '8',
-          '9',
-          '10',
-          '11',
-          '12',
-          '13',
-          '14',
-          '15',
-          '16',
-          '17',
-          '18',
-          '19',
-          '20',
-          '21',
-          '22',
-          '23',
-          '24',
-        ].map((hour, i) => (
+        {HOURS.map((hour, i) => (
           <MenuItem key={i} value={hour}>
             {hour}時
           </MenuItem>

@@ -1,20 +1,17 @@
-import { stringFieldsState } from '@/config/states/kintone';
+import { JotaiFieldSelect } from '@/components/jotai/field-select';
+import { stringFieldsAtom } from '@/config/states/kintone';
 import { calendarNoteState, enablesNoteState } from '@/config/states/plugin';
-import { RecoilFieldSelect } from '@konomi-app/kintone-utilities-react';
-import React, { FC } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { FC } from 'react';
+
+const handleNoteChangeAtom = atom(null, (_, set, code: string) => {
+  set(calendarNoteState, code);
+});
 
 const Component: FC = () => {
-  const enablesNote = useRecoilValue(enablesNoteState);
-  const noteField = useRecoilValue(calendarNoteState);
-
-  const onFieldChange = useRecoilCallback(
-    ({ set }) =>
-      (code: string) => {
-        set(calendarNoteState, code);
-      },
-    []
-  );
+  const enablesNote = useAtomValue(enablesNoteState);
+  const noteField = useAtomValue(calendarNoteState);
+  const onFieldChange = useSetAtom(handleNoteChangeAtom);
 
   if (!enablesNote) {
     return null;
@@ -22,8 +19,9 @@ const Component: FC = () => {
 
   return (
     <div className='mt-4 grid gap-4'>
-      <RecoilFieldSelect
-        state={stringFieldsState}
+      <JotaiFieldSelect
+        //@ts-expect-error 型定義不足
+        fieldPropertiesAtom={stringFieldsAtom}
         onChange={onFieldChange}
         fieldCode={noteField}
         placeholder='フィールドを選択してください'
