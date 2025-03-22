@@ -16,5 +16,5 @@ export function useIsMobile() {
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
-  return isKintoneMobile || !!isMobile;
+  return isKintoneMobile() || !!isMobile;
 }
