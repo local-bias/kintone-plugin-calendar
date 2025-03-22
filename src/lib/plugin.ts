@@ -1,9 +1,18 @@
 import { DEFAULT_COLORS } from '@/desktop/static';
-import { AnyPluginConfig, PluginCondition, PluginConfig } from '@/schema/plugin-config';
+import {
+  AnyPluginConfig,
+  LatestPluginConditionSchema,
+  PluginCondition,
+  PluginConfig,
+} from '@/schema/plugin-config';
 import { restoreStorage } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
 import { nanoid } from 'nanoid';
 import { PLUGIN_ID } from './global';
+
+export const validateCondition = (condition: unknown): PluginCondition => {
+  return LatestPluginConditionSchema.parse(condition);
+};
 
 export const getNewCondition = (): PluginCondition => ({
   id: nanoid(),
@@ -16,6 +25,7 @@ export const getNewCondition = (): PluginCondition => ({
   slotMaxTime: '24:00:00',
   colors: DEFAULT_COLORS,
   daysOfWeek: [1, 2, 3, 4, 5],
+  firstDay: 0,
   calendarEvent: {
     inputTitleField: '',
     displayTitleField: '',
@@ -31,7 +41,7 @@ export const getNewCondition = (): PluginCondition => ({
  * プラグインの設定情報のひな形を返却します
  */
 export const createConfig = (): PluginConfig => ({
-  version: 3,
+  version: 4,
   common: {},
   conditions: [getNewCondition()],
 });
@@ -67,6 +77,16 @@ export const migrateConfig = (config: AnyPluginConfig): PluginConfig => {
             inputTitleField: condition.calendarEvent.titleField,
             displayTitleField: '',
           },
+        })),
+      });
+    }
+    case 3: {
+      return migrateConfig({
+        version: 4,
+        common: {},
+        conditions: config.conditions.map((condition) => ({
+          ...condition,
+          firstDay: 0,
         })),
       });
     }

@@ -109,18 +109,65 @@ export const PluginConfigV3Schema = z.object({
   common: z.object({}),
   conditions: z.array(PluginConditionV3Schema),
 });
-type PluginConfigV3 = z.infer<typeof PluginConfigV3Schema>;
 
-export type PluginConfig = PluginConfigV3;
+export const PluginConditionV4Schema = z.object({
+  viewId: z.string(),
+  initialView: ViewTypeSchema,
+  enablesAllDay: z.boolean(),
+  allDayOption: z.string(),
+  enablesNote: z.boolean(),
+  slotMaxTime: z.string(),
+  slotMinTime: z.string(),
+  colors: z.array(z.string()),
+  calendarEvent: PluginCalendarEventV3Schema,
+  id: z.string(),
+  /**
+   * 週表示時に表示する曜日
+   *
+   * 0: 日曜日
+   * 1: 月曜日
+   * 2: 火曜日
+   * 3: 水曜日
+   * 4: 木曜日
+   * 5: 金曜日
+   * 6: 土曜日
+   */
+  daysOfWeek: z.array(
+    z.union([
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+    ])
+  ),
+  // ------ 追加 ------
+  /**
+   * 週の始まりの曜日
+   *
+   * @default 0 (日曜日)
+   */
+  firstDay: z.number(),
+});
+export const PluginConfigV4Schema = z.object({
+  version: z.literal(4),
+  common: z.object({}),
+  conditions: z.array(PluginConditionV4Schema),
+});
+
+export const LatestPluginConditionSchema = PluginConditionV4Schema;
+
+export type PluginConfig = z.infer<typeof PluginConfigV4Schema>;
 export type PluginCommonConfig = PluginConfig['common'];
 export type PluginCondition = PluginConfig['conditions'][number];
-
-export const LatestPluginConditionSchema = PluginConditionV3Schema;
 
 export const AnyPluginConfigSchema = z.discriminatedUnion('version', [
   PluginConfigV1Schema,
   PluginConfigV2Schema,
   PluginConfigV3Schema,
+  PluginConfigV4Schema,
 ]);
 
 export type AnyPluginConfig = z.infer<typeof AnyPluginConfigSchema>;
