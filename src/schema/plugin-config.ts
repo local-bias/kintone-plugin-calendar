@@ -22,7 +22,6 @@ export const PluginConfigV1Schema = z.object({
   version: z.literal(1),
   conditions: z.array(PluginConditionV1Schema),
 });
-type PluginConfigV1 = z.infer<typeof PluginConfigV1Schema>;
 
 export const PluginConditionV2Schema = z.object({
   viewId: z.string(),
@@ -46,7 +45,6 @@ export const PluginConfigV2Schema = z.object({
   version: z.literal(2),
   conditions: z.array(PluginConditionV2Schema),
 });
-type PluginConfigV2 = z.infer<typeof PluginConfigV2Schema>;
 
 const PluginCalendarEventV3Schema = z.object({
   startField: z.string(),
@@ -119,4 +117,10 @@ export type PluginCondition = PluginConfig['conditions'][number];
 
 export const LatestPluginConditionSchema = PluginConditionV3Schema;
 
-export type AnyPluginConfig = PluginConfigV1 | PluginConfigV2 | PluginConfigV3;
+export const AnyPluginConfigSchema = z.discriminatedUnion('version', [
+  PluginConfigV1Schema,
+  PluginConfigV2Schema,
+  PluginConfigV3Schema,
+]);
+
+export type AnyPluginConfig = z.infer<typeof AnyPluginConfigSchema>;
