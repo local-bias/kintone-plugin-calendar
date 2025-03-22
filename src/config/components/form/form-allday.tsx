@@ -1,31 +1,53 @@
-import { alldayOptionsState, checkboxFieldsState } from '@/config/states/kintone';
+import { JotaiFieldSelect } from '@/components/jotai/field-select';
+import { alldayOptionsAtom, checkboxFieldsAtom } from '@/config/states/kintone';
 import { alldayOptionState, calendarAllDayState, enablesAllDayState } from '@/config/states/plugin';
-import { RecoilFieldSelect } from '@konomi-app/kintone-utilities-react';
-import React, { FC } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { TextField, MenuItem } from '@mui/material';
+import { MenuItem, Skeleton, TextField } from '@mui/material';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import React, { FC, Suspense } from 'react';
+
+const handleAllDayFieldChangeAtom = atom(null, (_, set, code: string) => {
+  set(calendarAllDayState, code);
+});
+
+const handleAllDayOptionChangeAtom = atom(
+  null,
+  (_, set, event: React.ChangeEvent<HTMLInputElement>) => {
+    set(alldayOptionState, event.target.value);
+  }
+);
+
+const AllDayOptionForm: FC = () => {
+  const alldayOption = useAtomValue(alldayOptionState);
+  const alldayOptions = useAtomValue(alldayOptionsAtom);
+  const onAllDayOptionChange = useSetAtom(handleAllDayOptionChangeAtom);
+
+  return (
+    <TextField
+      label='終日とする値'
+      select
+      variant='outlined'
+      color='primary'
+      onChange={onAllDayOptionChange}
+      sx={{ width: '350px' }}
+      value={alldayOption}
+    >
+      {alldayOptions.map((code) => (
+        <MenuItem key={`allDayOptions-${code}`} value={code}>
+          {code}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+};
+
+const AllDayOptionFormPlaceholder: FC = () => {
+  return <Skeleton variant='rounded' width={350} height={56} />;
+};
 
 const Component: FC = () => {
-  const enablesAllday = useRecoilValue(enablesAllDayState);
-  const alldayField = useRecoilValue(calendarAllDayState);
-  const alldayOption = useRecoilValue(alldayOptionState);
-  const alldayOptions = useRecoilValue(alldayOptionsState);
-
-  const onFieldChange = useRecoilCallback(
-    ({ set }) =>
-      (code: string) => {
-        set(calendarAllDayState, code);
-      },
-    []
-  );
-
-  const onAllDayOptionChange = useRecoilCallback(
-    ({ set }) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        set(alldayOptionState, e.target.value);
-      },
-    []
-  );
+  const enablesAllday = useAtomValue(enablesAllDayState);
+  const alldayField = useAtomValue(calendarAllDayState);
+  const onFieldChange = useSetAtom(handleAllDayFieldChangeAtom);
 
   if (!enablesAllday) {
     return null;
@@ -33,29 +55,26 @@ const Component: FC = () => {
 
   return (
     <div className='mt-4 grid gap-4'>
-      <RecoilFieldSelect
-        state={checkboxFieldsState}
+      <JotaiFieldSelect
+        // @ts-expect-error 型定義不足
+        fieldPropertiesAtom={checkboxFieldsAtom}
         onChange={onFieldChange}
         fieldCode={alldayField}
         placeholder='フィールドを選択してください'
       />
-      <TextField
-        label='終日とする値'
-        select
-        variant='outlined'
-        color='primary'
-        onChange={onAllDayOptionChange}
-        sx={{ width: '350px' }}
-        value={alldayOption}
-      >
-        {alldayOptions.map((code) => (
-          <MenuItem key={`allDayOptions-${code}`} value={code}>
-            {code}
-          </MenuItem>
-        ))}
-      </TextField>
+      <Suspense fallback={<AllDayOptionFormPlaceholder />}>
+        <AllDayOptionForm />
+      </Suspense>
     </div>
   );
 };
 
-export default Component;
+const AllDayForm: FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Component />
+    </Suspense>
+  );
+};
+
+export default AllDayForm;
