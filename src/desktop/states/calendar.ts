@@ -8,12 +8,17 @@ import { completeCalendarEvent, getDefaultEndDate, getDefaultStartDate } from '.
 import { dialogPropsAtom, dialogShownAtom } from './dialog';
 import { loadingAtom } from './kintone';
 import { displayingCategoriesAtom } from './sidebar';
+import { ComponentRef } from 'react';
+import FullCalendar from '@fullcalendar/react';
 
 export type PluginCalendarEvent = EventInput & {
   note?: string;
   category?: string;
   __quickSearch?: string;
 };
+
+export const fullcalendarRefAtom = atom<ComponentRef<typeof FullCalendar> | null>(null);
+export const fullcalendarApiAtom = atom((get) => get(fullcalendarRefAtom)?.getApi());
 
 export const calendarEventsAtom = atom<PluginCalendarEvent[]>([]);
 

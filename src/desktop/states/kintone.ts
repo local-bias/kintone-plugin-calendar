@@ -4,6 +4,7 @@ import { getSortedOptions } from '@/lib/utils';
 import { PluginCondition } from '@/schema/plugin-config';
 import { getAppId, getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { atom } from 'jotai';
+import { derive } from 'jotai-derive';
 
 export const pluginConditionAtom = atom<PluginCondition | null>(null);
 
@@ -30,16 +31,17 @@ export const appPropertiesAtom = atom<Promise<kintoneAPI.FieldProperties>>(async
   return filtered;
 });
 
-export const calendarEventCategoryAtom = atom<Promise<string[] | null>>(async (get) => {
-  const condition = get(pluginConditionAtom);
-  if (!condition?.calendarEvent.categoryField) {
-    return null;
+export const categoryFieldPropertyAtom = derive(
+  [appPropertiesAtom, pluginConditionAtom],
+  (formFields, pluginCondition) => {
+    if (!pluginCondition?.calendarEvent.categoryField) {
+      return null;
+    }
+    return formFields[pluginCondition.calendarEvent.categoryField];
   }
+);
 
-  const properties = await get(appPropertiesAtom);
-  const categoryProperty: kintoneAPI.FieldProperty | undefined =
-    properties[condition.calendarEvent.categoryField];
-
+export const calendarEventCategoryAtom = derive([categoryFieldPropertyAtom], (categoryProperty) => {
   if (
     !categoryProperty ||
     (categoryProperty.type !== 'CHECK_BOX' &&
@@ -48,6 +50,5 @@ export const calendarEventCategoryAtom = atom<Promise<string[] | null>>(async (g
   ) {
     return null;
   }
-
   return getSortedOptions(categoryProperty.options ?? {}).map((option) => option.label);
 });
