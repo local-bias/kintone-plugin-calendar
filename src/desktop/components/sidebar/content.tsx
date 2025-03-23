@@ -21,6 +21,7 @@ export default function SidebarContent() {
       </Button> */}
       <SidebarSearchInput />
       <SidebarDatePicker />
+      <div className='w-full h-[1px] bg-border' />
       <div>
         <Suspense fallback={null}>
           <Categories />
