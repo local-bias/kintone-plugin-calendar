@@ -16,6 +16,7 @@ import {
 } from '../../states/calendar';
 import { pluginConditionAtom } from '../../states/kintone';
 import DayHeader from './day-header';
+import CalendarEvent from './event';
 
 const FullCalendarRoot: FC = () => {
   const setFullcalendarRef = useSetAtom(fullcalendarRefAtom);
@@ -71,7 +72,7 @@ const FullCalendarRoot: FC = () => {
       // slotLaneContent={(props) => <pre>{JSON.stringify(props, null, 2)}</pre>}
       // weekNumberContent={(props) => <pre>{JSON.stringify(props, null, 2)}</pre>}
       // moreLinkContent={(props) => <pre>{JSON.stringify(props, null, 2)}</pre>}
-      // eventContent={CalendarEvent}
+      eventContent={CalendarEvent}
       select={onCalendarDateSelect}
       eventClick={onCalendarEventClick}
       eventChange={onCalendarEventChange}
