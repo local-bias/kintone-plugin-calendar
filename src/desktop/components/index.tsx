@@ -44,6 +44,11 @@ const StyledComponent = styled(Component)`
   border-color: hsl(var(--ribbit-border) / 0.7);
   --fc-border-color: hsl(var(--ribbit-border) / 0.7);
 
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
   --fc-button-bg-color: #fff;
   --fc-button-hover-bg-color: #d2e3fc;
   --fc-button-active-bg-color: #d2e3fc;
