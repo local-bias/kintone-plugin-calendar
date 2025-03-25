@@ -4,9 +4,14 @@ import { deleteAllRecords, getAppId, getYuruChara } from '@konomi-app/kintone-ut
 import { produce } from 'immer';
 import { atom } from 'jotai';
 import { enqueueSnackbar } from 'notistack';
-import { completeCalendarEvent, getDefaultEndDate, getDefaultStartDate } from '../actions';
+import {
+  addNewRecord,
+  completeCalendarEvent,
+  getDefaultEndDate,
+  getDefaultStartDate,
+} from '../actions';
 import { dialogPropsAtom, dialogShownAtom } from './dialog';
-import { loadingAtom } from './kintone';
+import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from './kintone';
 import { displayingCategoriesAtom } from './sidebar';
 import { ComponentRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
@@ -100,6 +105,37 @@ export const handleTemporaryEventAddAtom = atom(null, (_, set) => {
   set(calendarEventsAtom, (current) => produce(current, (draft) => [...draft, completed]));
   set(dialogPropsAtom, { new: true, event: completed });
   set(dialogShownAtom, true);
+});
+
+/**
+ * カレンダーイベントをコピーして新規追加する
+ */
+export const handleCalendarEventCopyAtom = atom(null, async (get, set) => {
+  try {
+    set(loadingAtom, true);
+
+    const currentProps = get(dialogPropsAtom);
+    if (!currentProps.event.id) {
+      throw new Error('新規イベントをコピーすることはできません');
+    }
+
+    const condition = get(pluginConditionAtom);
+    const properties = await get(appPropertiesAtom);
+    const newEvent = await addNewRecord({
+      calendarEvent: completeCalendarEvent({
+        ...currentProps.event,
+        id: undefined,
+        title: `${currentProps.event.title} (コピー)`,
+      }),
+      condition: condition!,
+      properties,
+    });
+    set(calendarEventsAtom, (current) => [...current, newEvent]);
+    set(dialogShownAtom, false);
+    enqueueSnackbar('イベントのコピーしました', { variant: 'success' });
+  } finally {
+    set(loadingAtom, false);
+  }
 });
 
 export const handleCalendarEventDeleteAtom = atom(null, async (get, set) => {
