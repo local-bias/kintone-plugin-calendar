@@ -42,13 +42,13 @@ const StyledComponent = styled(Component)`
   background-color: #fff;
   color: hsl(var(--ribbit-foreground));
   border-color: hsl(var(--ribbit-border) / 0.7);
-  --fc-border-color: hsl(var(--ribbit-border) / 0.7);
 
   a {
     color: inherit;
     text-decoration: none;
   }
 
+  --fc-border-color: hsl(var(--ribbit-border) / 0.7);
   --fc-button-bg-color: #fff;
   --fc-button-hover-bg-color: #d2e3fc;
   --fc-button-active-bg-color: #d2e3fc;
@@ -100,11 +100,18 @@ const StyledComponent = styled(Component)`
       font-size: 12px !important;
       line-height: 1.5 !important;
     }
-    .fc-day.fc-day-sat {
-      background-color: #f1f8ff88 !important;
+
+    .fc-day {
+      &.fc-day-sat {
+        background-color: #f1f8ff88 !important;
+      }
+      &.fc-day-sun {
+        background-color: #fff1f288 !important;
+      }
     }
-    .fc-day.fc-day-sun {
-      background-color: #fff1f288 !important;
+
+    .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
+      min-height: 3em;
     }
   }
 
