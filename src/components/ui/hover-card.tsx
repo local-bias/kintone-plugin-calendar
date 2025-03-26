@@ -11,13 +11,14 @@ const HoverCardTrigger = HoverCardPrimitive.Trigger;
 const HoverCardContent = React.forwardRef<
   React.ElementRef<typeof HoverCardPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
->(({ className, align = 'center', sideOffset = 4, ...props }, ref) => (
+>(({ className, align = 'start', side = 'left', sideOffset = 4, ...props }, ref) => (
   <HoverCardPrimitive.Content
     ref={ref}
     align={align}
+    side={side}
     sideOffset={sideOffset}
     className={css`
-      z-index: 50;
+      z-index: 9999;
       width: 16rem;
       border-radius: 0.375rem;
       border: 1px solid hsl(var(--ribbit-border));
