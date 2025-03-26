@@ -1,34 +1,23 @@
+import { CalendarViewType } from '@/schema/calendar';
 import { derive } from 'jotai-derive';
-import { appPropertiesAtom, pluginConditionAtom } from './kintone';
+import { atomWithDefault } from 'jotai/utils';
+import { endFieldPropertyAtom, pluginConditionAtom, startFieldPropertyAtom } from './kintone';
 
-export const hasStartTimeAtom = derive(
-  [pluginConditionAtom, appPropertiesAtom],
-  (condition, properties) => {
-    if (!condition?.calendarEvent.startField) {
-      return false;
-    }
+export const hasStartTimeAtom = derive([startFieldPropertyAtom], (startField) => {
+  return startField?.type === 'DATETIME';
+});
 
-    const startField = properties[condition.calendarEvent.startField];
-    if (!startField) {
-      return false;
-    }
+export const hasEndTimeAtom = derive([endFieldPropertyAtom], (endField) => {
+  return endField?.type === 'DATETIME';
+});
 
-    return startField.type === 'DATETIME';
+export const isTimeSupportedAtom = derive(
+  [hasStartTimeAtom, hasEndTimeAtom],
+  (hasStartTime, hasEndTime) => {
+    return hasStartTime && hasEndTime;
   }
 );
 
-export const hasEndTimeAtom = derive(
-  [pluginConditionAtom, appPropertiesAtom],
-  (condition, properties) => {
-    if (!condition?.calendarEvent.endField) {
-      return false;
-    }
-
-    const endField = properties[condition.calendarEvent.endField];
-    if (!endField) {
-      return false;
-    }
-
-    return endField.type === 'DATETIME';
-  }
-);
+export const calendarGridType = atomWithDefault<CalendarViewType>((get) => {
+  return get(pluginConditionAtom)?.initialView ?? 'timeGridWeek';
+});
