@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { ViewTypeSchema } from './calendar';
+import { CalendarViewTypeSchema } from './calendar';
 
 export const PluginConditionV1Schema = z.object({
   viewId: z.string(),
-  initialView: ViewTypeSchema,
+  initialView: CalendarViewTypeSchema,
   enablesAllDay: z.boolean(),
   allDayOption: z.string(),
   enablesNote: z.boolean(),
@@ -25,7 +25,7 @@ export const PluginConfigV1Schema = z.object({
 
 export const PluginConditionV2Schema = z.object({
   viewId: z.string(),
-  initialView: ViewTypeSchema,
+  initialView: CalendarViewTypeSchema,
   enablesAllDay: z.boolean(),
   allDayOption: z.string(),
   enablesNote: z.boolean(),
@@ -71,7 +71,7 @@ const PluginCalendarEventV3Schema = z.object({
 export const PluginConditionV3Schema = z.object({
   // ------ 継続 ------
   viewId: z.string(),
-  initialView: ViewTypeSchema,
+  initialView: CalendarViewTypeSchema,
   enablesAllDay: z.boolean(),
   allDayOption: z.string(),
   enablesNote: z.boolean(),
@@ -112,7 +112,7 @@ export const PluginConfigV3Schema = z.object({
 
 export const PluginConditionV4Schema = z.object({
   viewId: z.string(),
-  initialView: ViewTypeSchema,
+  initialView: CalendarViewTypeSchema,
   enablesAllDay: z.boolean(),
   allDayOption: z.string(),
   enablesNote: z.boolean(),

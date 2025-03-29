@@ -9,7 +9,7 @@ import { z } from 'zod';
  * - timeGridFiveDay: 5日表示
  * - timeGridThreeDay: 3日表示
  */
-export const VIEW_TYPES = [
+export const CALENDAR_VIEW_TYPES = [
   'dayGridMonth',
   'timeGridWeek',
   'timeGridDay',
@@ -18,6 +18,6 @@ export const VIEW_TYPES = [
 ] as const;
 
 // 配列から型を作成
-export type ViewType = (typeof VIEW_TYPES)[number];
+export type CalendarViewType = (typeof CALENDAR_VIEW_TYPES)[number];
 
-export const ViewTypeSchema = z.enum(VIEW_TYPES);
+export const CalendarViewTypeSchema = z.enum(CALENDAR_VIEW_TYPES);
