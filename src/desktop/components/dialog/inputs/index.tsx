@@ -5,6 +5,7 @@ import Category from './category';
 import Note from './note';
 import StartEnd from './start-end';
 import Title from './title';
+import DialogAllDayForm from './allday';
 
 const Component: FCX = ({ className }) => (
   <div className={className}>
@@ -12,6 +13,7 @@ const Component: FCX = ({ className }) => (
       <Title />
     </div>
     <StartEnd />
+    <DialogAllDayForm />
     <Note />
     <Suspense fallback={<Skeleton variant='text' />}>
       <Category />

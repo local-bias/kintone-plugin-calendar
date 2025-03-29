@@ -215,35 +215,6 @@ const getForegroundColor = (backgroundColor: string) => {
   }
 };
 
-const getEventForegroundColor = (
-  value: kintoneAPI.RecordData[string]['value'] | undefined,
-  condition: PluginCondition,
-  properties: kintoneAPI.FieldProperties
-) => {
-  const { colors } = condition;
-  if (!value) {
-    return getForegroundColor(colors[0]);
-  }
-
-  const keyProperty: kintoneAPI.FieldProperty | undefined =
-    properties[condition.calendarEvent.categoryField];
-  if (
-    keyProperty?.type === 'CHECK_BOX' ||
-    keyProperty?.type === 'DROP_DOWN' ||
-    keyProperty?.type === 'RADIO_BUTTON'
-  ) {
-    const index = getSortedOptions(keyProperty.options).findIndex(
-      (option) => option.label === value
-    );
-    if (index === -1) {
-      return colors[0];
-    }
-    return getForegroundColor(colors[index % colors.length]);
-  }
-
-  return getForegroundColor(colors[0]);
-};
-
 const getEventBackgroundColor = (
   value: kintoneAPI.RecordData[string]['value'] | undefined,
   condition: PluginCondition,
@@ -281,7 +252,7 @@ export const getEventColors = (params: {
   const { value, condition, properties } = params;
 
   const background = getEventBackgroundColor(value, condition, properties);
-  const foreground = getEventForegroundColor(value, condition, properties);
+  const foreground = getForegroundColor(background);
 
   return {
     color: `${foreground}aa`,

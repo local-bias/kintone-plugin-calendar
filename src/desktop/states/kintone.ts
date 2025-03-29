@@ -31,6 +31,26 @@ export const appPropertiesAtom = atom<Promise<kintoneAPI.FieldProperties>>(async
   return filtered;
 });
 
+export const startFieldPropertyAtom = derive(
+  [appPropertiesAtom, pluginConditionAtom],
+  (formFields, pluginCondition) => {
+    if (!pluginCondition?.calendarEvent.startField) {
+      return null;
+    }
+    return formFields[pluginCondition.calendarEvent.startField];
+  }
+);
+
+export const endFieldPropertyAtom = derive(
+  [appPropertiesAtom, pluginConditionAtom],
+  (formFields, pluginCondition) => {
+    if (!pluginCondition?.calendarEvent.endField) {
+      return null;
+    }
+    return formFields[pluginCondition.calendarEvent.endField];
+  }
+);
+
 export const categoryFieldPropertyAtom = derive(
   [appPropertiesAtom, pluginConditionAtom],
   (formFields, pluginCondition) => {

@@ -47,6 +47,17 @@ export const dialogEventNoteAtom = atom(
   }
 );
 
+export const dialogAllDayAtom = atom(
+  (get) => get(dialogEventAtom).allDay,
+  (get, set, newValue: SetStateAction<boolean>) => {
+    set(dialogEventAtom, (current) =>
+      produce(current, (draft) => {
+        draft.allDay = typeof newValue === 'function' ? newValue(!!draft.allDay) : newValue;
+      })
+    );
+  }
+);
+
 export const handleDialogSubmitAtom = atom(null, async (get, set) => {
   set(loadingAtom, true);
   try {
