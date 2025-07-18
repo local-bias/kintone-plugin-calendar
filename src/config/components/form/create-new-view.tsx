@@ -3,7 +3,7 @@ import { loadingAtom, loadingCountAtom, viewIdState } from '@/config/states/plug
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { VIEW_ROOT_ID } from '@/lib/static';
 import { getAppId, getViews, kintoneAPI, updateViews } from '@konomi-app/kintone-utilities';
-import { LoadingButton } from '@mui/lab';
+import { Button } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { enqueueSnackbar } from 'notistack';
 import { FC } from 'react';
@@ -66,15 +66,9 @@ const Component: FC = () => {
   const onClick = useSetAtom(handleCreateNewViewAtom);
 
   return (
-    <LoadingButton
-      variant='outlined'
-      color='primary'
-      size='large'
-      onClick={onClick}
-      loading={loading}
-    >
+    <Button variant='outlined' color='primary' size='large' onClick={onClick} loading={loading}>
       一覧を新規作成
-    </LoadingButton>
+    </Button>
   );
 };
 

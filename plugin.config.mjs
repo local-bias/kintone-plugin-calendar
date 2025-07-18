@@ -23,17 +23,26 @@ export default /** @type { const } */ ({
   manifest: {
     base: {
       manifest_version: 1,
-      version: '0.17.0',
+      version: '0.18.0',
       type: 'APP',
       name: {
         en: 'calendar plugin',
         ja: 'カレンダープラグイン',
         zh: '日历插件',
+        'zh-TW': '日曆插件',
+        es: 'plugin de calendario',
+        'pt-BR': 'plugin de calendário',
+        th: 'ปลั๊กอินปฏิทิน',
       },
       description: {
         en: 'A calendar plugin that can be used as a scheduler using the open source library fullcalendar',
         ja: 'オープンソースライブラリであるfullcalendarを使用し、スケジューラーとして利用できるカレンダーを実装します',
         zh: '使用开源库fullcalendar，实现可用作调度程序的日历',
+        'zh-TW': '使用開源庫fullcalendar，實現可用作調度程序的日曆',
+        es: 'Un plugin de calendario que se puede utilizar como programador utilizando la biblioteca de código abierto fullcalendar',
+        'pt-BR':
+          'Um plugin de calendário que pode ser usado como um agendador usando a biblioteca de código aberto fullcalendar',
+        th: 'ปลั๊กอินปฏิทินที่สามารถใช้เป็นตัวจัดกำหนดการโดยใช้ไลบรารีโอเพนซอร์ส fullcalendar',
       },
       icon: 'icon.png',
       homepage_url: { ja: hp, en: hp },

@@ -18,6 +18,6 @@ export const isTimeSupportedAtom = derive(
   }
 );
 
-export const calendarGridType = atomWithDefault<CalendarViewType>((get) => {
+export const calendarGridTypeAtom = atomWithDefault<CalendarViewType>((get) => {
   return get(pluginConditionAtom)?.initialView ?? 'timeGridWeek';
 });

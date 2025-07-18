@@ -1,5 +1,4 @@
 import SaveIcon from '@mui/icons-material/Save';
-import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, DialogActions } from '@mui/material';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { FC } from 'react';
@@ -15,7 +14,7 @@ const Component: FC<{ onDialogClose: () => void }> = ({ onDialogClose }) => {
       <Button color='inherit' variant='contained' onClick={onDialogClose}>
         キャンセル
       </Button>
-      <LoadingButton
+      <Button
         loading={loading}
         loadingPosition='start'
         startIcon={<SaveIcon />}
@@ -23,7 +22,7 @@ const Component: FC<{ onDialogClose: () => void }> = ({ onDialogClose }) => {
         variant='contained'
       >
         決定
-      </LoadingButton>
+      </Button>
     </DialogActions>
   );
 };
