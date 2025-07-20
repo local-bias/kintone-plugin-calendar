@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { atom } from 'jotai';
 import { SetStateAction } from 'react';
-import { addNewRecord, reschedule } from '../actions';
+import { addNewRecord, reschedule, dateInputToDateTime, dateTimeToDateInput } from '../actions';
 import { calendarEventsAtom, PluginCalendarEvent } from './calendar';
 import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from './kintone';
 
@@ -76,9 +76,18 @@ export const handleDialogSubmitAtom = atom(null, async (get, set) => {
     const condition = await get(pluginConditionAtom);
     const properties = await get(appPropertiesAtom);
 
+    // 全日イベントの場合、FullCalendarが期待する形式（終了日が翌日の0時0分）に調整
+    const adjustedEvent = produce(currentProps.event, (draft) => {
+      if (draft.allDay && draft.end) {
+        const endDateTime = dateInputToDateTime(draft.end);
+        const adjustedEndDateTime = endDateTime.plus({ days: 1 });
+        draft.end = dateTimeToDateInput(adjustedEndDateTime);
+      }
+    });
+
     if (currentProps.new) {
       const newEvent = await addNewRecord({
-        calendarEvent: currentProps.event,
+        calendarEvent: adjustedEvent,
         condition: condition!,
         properties,
       });
@@ -95,14 +104,14 @@ export const handleDialogSubmitAtom = atom(null, async (get, set) => {
       );
     } else {
       await reschedule({
-        calendarEvent: currentProps.event,
+        calendarEvent: adjustedEvent,
         condition: condition!,
         properties,
       });
       set(calendarEventsAtom, (current) =>
         produce(current, (draft) => {
           const index = draft.findIndex((event) => event.id === currentProps.event.id);
-          draft[index] = currentProps.event;
+          draft[index] = adjustedEvent;
         })
       );
     }

@@ -72,11 +72,20 @@ export const handleCalendarDateSelectAtom = atom(null, (_, set, props: DateSelec
 
   const temporaryKey = Math.random().toString();
 
+  // 全日イベントの場合、FullCalendarは終了日を次の日の0時0分として扱うため、
+  // 実際の選択範囲に合わせて終了日を1日前にする
+  let adjustedEnd = props.end;
+  if (props.allDay && props.end) {
+    const endDate = new Date(props.end);
+    endDate.setDate(endDate.getDate() - 1);
+    adjustedEnd = endDate;
+  }
+
   const completed = completeCalendarEvent({
     id: temporaryKey,
     allDay: props.allDay,
     start: props.start,
-    end: props.end,
+    end: adjustedEnd,
     __quickSearch: '',
   });
 
