@@ -1,4 +1,4 @@
-import { GUEST_SPACE_ID } from '@/lib/global';
+import { GUEST_SPACE_ID, isDev } from '@/lib/global';
 import { DateSelectArg, EventInput } from '@fullcalendar/core';
 import { deleteAllRecords, getAppId, getYuruChara } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
@@ -67,7 +67,9 @@ export const textFilteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) 
   });
 });
 
-export const handleCalendarDateSelectAtom = atom(null, (get, set, props: DateSelectArg) => {
+export const handleCalendarDateSelectAtom = atom(null, (_, set, props: DateSelectArg) => {
+  isDev && console.info('📅 日付が選択されました', props);
+
   const temporaryKey = Math.random().toString();
 
   const completed = completeCalendarEvent({
