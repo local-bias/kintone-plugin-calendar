@@ -11,6 +11,17 @@ export const dialogPropsAtom = atom<{ new: boolean; event: PluginCalendarEvent }
   new: false,
   event: {},
 });
+
+export const handleDialogCloseAtom = atom(null, async (get, set) => {
+  const currentProps = await get(dialogPropsAtom);
+
+  if (currentProps.new) {
+    set(calendarEventsAtom, (current) => current.filter(({ id }) => id !== currentProps.event.id));
+  }
+  set(dialogShownAtom, false);
+  set(dialogPropsAtom, { new: false, event: {} });
+});
+
 // export const dialogEventAtom = focusAtom(dialogPropsAtom, (o) => o.prop('event'));
 export const dialogEventAtom = atom(
   (get) => get(dialogPropsAtom).event,
