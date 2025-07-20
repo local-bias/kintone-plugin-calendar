@@ -1,4 +1,4 @@
-import { GUEST_SPACE_ID } from '@/lib/global';
+import { GUEST_SPACE_ID, isDev } from '@/lib/global';
 import { DateSelectArg, EventInput } from '@fullcalendar/core';
 import { deleteAllRecords, getAppId, getYuruChara } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
@@ -67,14 +67,25 @@ export const textFilteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) 
   });
 });
 
-export const handleCalendarDateSelectAtom = atom(null, (get, set, props: DateSelectArg) => {
+export const handleCalendarDateSelectAtom = atom(null, (_, set, props: DateSelectArg) => {
+  isDev && console.info('📅 日付が選択されました', props);
+
   const temporaryKey = Math.random().toString();
+
+  // 全日イベントの場合、FullCalendarは終了日を次の日の0時0分として扱うため、
+  // 実際の選択範囲に合わせて終了日を1日前にする
+  let adjustedEnd = props.end;
+  if (props.allDay && props.end) {
+    const endDate = new Date(props.end);
+    endDate.setDate(endDate.getDate() - 1);
+    adjustedEnd = endDate;
+  }
 
   const completed = completeCalendarEvent({
     id: temporaryKey,
     allDay: props.allDay,
     start: props.start,
-    end: props.end,
+    end: adjustedEnd,
     __quickSearch: '',
   });
 
