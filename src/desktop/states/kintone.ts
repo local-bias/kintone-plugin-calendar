@@ -4,7 +4,7 @@ import { getSortedOptions } from '@/lib/utils';
 import { PluginCondition } from '@/schema/plugin-config';
 import { getAppId, getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { atom } from 'jotai';
-import { derive } from 'jotai-derive';
+import { eagerAtom } from 'jotai-eager';
 
 export const pluginConditionAtom = atom<PluginCondition | null>(null);
 
@@ -31,37 +31,37 @@ export const appPropertiesAtom = atom<Promise<kintoneAPI.FieldProperties>>(async
   return filtered;
 });
 
-export const startFieldPropertyAtom = derive(
-  [appPropertiesAtom, pluginConditionAtom],
-  (formFields, pluginCondition) => {
-    if (!pluginCondition?.calendarEvent.startField) {
-      return null;
-    }
-    return formFields[pluginCondition.calendarEvent.startField];
-  }
-);
+export const startFieldPropertyAtom = eagerAtom((get) => {
+  const formFields = get(appPropertiesAtom);
+  const pluginCondition = get(pluginConditionAtom);
 
-export const endFieldPropertyAtom = derive(
-  [appPropertiesAtom, pluginConditionAtom],
-  (formFields, pluginCondition) => {
-    if (!pluginCondition?.calendarEvent.endField) {
-      return null;
-    }
-    return formFields[pluginCondition.calendarEvent.endField];
+  if (!pluginCondition?.calendarEvent.startField) {
+    return null;
   }
-);
+  return formFields[pluginCondition.calendarEvent.startField];
+});
 
-export const categoryFieldPropertyAtom = derive(
-  [appPropertiesAtom, pluginConditionAtom],
-  (formFields, pluginCondition) => {
-    if (!pluginCondition?.calendarEvent.categoryField) {
-      return null;
-    }
-    return formFields[pluginCondition.calendarEvent.categoryField];
+export const endFieldPropertyAtom = eagerAtom((get) => {
+  const pluginCondition = get(pluginConditionAtom);
+  if (!pluginCondition?.calendarEvent.endField) {
+    return null;
   }
-);
+  const formFields = get(appPropertiesAtom);
+  return formFields[pluginCondition.calendarEvent.endField] ?? null;
+});
 
-export const calendarEventCategoryAtom = derive([categoryFieldPropertyAtom], (categoryProperty) => {
+export const categoryFieldPropertyAtom = eagerAtom((get) => {
+  const pluginCondition = get(pluginConditionAtom);
+  if (!pluginCondition?.calendarEvent.categoryField) {
+    return null;
+  }
+  const formFields = get(appPropertiesAtom);
+  return formFields[pluginCondition.calendarEvent.categoryField] ?? null;
+});
+
+export const calendarEventCategoryAtom = eagerAtom((get) => {
+  const categoryProperty = get(categoryFieldPropertyAtom);
+
   if (
     !categoryProperty ||
     (categoryProperty.type !== 'CHECK_BOX' &&
