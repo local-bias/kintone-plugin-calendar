@@ -34,7 +34,7 @@ const Container: FC = () => (
       <Suspense fallback={<LoaderWithLabel label='画面の描画を待機しています' />}>
         <PluginErrorBoundary>
           <Announcement />
-          <SnackbarProvider maxSnack={1}>
+          <SnackbarProvider maxSnack={1} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
             <Suspense fallback={<LoaderWithLabel label='設定情報を取得しています' />}>
               <PluginLayout>
                 <Component />
