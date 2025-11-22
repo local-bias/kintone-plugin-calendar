@@ -2,11 +2,10 @@ import AddIcon from '@mui/icons-material/Add';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import { Fab, Tooltip } from '@mui/material';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { FC } from 'react';
 import { handleTemporaryEventAddAtom } from '../../states/calendar';
 import { loadingAtom } from '../../states/kintone';
 
-const Component: FC = () => {
+export default function FabContainer() {
   const loading = useAtomValue(loadingAtom);
   const handleEventAdd = useSetAtom(handleTemporaryEventAddAtom);
 
@@ -25,6 +24,4 @@ const Component: FC = () => {
       </Tooltip>
     </div>
   );
-};
-
-export default Component;
+}

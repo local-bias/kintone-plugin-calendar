@@ -1,21 +1,21 @@
 import { PluginErrorBoundary } from '@/lib/components/error-boundary';
 import { store } from '@/lib/store';
+import { cn } from '@/lib/utils';
 import styled from '@emotion/styled';
 import { LoaderWithLabel } from '@konomi-app/ui-react';
 import { jaJP } from '@mui/material/locale';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'jotai';
 import { SnackbarProvider } from 'notistack';
-import { FC, FCX, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useInitialize } from '../hooks/use-initialize';
+import { useIsMobile } from '../hooks/use-mobile';
 import Calendar from './calendar';
 import Dialog from './dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
-import { useIsMobile } from '../hooks/use-mobile';
-import { cn } from '@/lib/utils';
 
-const Component: FCX = ({ className }) => {
+function DesktopLayout({ className }: { className?: string; }) {
   useInitialize();
   const isMobile = useIsMobile();
 
@@ -35,9 +35,9 @@ const Component: FCX = ({ className }) => {
       <Fab />
     </>
   );
-};
+}
 
-const StyledComponent = styled(Component)`
+const StyledDesktopLayout = styled(DesktopLayout)`
   font-family: 'Yu Gothic Medium', YuGothic, 'Noto Sans JP', メイリオ;
   background-color: #fff;
   color: hsl(var(--ribbit-foreground));
@@ -133,18 +133,18 @@ const StyledComponent = styled(Component)`
   }
 `;
 
-const Container: FC = () => (
-  <Provider store={store}>
-    <PluginErrorBoundary>
-      <Suspense fallback={<LoaderWithLabel label='読み込み中' />}>
-        <SnackbarProvider maxSnack={1}>
-          <ThemeProvider theme={createTheme({}, jaJP)}>
-            <StyledComponent />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </Suspense>
-    </PluginErrorBoundary>
-  </Provider>
-);
-
-export default Container;
+export default function DesktopApp() {
+  return (
+    <Provider store={store}>
+      <PluginErrorBoundary>
+        <Suspense fallback={<LoaderWithLabel label='読み込み中' />}>
+          <SnackbarProvider maxSnack={1}>
+            <ThemeProvider theme={createTheme({}, jaJP)}>
+              <StyledDesktopLayout />
+            </ThemeProvider>
+          </SnackbarProvider>
+        </Suspense>
+      </PluginErrorBoundary>
+    </Provider>
+  );
+}
