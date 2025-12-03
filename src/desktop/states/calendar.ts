@@ -15,6 +15,7 @@ import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from './kintone';
 import { displayingCategoriesAtom } from './sidebar';
 import { ComponentRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
+import { extractErrorMessage } from '@/lib/error';
 
 export type PluginCalendarEvent = EventInput & {
   note?: string;
@@ -169,6 +170,11 @@ export const handleCalendarEventDeleteAtom = atom(null, async (get, set) => {
       debug: process.env.NODE_ENV === 'development',
     });
     enqueueSnackbar('レコードの削除が完了しました', { variant: 'success' });
+  } catch (error) {
+    console.error(error);
+    enqueueSnackbar(`レコードの削除に失敗しました: ${extractErrorMessage(error)}`, {
+      variant: 'error',
+    });
   } finally {
     set(loadingAtom, false);
   }

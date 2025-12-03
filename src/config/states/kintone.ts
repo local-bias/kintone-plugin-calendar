@@ -1,7 +1,7 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { getAppId, getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { atom } from 'jotai';
-import { derive } from 'jotai-derive';
+import { eagerAtom } from 'jotai-eager';
 import { calendarAllDayState } from './plugin';
 
 const currentAppIdAtom = atom<number>(() => {
@@ -26,7 +26,8 @@ export const appFieldsAtom = atom<Promise<kintoneAPI.FieldProperty[]>>(async (ge
   return values.sort((a, b) => a.label.localeCompare(b.label, 'ja'));
 });
 
-export const dateTimeFieldsAtom = derive([appFieldsAtom], (fields) => {
+export const dateTimeFieldsAtom = eagerAtom((get) => {
+  const fields = get(appFieldsAtom);
   const types: kintoneAPI.FieldPropertyType[] = ['DATETIME', 'DATE'];
 
   return fields.filter((field) => types.includes(field.type)) as (
@@ -40,7 +41,8 @@ type TextFieldProperty =
   | kintoneAPI.property.MultiLineText
   | kintoneAPI.property.RichText;
 
-export const stringFieldsAtom = derive([appFieldsAtom], (fields) => {
+export const stringFieldsAtom = eagerAtom((get) => {
+  const fields = get(appFieldsAtom);
   const types: kintoneAPI.FieldPropertyType[] = [
     'SINGLE_LINE_TEXT',
     'MULTI_LINE_TEXT',
@@ -50,11 +52,13 @@ export const stringFieldsAtom = derive([appFieldsAtom], (fields) => {
   return fields.filter((field) => types.includes(field.type)) as TextFieldProperty[];
 });
 
-export const checkboxFieldsAtom = derive([appFieldsAtom], (fields) => {
+export const checkboxFieldsAtom = eagerAtom((get) => {
+  const fields = get(appFieldsAtom);
   return fields.filter((field) => field.type === 'CHECK_BOX') as kintoneAPI.property.CheckBox[];
 });
 
-export const selectableFieldsAtom = derive([appFieldsAtom], (fields) => {
+export const selectableFieldsAtom = eagerAtom((get) => {
+  const fields = get(appFieldsAtom);
   const types: kintoneAPI.FieldPropertyType[] = ['CHECK_BOX', 'DROP_DOWN', 'RADIO_BUTTON'];
 
   return fields.filter((field) => types.includes(field.type)) as (
@@ -72,18 +76,18 @@ export const customViewsAtom = atom((get) => {
   return Object.fromEntries(filtered);
 });
 
-export const alldayOptionsAtom = derive(
-  [calendarAllDayState, checkboxFieldsAtom],
-  (allDayField, checkboxFields) => {
-    if (!allDayField) {
-      return [];
-    }
+export const alldayOptionsAtom = eagerAtom((get) => {
+  const allDayField = get(calendarAllDayState);
+  const checkboxFields = get(checkboxFieldsAtom);
 
-    const field = checkboxFields.find((field) => field.code === allDayField);
-    if (!field) {
-      return [];
-    }
-
-    return Object.keys(field.options);
+  if (!allDayField) {
+    return [];
   }
-);
+
+  const field = checkboxFields.find((field) => field.code === allDayField);
+  if (!field) {
+    return [];
+  }
+
+  return Object.keys(field.options);
+});

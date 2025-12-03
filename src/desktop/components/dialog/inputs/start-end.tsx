@@ -7,22 +7,27 @@ import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { DateTime } from 'luxon';
 import { FC } from 'react';
 import { dialogAllDayAtom, dialogPropsAtom } from '../../../states/dialog';
+import { PickerValue } from '@mui/x-date-pickers/internals';
 
-const handleStartChangeAtom = atom(null, async (get, set, date: DateTime | null) => {
+const handleStartChangeAtom = atom(null, async (get, set, date: PickerValue) => {
   set(dialogPropsAtom, (current) =>
     produce(current, (draft) => {
-      if (date) {
+      if (date instanceof DateTime) {
         draft.event.start = dateTimeToDateInput(date);
+      } else {
+        draft.event.start = undefined;
       }
     })
   );
 });
 
-const handleEndChangeAtom = atom(null, async (get, set, date: DateTime | null) => {
+const handleEndChangeAtom = atom(null, async (get, set, date: PickerValue) => {
   set(dialogPropsAtom, (current) =>
     produce(current, (draft) => {
-      if (date) {
+      if (date instanceof DateTime) {
         draft.event.end = dateTimeToDateInput(date);
+      } else {
+        draft.event.end = undefined;
       }
     })
   );

@@ -4,6 +4,8 @@ import { SetStateAction } from 'react';
 import { addNewRecord, reschedule, dateInputToDateTime, dateTimeToDateInput } from '../actions';
 import { calendarEventsAtom, PluginCalendarEvent } from './calendar';
 import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from './kintone';
+import { enqueueSnackbar } from 'notistack';
+import { extractErrorMessage } from '@/lib/error';
 
 export const dialogShownAtom = atom<boolean>(false);
 
@@ -120,6 +122,9 @@ export const handleDialogSubmitAtom = atom(null, async (get, set) => {
     set(dialogPropsAtom, { new: false, event: {} });
   } catch (error) {
     console.error(error);
+    enqueueSnackbar(`レコードの保存に失敗しました: ${extractErrorMessage(error)}`, {
+      variant: 'error',
+    });
   } finally {
     set(loadingAtom, false);
   }

@@ -1,20 +1,15 @@
-import React, { FCX } from 'react';
+import { LocalizationProvider, DatePicker as MUIDatePicker } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import {
-  DatePicker as MUIDatePicker,
-  DatePickerProps,
-  LocalizationProvider,
-} from '@mui/x-date-pickers';
-import { DateTime } from 'luxon';
+import { ComponentProps } from 'react';
 
-type Props = Omit<DatePickerProps<DateTime>, 'renderInput' | 'mask'>;
+type Props = Omit<ComponentProps<typeof MUIDatePicker>, 'renderInput' | 'mask'>;
 
-const Component: FCX<Props> = ({ className, ...others }) => (
-  <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={'ja'}>
-    <div {...{ className }}>
-      <MUIDatePicker {...others} />
-    </div>
-  </LocalizationProvider>
-);
-
-export const DatePicker = Component;
+export function DatePicker({ className, ...others }: Props) {
+  return (
+    <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={'ja'}>
+      <div {...{ className }}>
+        <MUIDatePicker {...others} />
+      </div>
+    </LocalizationProvider>
+  );
+}
