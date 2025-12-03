@@ -1,4 +1,5 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { htmlToMarkdown, markdownToHtml } from '@/lib/html-markdown-converter';
 import { getSortedOptions } from '@/lib/utils';
 import { PluginCondition } from '@/schema/plugin-config';
 import { DateInput } from '@fullcalendar/core';
@@ -47,11 +48,11 @@ export const completeCalendarEvent = (eventInput: PluginCalendarEvent) => {
   });
 };
 
-export const getKintoneRecordFromCalendarEvent = (params: {
+export const getKintoneRecordFromCalendarEvent = async (params: {
   calendarEvent: PluginCalendarEvent;
   condition: PluginCondition;
   properties: kintoneAPI.FieldProperties;
-}) => {
+}): Promise<AddRecordParams['record']> => {
   const { calendarEvent, condition, properties } = params;
   const { calendarEvent: calendarConfig } = condition;
   let start = calendarEvent.start ? convertCalendarDateIntoKintoneDate(calendarEvent.start) : null;
@@ -84,7 +85,13 @@ export const getKintoneRecordFromCalendarEvent = (params: {
     };
   }
   if (condition.enablesNote && calendarConfig.noteField) {
-    record[calendarConfig.noteField] = { value: calendarEvent.note ?? '' };
+    const noteProperty = properties[calendarConfig.noteField];
+    const isRichText = noteProperty?.type === 'RICH_TEXT';
+    // リッチテキストフィールドの場合のみMarkdown→HTML変換を実施
+    const noteValue = isRichText
+      ? await markdownToHtml(calendarEvent.note ?? '')
+      : calendarEvent.note ?? '';
+    record[calendarConfig.noteField] = { value: noteValue };
   }
   if (calendarConfig.categoryField) {
     record[calendarConfig.categoryField] = { value: calendarEvent.category ?? '' };
@@ -98,11 +105,11 @@ export const getKintoneRecordFromCalendarEvent = (params: {
   return record;
 };
 
-export const getCalendarEventFromKintoneRecord = (params: {
+export const getCalendarEventFromKintoneRecord = async (params: {
   condition: PluginCondition;
   properties: kintoneAPI.FieldProperties;
   record: kintoneAPI.RecordData;
-}): PluginCalendarEvent => {
+}): Promise<PluginCalendarEvent> => {
   const { condition, properties, record } = params;
 
   const startProperty = properties[condition.calendarEvent.startField];
@@ -114,17 +121,23 @@ export const getCalendarEventFromKintoneRecord = (params: {
     properties,
   });
 
+  // リッチテキストフィールドの場合のみHTML→Markdown変換を実施
+  const noteProperty = properties[condition.calendarEvent.noteField];
+  const isRichText = noteProperty?.type === 'RICH_TEXT';
+  const rawNote = record[condition.calendarEvent.noteField]?.value as string | undefined;
+  const noteValue = rawNote && isRichText ? await htmlToMarkdown(rawNote) : rawNote;
+
   const calendarEvent: PluginCalendarEvent = {
     id: record.$id.value as string | undefined,
     start: record[condition.calendarEvent.startField]?.value as string | undefined,
     end: record[condition.calendarEvent.endField]?.value as string | undefined,
     title: record[condition.calendarEvent.inputTitleField]?.value as string | undefined,
-    note: record[condition.calendarEvent.noteField]?.value as string | undefined,
+    note: noteValue,
     category: record[condition.calendarEvent.categoryField]?.value as string | undefined,
     __quickSearch: getYuruChara(
       [
         record[condition.calendarEvent.inputTitleField]?.value,
-        record[condition.calendarEvent.noteField]?.value,
+        noteValue,
         record[condition.calendarEvent.categoryField]?.value,
       ]
         .filter(Boolean)
@@ -158,7 +171,7 @@ export const addNewRecord = async (params: {
 
   const newEvent = { ...calendarEvent, title: calendarEvent.title || '（タイトルなし）' };
 
-  const record = getKintoneRecordFromCalendarEvent({
+  const record = await getKintoneRecordFromCalendarEvent({
     calendarEvent: newEvent,
     condition,
     properties,
@@ -189,7 +202,7 @@ export const reschedule = async (params: {
   }
 
   const app = getAppId()!;
-  const record = getKintoneRecordFromCalendarEvent({ calendarEvent, condition, properties });
+  const record = await getKintoneRecordFromCalendarEvent({ calendarEvent, condition, properties });
   return updateRecord({
     app,
     id,

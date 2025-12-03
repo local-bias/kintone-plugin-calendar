@@ -12,6 +12,24 @@ export const loadingAtom = atom<boolean>(false);
 
 export const kintoneRecordsAtom = atom<kintoneAPI.RecordData[]>([]);
 
+export const memoFieldPropertyAtom = eagerAtom((get) => {
+  const formFields = get(appPropertiesAtom);
+  const pluginCondition = get(pluginConditionAtom);
+
+  if (!pluginCondition?.calendarEvent.noteField) {
+    return null;
+  }
+  return formFields[pluginCondition.calendarEvent.noteField];
+});
+
+export const richTextModeAtom = eagerAtom((get) => {
+  const memoFieldProperty = get(memoFieldPropertyAtom);
+  if (!memoFieldProperty) {
+    return false;
+  }
+  return memoFieldProperty.type === 'RICH_TEXT';
+});
+
 export const appPropertiesAtom = atom<Promise<kintoneAPI.FieldProperties>>(async () => {
   const { properties } = await getFormFields({
     app: getAppId()!,

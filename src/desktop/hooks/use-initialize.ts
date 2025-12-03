@@ -27,9 +27,11 @@ const handleRecordsInitializeAtom = atom(null, async (get, set, condition: Plugi
 
     const properties = await get(appPropertiesAtom);
 
-    const onStep: Parameters<typeof getAllRecordsWithId>[0]['onStep'] = ({ records }) => {
-      const calendarEvents = records.map((record) =>
-        getCalendarEventFromKintoneRecord({ condition, properties, record })
+    const onStep: Parameters<typeof getAllRecordsWithId>[0]['onStep'] = async ({ records }) => {
+      const calendarEvents = await Promise.all(
+        records.map((record) =>
+          getCalendarEventFromKintoneRecord({ condition, properties, record })
+        )
       );
       set(calendarEventsAtom, calendarEvents);
     };

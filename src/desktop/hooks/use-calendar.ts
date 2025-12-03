@@ -6,6 +6,7 @@ import { calendarEventsAtom } from '../states/calendar';
 import { dialogPropsAtom, dialogShownAtom } from '../states/dialog';
 import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from '../states/kintone';
 import { isDev } from '@/lib/global';
+import { extractErrorMessage } from '@/lib/error';
 
 const handleCalendarEventDeleteAtom = atom(null, (get, set, props: EventRemoveArg) => {
   console.info('📅 イベントが削除されました', props);
@@ -65,6 +66,11 @@ const handleCalendarEventChangeAtom = atom(null, async (get, set, props: EventCh
       properties,
     });
     isDev && console.info('レコードを更新しました');
+  } catch (error) {
+    console.error(error);
+    enqueueSnackbar(`レコードの更新に失敗しました: ${extractErrorMessage(error)}`, {
+      variant: 'error',
+    });
   } finally {
     set(loadingAtom, false);
   }
