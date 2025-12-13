@@ -1,15 +1,16 @@
+import { t } from '@/lib/i18n-plugin';
 import { PluginCondition } from '@/schema/plugin-config';
 import { MenuItem, TextField } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import React, { FC } from 'react';
 import { initialViewState } from '../../states/plugin';
 
-const VIEW_LIST: { label: string; viewType: PluginCondition['initialView'] }[] = [
-  { label: '日単位、１ヶ月のカレンダー', viewType: 'dayGridMonth' },
-  { label: '時間単位、１週間のカレンダー', viewType: 'timeGridWeek' },
-  { label: '時間単位、5日間のカレンダー', viewType: 'timeGridFiveDay' },
-  { label: '時間単位、3日のカレンダー', viewType: 'timeGridThreeDay' },
-  { label: '時間単位、１日のカレンダー', viewType: 'timeGridDay' },
+const VIEW_LIST: { labelKey: string; viewType: PluginCondition['initialView']; }[] = [
+  { labelKey: 'config.initialView.dayGridMonth', viewType: 'dayGridMonth' },
+  { labelKey: 'config.initialView.timeGridWeek', viewType: 'timeGridWeek' },
+  { labelKey: 'config.initialView.timeGridFiveDay', viewType: 'timeGridFiveDay' },
+  { labelKey: 'config.initialView.timeGridThreeDay', viewType: 'timeGridThreeDay' },
+  { labelKey: 'config.initialView.timeGridDay', viewType: 'timeGridDay' },
 ];
 
 const handleViewChangeAtom = atom(null, (_, set, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,14 +24,14 @@ const Container: FC = () => {
   return (
     <TextField
       select
-      label='カレンダーの種類'
+      label={t('config.form.calendarType')}
       value={initialView}
       onChange={onChange}
       sx={{ width: '400px' }}
     >
-      {VIEW_LIST.map(({ label, viewType }) => (
+      {VIEW_LIST.map(({ labelKey, viewType }) => (
         <MenuItem key={viewType} value={viewType}>
-          {label}
+          {t(labelKey as any)}
         </MenuItem>
       ))}
     </TextField>
