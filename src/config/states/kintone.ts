@@ -1,4 +1,5 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { t } from '@/lib/i18n-plugin';
 import { getAppId, getFormFields, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { atom } from 'jotai';
 import { eagerAtom } from 'jotai-eager';
@@ -7,7 +8,7 @@ import { calendarAllDayState } from './plugin';
 const currentAppIdAtom = atom<number>(() => {
   const appId = getAppId();
   if (!appId) {
-    throw new Error('アプリIDが取得できませんでした');
+    throw new Error(t('config.error.appIdNotFound'));
   }
   return appId;
 });

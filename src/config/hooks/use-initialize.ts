@@ -1,4 +1,5 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { t } from '@/lib/i18n-plugin';
 import { getAppId, getViews } from '@konomi-app/kintone-utilities';
 import { atom, useSetAtom } from 'jotai';
 import { enqueueSnackbar } from 'notistack';
@@ -11,7 +12,7 @@ export const initializeAppViewsAtom = atom(null, async (_, set) => {
     set(loadingCountAtom, (c) => c + 1);
     const app = getAppId();
     if (!app) {
-      throw new Error('アプリのフィールド情報が取得できませんでした');
+      throw new Error(t('config.error.fieldInfoNotFound'));
     }
 
     const { views } = await getViews({
@@ -23,7 +24,7 @@ export const initializeAppViewsAtom = atom(null, async (_, set) => {
 
     set(allAppViewsAtom, views);
   } catch (error) {
-    enqueueSnackbar('アプリのビュー情報を取得できませんでした', { variant: 'error' });
+    enqueueSnackbar(t('config.error.viewInfoNotFound'), { variant: 'error' });
   } finally {
     set(loadingCountAtom, (c) => c - 1);
   }

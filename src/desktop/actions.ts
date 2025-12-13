@@ -1,5 +1,6 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { htmlToMarkdown, markdownToHtml } from '@/lib/html-markdown-converter';
+import { t } from '@/lib/i18n-plugin';
 import { getSortedOptions } from '@/lib/utils';
 import { PluginCondition } from '@/schema/plugin-config';
 import { DateInput } from '@fullcalendar/core';
@@ -146,6 +147,7 @@ export const getCalendarEventFromKintoneRecord = async (params: {
     ...colors,
   };
 
+  // 日付フィールドが使用されている場合、自動的に全日イベントとする
   if (startProperty.type === 'DATE' || endProperty.type === 'DATE') {
     calendarEvent.allDay = true;
   } else if (condition.enablesAllDay && condition.allDayOption) {
@@ -169,7 +171,10 @@ export const addNewRecord = async (params: {
 }): Promise<PluginCalendarEvent> => {
   const { calendarEvent, condition, properties } = params;
 
-  const newEvent = { ...calendarEvent, title: calendarEvent.title || '（タイトルなし）' };
+  const newEvent = {
+    ...calendarEvent,
+    title: calendarEvent.title || t('desktop.calendar.noTitle'),
+  };
 
   const record = await getKintoneRecordFromCalendarEvent({
     calendarEvent: newEvent,
@@ -198,7 +203,7 @@ export const reschedule = async (params: {
   const { calendarEvent, condition, properties } = params;
   const { id } = calendarEvent;
   if (!id) {
-    throw 'スケジュールに紐づくレコードが存在しません、一覧を更新し、再度お試しください';
+    throw t('desktop.error.scheduleRecordNotFound');
   }
 
   const app = getAppId()!;

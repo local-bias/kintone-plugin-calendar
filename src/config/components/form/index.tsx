@@ -1,5 +1,6 @@
 import { JotaiSwitch } from '@/components/jotai/switch';
 import { enablesAllDayState, enablesNoteState } from '@/config/states/plugin';
+import { t } from '@/lib/i18n-plugin';
 import {
   PluginFormDescription,
   PluginFormSection,
@@ -24,110 +25,110 @@ import FirstDayForm from './form-first-day';
 const Component: FC = () => (
   <div className='p-4'>
     <PluginFormSection>
-      <PluginFormTitle>テーブルを表示する一覧の設定</PluginFormTitle>
-      <PluginFormDescription last>カレンダーを表示する一覧を選択してください</PluginFormDescription>
+      <PluginFormTitle>{t('config.section.viewSettings.title')}</PluginFormTitle>
+      <PluginFormDescription last>{t('config.section.viewSettings.description')}</PluginFormDescription>
       <div className='flex items-center gap-8'>
         <FormView />
         <CreateNewView />
       </div>
     </PluginFormSection>
     <PluginFormSection>
-      <PluginFormTitle>スケジュールのタイトル</PluginFormTitle>
+      <PluginFormTitle>{t('config.section.scheduleTitle.title')}</PluginFormTitle>
       <PluginFormDescription>
-        スケジュールのタイトルとして使用するフィールドを選択してください
+        {t('config.section.scheduleTitle.description')}
       </PluginFormDescription>
       <PluginFormDescription last>
-        使用できるフィールドタイプは、文字列１行フィールド、文字列複数行フィールド、リッチテキストです
+        {t('config.section.scheduleTitle.description2')}
       </PluginFormDescription>
       <FormScheduleTitle />
     </PluginFormSection>
     <PluginFormSection>
-      <PluginFormTitle>スケジュールの開始日時</PluginFormTitle>
+      <PluginFormTitle>{t('config.section.scheduleStart.title')}</PluginFormTitle>
       <PluginFormDescription>
-        スケジュールの開始日時として使用するフィールドを選択してください
+        {t('config.section.scheduleStart.description')}
       </PluginFormDescription>
       <PluginFormDescription last>
-        「日付」フィールドを設定した場合は、無条件で終日扱いとなります
+        {t('config.section.scheduleStart.description2')}
       </PluginFormDescription>
       <FormScheduleStart />
     </PluginFormSection>
     <PluginFormSection>
-      <PluginFormTitle>スケジュールの終了日付</PluginFormTitle>
+      <PluginFormTitle>{t('config.section.scheduleEnd.title')}</PluginFormTitle>
       <PluginFormDescription>
-        スケジュールの終了日付として使用するフィールドを選択してください
+        {t('config.section.scheduleEnd.description')}
       </PluginFormDescription>
       <PluginFormDescription last>
-        「日付」フィールドを設定した場合は、無条件で終日扱いとなります
+        {t('config.section.scheduleEnd.description2')}
       </PluginFormDescription>
       <FormScheduleEnd />
     </PluginFormSection>
     <PluginFormSection>
-      <PluginFormTitle>終日設定</PluginFormTitle>
-      <PluginFormDescription last>時刻を指定せず、終日の予定を有効にします</PluginFormDescription>
-      <JotaiSwitch atom={enablesAllDayState} label='終日設定を有効にする' />
+      <PluginFormTitle>{t('config.section.allDay.title')}</PluginFormTitle>
+      <PluginFormDescription last>{t('config.section.allDay.description')}</PluginFormDescription>
+      <JotaiSwitch atom={enablesAllDayState} label={t('config.section.allDay.enableLabel')} />
       <FormAllday />
     </PluginFormSection>
     <PluginFormSection>
-      <PluginFormTitle>スケジュールの備考</PluginFormTitle>
+      <PluginFormTitle>{t('config.section.note.title')}</PluginFormTitle>
       <PluginFormDescription>
-        カレンダーから編集することのできるスケジュールの備忘を有効にします
+        {t('config.section.note.description')}
       </PluginFormDescription>
       <PluginFormDescription last>
-        使用できるフィールドタイプは、文字列１行フィールド、文字列複数行フィールド、リッチテキストです
+        {t('config.section.note.description2')}
       </PluginFormDescription>
-      <JotaiSwitch atom={enablesNoteState} label='スケジュールの備考を有効にする' />
+      <JotaiSwitch atom={enablesNoteState} label={t('config.section.note.enableLabel')} />
       <FormNote />
     </PluginFormSection>
     <details className='mt-8'>
-      <summary className='font-bold text-lg mb-4 cursor-pointer'>高度な設定</summary>
+      <summary className='font-bold text-lg mb-4 cursor-pointer'>{t('config.section.advanced')}</summary>
       <PluginFormSection>
-        <PluginFormTitle>初期表示するカレンダーの種類</PluginFormTitle>
+        <PluginFormTitle>{t('config.section.initialView.title')}</PluginFormTitle>
         <PluginFormDescription last>
-          初期表示するカレンダーの種類を選択してください
+          {t('config.section.initialView.description')}
         </PluginFormDescription>
         <FormInitialView />
       </PluginFormSection>
       <PluginFormSection>
-        <PluginFormTitle>表示時間帯の設定</PluginFormTitle>
+        <PluginFormTitle>{t('config.section.slotMinmax.title')}</PluginFormTitle>
         <PluginFormDescription last>
-          カレンダーに表示する時間帯の上限と下限を設定します。
+          {t('config.section.slotMinmax.description')}
         </PluginFormDescription>
         <FormSlotMinmax />
       </PluginFormSection>
       <PluginFormSection>
-        <PluginFormTitle>営業日の設定</PluginFormTitle>
-        <PluginFormDescription>カレンダーで営業日とする曜日を設定します</PluginFormDescription>
+        <PluginFormTitle>{t('config.section.businessDays.title')}</PluginFormTitle>
+        <PluginFormDescription>{t('config.section.businessDays.description')}</PluginFormDescription>
         <PluginFormDescription last>
-          チェックを外した曜日は、カレンダー上でグレーアウトされます
+          {t('config.section.businessDays.description2')}
         </PluginFormDescription>
         <DaysOfWeekForm />
       </PluginFormSection>
       <PluginFormSection>
-        <PluginFormTitle>週の始まりの曜日</PluginFormTitle>
-        <PluginFormDescription>1週間の始まりとする曜日を設定します</PluginFormDescription>
+        <PluginFormTitle>{t('config.section.firstDay.title')}</PluginFormTitle>
+        <PluginFormDescription>{t('config.section.firstDay.description')}</PluginFormDescription>
         <PluginFormDescription last>
-          ここで設定した曜日が、週表示、月表示時の左端の曜日となります
+          {t('config.section.firstDay.description2')}
         </PluginFormDescription>
         <FirstDayForm />
       </PluginFormSection>
       <PluginFormSection>
-        <PluginFormTitle>カテゴリー設定</PluginFormTitle>
+        <PluginFormTitle>{t('config.section.category.title')}</PluginFormTitle>
         <PluginFormDescription>
-          カレンダーのカテゴリーとして使用するフィールドを設定します
+          {t('config.section.category.description')}
         </PluginFormDescription>
-        <PluginFormDescription>カレンダーはカテゴリーに応じて色分けされます</PluginFormDescription>
+        <PluginFormDescription>{t('config.section.category.description2')}</PluginFormDescription>
         <PluginFormDescription last>
-          使用できるフィールドタイプは、チェックボックス、ラジオボタン、ドロップダウンです
+          {t('config.section.category.description3')}
         </PluginFormDescription>
         <FormCategory />
       </PluginFormSection>
       <PluginFormSection>
-        <PluginFormTitle>スケジュールの色</PluginFormTitle>
+        <PluginFormTitle>{t('config.section.colors.title')}</PluginFormTitle>
         <PluginFormDescription>
-          カレンダーに登録するスケジュールの色を設定します。
+          {t('config.section.colors.description')}
         </PluginFormDescription>
         <PluginFormDescription last>
-          カテゴリーを使用しない場合、スケジュールは必ず１つ目の色になります
+          {t('config.section.colors.description2')}
         </PluginFormDescription>
         <FormColors />
       </PluginFormSection>
