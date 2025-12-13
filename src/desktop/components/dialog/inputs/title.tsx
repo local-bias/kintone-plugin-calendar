@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n-plugin';
 import { TextField } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import React, { FC } from 'react';
@@ -18,7 +19,7 @@ const DialogEventTitleInput: FC = () => {
     <TextField
       variant='outlined'
       color='primary'
-      label='イベントのタイトル'
+      label={t('desktop.dialog.eventTitle')}
       value={title || ''}
       onChange={onTitleChange}
     />

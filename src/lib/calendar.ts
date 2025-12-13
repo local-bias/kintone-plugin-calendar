@@ -1,13 +1,14 @@
 import { createDuration } from '@fullcalendar/core/internal';
+import { t } from './i18n-plugin';
 
 export const WEEK_DAYS = [
-  { label: '日曜日', value: 0 },
-  { label: '月曜日', value: 1 },
-  { label: '火曜日', value: 2 },
-  { label: '水曜日', value: 3 },
-  { label: '木曜日', value: 4 },
-  { label: '金曜日', value: 5 },
-  { label: '土曜日', value: 6 },
+  { label: t('common.weekday.sunday'), value: 0 },
+  { label: t('common.weekday.monday'), value: 1 },
+  { label: t('common.weekday.tuesday'), value: 2 },
+  { label: t('common.weekday.wednesday'), value: 3 },
+  { label: t('common.weekday.thursday'), value: 4 },
+  { label: t('common.weekday.friday'), value: 5 },
+  { label: t('common.weekday.saturday'), value: 6 },
 ] as const;
 
 export function getSlotTime(time: string) {

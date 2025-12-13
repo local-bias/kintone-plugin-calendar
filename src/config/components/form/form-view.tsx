@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n-plugin';
 import { MenuItem, TextField } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import React, { FC } from 'react';
@@ -16,7 +17,7 @@ const Container: FC = () => {
   return (
     <TextField
       select
-      label='一覧の名前'
+      label={t('config.form.viewName')}
       value={viewId}
       onChange={onViewIdChange}
       sx={{ width: '250px' }}
