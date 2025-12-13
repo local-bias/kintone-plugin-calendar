@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n-plugin';
 import { MenuItem, TextField } from '@mui/material';
 import { produce } from 'immer';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
@@ -38,7 +39,7 @@ const handleCategoryChangeAtom = atom(
   }
 );
 
-const Component: FC<{ category?: string; categories: string[] }> = memo(
+const Component: FC<{ category?: string; categories: string[]; }> = memo(
   ({ category, categories }) => {
     const condition = useAtomValue(pluginConditionAtom);
     const colors = condition?.colors ?? DEFAULT_COLORS;
@@ -52,7 +53,7 @@ const Component: FC<{ category?: string; categories: string[] }> = memo(
           sx={{ width: '200px' }}
           color='primary'
           select
-          label='カテゴリー'
+          label={t('desktop.dialog.category')}
           value={category || ''}
           onChange={onCategoryChange}
         >

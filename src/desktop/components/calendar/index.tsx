@@ -1,5 +1,6 @@
 import { useCalendar } from '@/desktop/hooks/use-calendar';
 import { getSlotTime } from '@/lib/calendar';
+import { t } from '@/lib/i18n-plugin';
 import allLocales from '@fullcalendar/core/locales-all';
 import jaJP from '@fullcalendar/core/locales/ja';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -41,12 +42,12 @@ function FullCalendarRoot() {
         timeGridThreeDay: {
           type: 'timeGrid',
           duration: { days: 3 },
-          buttonText: '3日',
+          buttonText: t('desktop.calendar.viewType.threeDay'),
         },
         timeGridFiveDay: {
           type: 'timeGrid',
           duration: { days: 5 },
-          buttonText: '5日',
+          buttonText: t('desktop.calendar.viewType.fiveDay'),
         },
       }}
       firstDay={pluginCondition?.firstDay}

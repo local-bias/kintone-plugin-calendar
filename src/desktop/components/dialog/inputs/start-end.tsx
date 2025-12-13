@@ -2,6 +2,7 @@ import { dateInputToDateTime, dateTimeToDateInput } from '@/desktop/actions';
 import { isTimeSupportedAtom } from '@/desktop/states/plugin';
 import { DatePicker } from '@/lib/components/date-picker';
 import { DateTimePicker } from '@/lib/components/datetime-picker';
+import { t } from '@/lib/i18n-plugin';
 import { produce } from 'immer';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { DateTime } from 'luxon';
@@ -42,7 +43,7 @@ const DateEnd: FC = () => {
   if (!isTimeSupported || allDay) {
     return (
       <DatePicker
-        label='終了日'
+        label={t('desktop.dialog.endDate')}
         value={props.event.end ? dateInputToDateTime(props.event.end) : DateTime.local()}
         onChange={onEndChange}
       />
@@ -52,7 +53,7 @@ const DateEnd: FC = () => {
   return (
     <DateTimePicker
       ampm={false}
-      label='終了日時'
+      label={t('desktop.dialog.endDateTime')}
       value={props.event.end ? dateInputToDateTime(props.event.end) : DateTime.local()}
       onChange={onEndChange}
     />
@@ -68,7 +69,7 @@ const DateStart: FC = () => {
   if (!isTimeSupported || allDay) {
     return (
       <DatePicker
-        label='開始日'
+        label={t('desktop.dialog.startDate')}
         value={event.start ? dateInputToDateTime(event.start) : DateTime.local()}
         onChange={onStartChange}
       />
@@ -78,7 +79,7 @@ const DateStart: FC = () => {
   return (
     <DateTimePicker
       ampm={false}
-      label='開始日時'
+      label={t('desktop.dialog.startDateTime')}
       value={event.start ? dateInputToDateTime(event.start) : DateTime.local()}
       onChange={onStartChange}
     />

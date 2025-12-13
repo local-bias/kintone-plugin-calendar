@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n-plugin';
 import { TextField } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import React, { FC, memo } from 'react';
@@ -16,12 +17,12 @@ const handleNoteChangeAtom = atom(
   }
 );
 
-const Component: FC<{ value: string }> = memo((props) => {
+const Component: FC<{ value: string; }> = memo((props) => {
   const onNoteChange = useSetAtom(handleNoteChangeAtom);
 
   return (
     <div className='full'>
-      <TextField label='説明' multiline rows={4} value={props.value} onChange={onNoteChange} />
+      <TextField label={t('desktop.dialog.description')} multiline rows={4} value={props.value} onChange={onNoteChange} />
     </div>
   );
 });

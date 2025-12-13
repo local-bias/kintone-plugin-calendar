@@ -1,4 +1,5 @@
 import { isTimeSupportedAtom } from '@/desktop/states/plugin';
+import { t } from '@/lib/i18n-plugin';
 import { FormControlLabel, Switch } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { FC } from 'react';
@@ -16,7 +17,7 @@ const DialogAllDayFormComponent: FC = () => {
     <div>
       <FormControlLabel
         control={<Switch size='small' checked={allDay} onChange={onChange} />}
-        label='終日'
+        label={t('desktop.dialog.allDay')}
       />
     </div>
   );
