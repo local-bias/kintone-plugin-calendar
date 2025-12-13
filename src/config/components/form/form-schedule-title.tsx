@@ -1,6 +1,7 @@
 import { JotaiFieldSelect } from '@/components/jotai/field-select';
 import { stringFieldsAtom } from '@/config/states/kintone';
 import { calendarTitleState } from '@/config/states/plugin';
+import { t } from '@/lib/i18n-plugin';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { FC } from 'react';
 
@@ -18,7 +19,7 @@ const Component: FC = () => {
       fieldPropertiesAtom={stringFieldsAtom}
       onChange={onChange}
       fieldCode={title}
-      placeholder='フィールドを選択してください'
+      placeholder={t('config.form.selectField')}
     />
   );
 };

@@ -1,4 +1,5 @@
 import { slotMaxTimeState, slotMinTimeState } from '@/config/states/plugin';
+import { t } from '@/lib/i18n-plugin';
 import { MenuItem, TextField } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import React, { FC } from 'react';
@@ -27,7 +28,7 @@ const Component: FC = () => {
   return (
     <div>
       <TextField
-        label='開始'
+        label={t('config.form.slotStart')}
         select
         variant='outlined'
         color='primary'
@@ -37,12 +38,12 @@ const Component: FC = () => {
       >
         {HOURS.map((hour) => (
           <MenuItem key={`slotMinTime-${hour}`} value={hour}>
-            {hour}時
+            {hour}{t('config.form.hour')}
           </MenuItem>
         ))}
       </TextField>
       <TextField
-        label='終了'
+        label={t('config.form.slotEnd')}
         select
         variant='outlined'
         color='primary'
@@ -52,7 +53,7 @@ const Component: FC = () => {
       >
         {HOURS.map((hour, i) => (
           <MenuItem key={i} value={hour}>
-            {hour}時
+            {hour}{t('config.form.hour')}
           </MenuItem>
         ))}
       </TextField>
