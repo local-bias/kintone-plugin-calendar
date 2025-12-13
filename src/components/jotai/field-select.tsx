@@ -1,7 +1,8 @@
+import { t } from '@/lib/i18n-plugin';
 import { kintoneAPI } from '@konomi-app/kintone-utilities';
 import { Autocomplete, Box, TextField } from '@mui/material';
 import { Atom, useAtomValue } from 'jotai';
-import React, { ComponentProps, FC, Suspense, useCallback } from 'react';
+import { ComponentProps, FC, Suspense, useCallback } from 'react';
 
 type ContainerProps = {
   fieldPropertiesAtom: Atom<Promise<kintoneAPI.FieldProperty[]>>;
@@ -24,7 +25,7 @@ const JotaiFieldAutocomplete: FC<Props> = ({
   onFieldChange,
   label,
   placeholder,
-  fieldCodeLabelPrefix = 'コード: ',
+  fieldCodeLabelPrefix = t('common.field.codePrefix'),
   ...autocompleteProps
 }) => (
   <Autocomplete
@@ -97,8 +98,8 @@ const JotaiFieldSelectPlaceHolder: FC<ContainerProps> = ({
 
 export const JotaiFieldSelect: FC<ContainerProps> = (props) => {
   const completed: ContainerProps = {
-    label: '対象フィールド',
-    placeholder: 'フィールドを選択してください',
+    label: t('common.field.targetField'),
+    placeholder: t('common.field.selectPlaceholder'),
     ...props,
     sx: { width: 400, ...props.sx },
   };

@@ -1,4 +1,5 @@
 import { PluginErrorBoundary } from '@/lib/components/error-boundary';
+import { t } from '@/lib/i18n-plugin';
 import { URL_BANNER, URL_PROMOTION } from '@/lib/static';
 import { store } from '@/lib/store';
 import { PluginBanner, PluginContent, PluginLayout } from '@konomi-app/kintone-utilities-react';
@@ -32,11 +33,11 @@ export default function ConfigApp() {
   return (
     <Provider store={store}>
       <div className='🐸'>
-        <Suspense fallback={<LoaderWithLabel label='画面の描画を待機しています' />}>
+        <Suspense fallback={<LoaderWithLabel label={t('config.loading.waitingForRender')} />}>
           <PluginErrorBoundary>
             <Announcement />
             <SnackbarProvider maxSnack={1} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-              <Suspense fallback={<LoaderWithLabel label='設定情報を取得しています' />}>
+              <Suspense fallback={<LoaderWithLabel label={t('config.loading.fetchingSettings')} />}>
                 <PluginLayout>
                   <ConfigForm />
                 </PluginLayout>
