@@ -1,6 +1,7 @@
 import { JotaiFieldSelect } from '@/components/jotai/field-select';
 import { alldayOptionsAtom, checkboxFieldsAtom } from '@/config/states/kintone';
 import { alldayOptionState, calendarAllDayState, enablesAllDayState } from '@/config/states/plugin';
+import { t } from '@/lib/i18n-plugin';
 import { MenuItem, Skeleton, TextField } from '@mui/material';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import React, { FC, Suspense } from 'react';
@@ -23,7 +24,7 @@ const AllDayOptionForm: FC = () => {
 
   return (
     <TextField
-      label='終日とする値'
+      label={t('config.form.allDayValue')}
       select
       variant='outlined'
       color='primary'
@@ -60,7 +61,7 @@ const Component: FC = () => {
         fieldPropertiesAtom={checkboxFieldsAtom}
         onChange={onFieldChange}
         fieldCode={alldayField}
-        placeholder='フィールドを選択してください'
+        placeholder={t('config.form.selectField')}
       />
       <Suspense fallback={<AllDayOptionFormPlaceholder />}>
         <AllDayOptionForm />

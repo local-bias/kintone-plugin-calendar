@@ -1,6 +1,7 @@
 import { allAppViewsAtom } from '@/config/states/kintone';
 import { loadingAtom, loadingCountAtom, viewIdState } from '@/config/states/plugin';
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { t } from '@/lib/i18n-plugin';
 import { VIEW_ROOT_ID } from '@/lib/static';
 import { getAppId, getViews, kintoneAPI, updateViews } from '@konomi-app/kintone-utilities';
 import { Button } from '@mui/material';
@@ -15,10 +16,10 @@ const handleCreateNewViewAtom = atom(null, async (get, set) => {
 
     const views = Object.entries(allViews);
 
-    let viewName = '📆 カレンダー';
+    let viewName = t('config.form.calendarName');
     let counter = 1;
     while (views.some(([key]) => key === viewName)) {
-      viewName = `📆 カレンダー (${counter})`;
+      viewName = `${t('config.form.calendarName')} (${counter})`;
       counter++;
     }
 
@@ -52,10 +53,10 @@ const handleCreateNewViewAtom = atom(null, async (get, set) => {
 
     set(allAppViewsAtom, latestViews.views);
     set(viewIdState, viewId);
-    enqueueSnackbar('一覧を作成しました', { variant: 'success' });
+    enqueueSnackbar(t('config.toast.viewCreated'), { variant: 'success' });
   } catch (error) {
     process.env.NODE_ENV === 'development' && console.error(error);
-    enqueueSnackbar('一覧の作成に失敗しました', { variant: 'error' });
+    enqueueSnackbar(t('config.toast.viewCreationFailed'), { variant: 'error' });
   } finally {
     set(loadingCountAtom, (c) => c - 1);
   }
@@ -67,7 +68,7 @@ const Component: FC = () => {
 
   return (
     <Button variant='outlined' color='primary' size='large' onClick={onClick} loading={loading}>
-      一覧を新規作成
+      {t('config.form.createNewView')}
     </Button>
   );
 };

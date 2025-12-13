@@ -1,4 +1,5 @@
 import { pluginConditionsAtom, selectedConditionIdAtom } from '@/config/states/plugin';
+import { t } from '@/lib/i18n-plugin';
 import { PluginConditionDeleteButton } from '@konomi-app/kintone-utilities-react';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { RESET } from 'jotai/utils';
@@ -11,7 +12,7 @@ const handleConditionDeleteAtom = atom(null, (get, set) => {
     prev.filter((condition) => condition.id !== selectedConditionId)
   );
   set(selectedConditionIdAtom, RESET);
-  enqueueSnackbar('設定を削除しました', { variant: 'success' });
+  enqueueSnackbar(t('config.toast.conditionDeleted'), { variant: 'success' });
 });
 
 const Container: FC = () => {
