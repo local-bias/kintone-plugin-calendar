@@ -1,4 +1,5 @@
 import { GUEST_SPACE_ID } from '@/lib/global';
+import { t } from '@/lib/i18n-plugin';
 import { VIEW_ROOT_ID } from '@/lib/static';
 import { getAppId, getViews, storeStorage, updateViews } from '@konomi-app/kintone-utilities';
 import { PluginFooter } from '@konomi-app/kintone-utilities-react';
@@ -49,11 +50,11 @@ const handleUpdatePluginConfigAtom = atom(null, async (get, set) => {
     });
 
     storeStorage(storage!, () => true);
-    enqueueSnackbar('設定を保存しました', {
+    enqueueSnackbar(t('config.toast.settingSaved'), {
       variant: 'success',
       action: (
         <Button color='inherit' onClick={() => history.back()}>
-          プラグイン一覧に戻る
+          {t('config.footer.backToPluginListShort')}
         </Button>
       ),
     });
@@ -76,7 +77,7 @@ const Component: FC<Props> = ({ onBackButtonClick }) => {
           onClick={onSaveButtonClick}
           startIcon={loading ? <CircularProgress color='inherit' size={20} /> : <SaveIcon />}
         >
-          設定を保存
+          {t('config.footer.save')}
         </Button>
         <Button
           variant='contained'
@@ -87,7 +88,7 @@ const Component: FC<Props> = ({ onBackButtonClick }) => {
             loading ? <CircularProgress color='inherit' size={20} /> : <SettingsBackupRestoreIcon />
           }
         >
-          プラグイン一覧へ戻る
+          {t('config.footer.backToPluginList')}
         </Button>
       </div>
       <div className='flex items-center gap-4'>

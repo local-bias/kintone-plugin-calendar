@@ -1,4 +1,5 @@
 import { createConfig } from '@/lib/plugin';
+import { t } from '@/lib/i18n-plugin';
 import { PluginConfigResetButton } from '@konomi-app/kintone-utilities-react';
 import { atom, useSetAtom } from 'jotai';
 import { enqueueSnackbar } from 'notistack';
@@ -7,7 +8,7 @@ import { pluginConfigAtom } from '../../states/plugin';
 
 const handlePluginConfigResetAtom = atom(null, (_, set) => {
   set(pluginConfigAtom, createConfig());
-  enqueueSnackbar('設定をリセットしました', { variant: 'success' });
+  enqueueSnackbar(t('config.toast.settingReset'), { variant: 'success' });
 });
 
 const Component: FC = () => {

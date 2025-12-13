@@ -1,4 +1,5 @@
 import { PLUGIN_NAME } from '@/lib/static';
+import { t } from '@/lib/i18n-plugin';
 import { PluginConfigExportButton } from '@konomi-app/kintone-utilities-react';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { enqueueSnackbar } from 'notistack';
@@ -19,10 +20,10 @@ const handleExportPluginConfigAtom = atom(null, (get, set) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    enqueueSnackbar('プラグインの設定情報をエクスポートしました', { variant: 'success' });
+    enqueueSnackbar(t('config.toast.settingExported'), { variant: 'success' });
   } catch (error) {
     enqueueSnackbar(
-      'プラグインの設定情報のエクスポートに失敗しました。プラグイン開発者にお問い合わせください。',
+      t('config.toast.settingExportFailed'),
       { variant: 'error' }
     );
     throw error;
