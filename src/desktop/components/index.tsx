@@ -1,4 +1,5 @@
 import { PluginErrorBoundary } from '@/lib/components/error-boundary';
+import { t } from '@/lib/i18n-plugin';
 import { store } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import styled from '@emotion/styled';
@@ -137,7 +138,7 @@ export default function DesktopApp() {
   return (
     <Provider store={store}>
       <PluginErrorBoundary>
-        <Suspense fallback={<LoaderWithLabel label='読み込み中' />}>
+        <Suspense fallback={<LoaderWithLabel label={t('desktop.loading.default')} />}>
           <SnackbarProvider maxSnack={1}>
             <ThemeProvider theme={createTheme({}, jaJP)}>
               <StyledDesktopLayout />

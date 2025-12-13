@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n-plugin';
 import { cn } from '@/lib/utils';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { Eye, EyeOff } from 'lucide-react';
@@ -22,7 +23,7 @@ const handleCategoryChangeAtom = atom(null, async (get, set, category: string) =
   });
 });
 
-const Component: FC<{ categories: string[] }> = memo(({ categories }) => {
+const Component: FC<{ categories: string[]; }> = memo(({ categories }) => {
   const displayingCategories = useAtomValue(displayingCategoriesAtom);
   const onCategoryChange = useSetAtom(handleCategoryChangeAtom);
   const condition = useAtomValue(pluginConditionAtom);
@@ -67,7 +68,7 @@ const CategoryTitle: FC = () => {
   const categoryFieldProperty = useAtomValue(categoryFieldPropertyAtom);
 
   if (!categoryFieldProperty) {
-    return <>{condition?.calendarEvent.categoryField ?? 'カテゴリー'}</>;
+    return <>{condition?.calendarEvent.categoryField ?? t('desktop.sidebar.category')}</>;
   }
   return <>{categoryFieldProperty.label}</>;
 };
@@ -75,7 +76,7 @@ const CategoryTitle: FC = () => {
 const CategoryTitleContainer: FC = () => {
   return (
     <div className='text-xs text-foreground/70'>
-      <Suspense fallback={<>カテゴリー</>}>
+      <Suspense fallback={<>{t('desktop.sidebar.category')}</>}>
         <CategoryTitle />
       </Suspense>
     </div>
