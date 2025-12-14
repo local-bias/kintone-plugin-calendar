@@ -1,3 +1,6 @@
+import { extractErrorMessage } from '@/lib/error';
+import { isDev } from '@/lib/global';
+import { t } from '@/lib/i18n-plugin';
 import { EventChangeArg, EventClickArg, EventRemoveArg } from '@fullcalendar/core';
 import { atom, useSetAtom } from 'jotai';
 import { enqueueSnackbar } from 'notistack';
@@ -5,8 +8,6 @@ import { reschedule } from '../actions';
 import { calendarEventsAtom } from '../states/calendar';
 import { dialogPropsAtom, dialogShownAtom } from '../states/dialog';
 import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from '../states/kintone';
-import { isDev } from '@/lib/global';
-import { extractErrorMessage } from '@/lib/error';
 
 const handleCalendarEventDeleteAtom = atom(null, (get, set, props: EventRemoveArg) => {
   console.info('📅 イベントが削除されました', props);
@@ -18,9 +19,10 @@ const handleCalendarEventClickAtom = atom(null, (get, set, props: EventClickArg)
     (event) => event.id && props.event.id && event.id === props.event.id
   );
   if (!foundEvent) {
-    enqueueSnackbar('クリックしたイベントの取得に失敗しました', { variant: 'error' });
+    enqueueSnackbar(t('desktop.error.eventClickFailed'), { variant: 'error' });
     return;
   }
+
   set(dialogPropsAtom, {
     new: false,
     event: foundEvent,
@@ -68,7 +70,7 @@ const handleCalendarEventChangeAtom = atom(null, async (get, set, props: EventCh
     isDev && console.info('レコードを更新しました');
   } catch (error) {
     console.error(error);
-    enqueueSnackbar(`レコードの更新に失敗しました: ${extractErrorMessage(error)}`, {
+    enqueueSnackbar(t('desktop.error.recordUpdateFailed', extractErrorMessage(error)), {
       variant: 'error',
     });
   } finally {
