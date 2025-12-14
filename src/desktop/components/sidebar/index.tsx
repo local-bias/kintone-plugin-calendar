@@ -10,7 +10,7 @@ export default function CalendarSidebar() {
 
   return (
     <div
-      className={cn('border-r w-8 bg-background', {
+      className={cn('border-r border-r-border w-8 bg-background', {
         hidden: isMobile,
         'w-64': expanded,
       })}
