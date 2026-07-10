@@ -26,6 +26,7 @@ export const getNewCondition = (): PluginCondition => ({
   colors: DEFAULT_COLORS,
   daysOfWeek: [1, 2, 3, 4, 5],
   firstDay: 0,
+  enablesRecurrence: false,
   calendarEvent: {
     inputTitleField: '',
     displayTitleField: '',
@@ -34,6 +35,7 @@ export const getNewCondition = (): PluginCondition => ({
     allDayField: '',
     noteField: '',
     categoryField: '',
+    recurrenceField: '',
   },
 });
 
@@ -41,7 +43,7 @@ export const getNewCondition = (): PluginCondition => ({
  * プラグインの設定情報のひな形を返却します
  */
 export const createConfig = (): PluginConfig => ({
-  version: 4,
+  version: 5,
   common: {},
   conditions: [getNewCondition()],
 });
@@ -87,6 +89,20 @@ export const migrateConfig = (config: AnyPluginConfig): PluginConfig => {
         conditions: config.conditions.map((condition) => ({
           ...condition,
           firstDay: 0,
+        })),
+      });
+    }
+    case 4: {
+      return migrateConfig({
+        version: 5,
+        common: {},
+        conditions: config.conditions.map((condition) => ({
+          ...condition,
+          enablesRecurrence: false,
+          calendarEvent: {
+            ...condition.calendarEvent,
+            recurrenceField: '',
+          },
         })),
       });
     }

@@ -8,6 +8,7 @@ import { reschedule } from '../actions';
 import { calendarEventsAtom } from '../states/calendar';
 import { dialogPropsAtom, dialogShownAtom } from '../states/dialog';
 import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from '../states/kintone';
+import { openOccurrenceScopeDialogAtom } from '../states/recurrence';
 
 const handleCalendarEventDeleteAtom = atom(null, (get, set, props: EventRemoveArg) => {
   console.info('📅 イベントが削除されました', props);
@@ -20,6 +21,18 @@ const handleCalendarEventClickAtom = atom(null, (get, set, props: EventClickArg)
   );
   if (!foundEvent) {
     enqueueSnackbar(t('desktop.error.eventClickFailed'), { variant: 'error' });
+    return;
+  }
+
+  // 繰り返し予定のマスターの場合、クリックされたのは仮想オカレンスなので通常の編集ダイアログの
+  // 代わりに「この回のみ/シリーズ全体」選択ダイアログを開く。クリックされた実際のオカレンス日時は
+  // props.event.startStr/endStrから取得する(foundEvent.start/endはマスター=第1回の日時のため)。
+  if (foundEvent.extendedProps?.recurrence?.kind === 'master') {
+    set(openOccurrenceScopeDialogAtom, {
+      master: foundEvent,
+      occurrenceStart: props.event.startStr,
+      occurrenceEnd: props.event.endStr,
+    });
     return;
   }
 
@@ -48,12 +61,21 @@ const handleCalendarEventChangeAtom = atom(null, async (get, set, props: EventCh
       return;
     }
 
+    // 繰り返し予定のマスターはeditable:falseでドラッグ・リサイズ不可のはずだが、念のための
+    // 防御ガード(日時変更は編集ダイアログの「シリーズ全体を編集」からのみ行う)。
+    if (targetEvent.extendedProps?.recurrence?.kind === 'master') {
+      console.warn('繰り返し予定のマスターはドラッグ操作の対象外です。予期しないeventChangeを無視します');
+      return;
+    }
+
     console.log({ changed, targetEvent });
 
+    // `changed.start`/`end` are FullCalendar's UTC-coerced marker Dates; use the string
+    // getters instead, which are the canonical calendar-space values this plugin persists.
     const newEvent = {
       ...targetEvent,
-      start: changed.start || targetEvent.start,
-      end: changed.end || targetEvent.end,
+      start: changed.startStr || targetEvent.start,
+      end: changed.endStr || targetEvent.end,
     };
     set(calendarEventsAtom, (current) => {
       const newEvents = [...current];

@@ -157,9 +157,47 @@ export const PluginConfigV4Schema = z.object({
   conditions: z.array(PluginConditionV4Schema),
 });
 
-export const LatestPluginConditionSchema = PluginConditionV4Schema;
+const PluginCalendarEventV5Schema = PluginCalendarEventV3Schema.extend({
+  // ------ 追加 ------
+  /** 繰り返し予定の情報(JSON)を保存するフィールド */
+  recurrenceField: z.string(),
+});
+export const PluginConditionV5Schema = z.object({
+  viewId: z.string(),
+  initialView: CalendarViewTypeSchema,
+  enablesAllDay: z.boolean(),
+  allDayOption: z.string(),
+  enablesNote: z.boolean(),
+  slotMaxTime: z.string(),
+  slotMinTime: z.string(),
+  colors: z.array(z.string()),
+  calendarEvent: PluginCalendarEventV5Schema,
+  id: z.string(),
+  daysOfWeek: z.array(
+    z.union([
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+    ])
+  ),
+  firstDay: z.number(),
+  // ------ 追加 ------
+  /** 繰り返し予定機能を有効にするかどうか */
+  enablesRecurrence: z.boolean(),
+});
+export const PluginConfigV5Schema = z.object({
+  version: z.literal(5),
+  common: z.object({}),
+  conditions: z.array(PluginConditionV5Schema),
+});
 
-export type PluginConfig = z.infer<typeof PluginConfigV4Schema>;
+export const LatestPluginConditionSchema = PluginConditionV5Schema;
+
+export type PluginConfig = z.infer<typeof PluginConfigV5Schema>;
 export type PluginCommonConfig = PluginConfig['common'];
 export type PluginCondition = PluginConfig['conditions'][number];
 
@@ -168,6 +206,7 @@ export const AnyPluginConfigSchema = z.discriminatedUnion('version', [
   PluginConfigV2Schema,
   PluginConfigV3Schema,
   PluginConfigV4Schema,
+  PluginConfigV5Schema,
 ]);
 
 export type AnyPluginConfig = z.infer<typeof AnyPluginConfigSchema>;

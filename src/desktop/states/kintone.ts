@@ -90,3 +90,7 @@ export const calendarEventCategoryAtom = eagerAtom((get) => {
   }
   return getSortedOptions(categoryProperty.options ?? {}).map((option) => option.label);
 });
+
+export const loginUserAtom = atom<ReturnType<typeof kintone.getLoginUser>>(() => {
+  return kintone.getLoginUser();
+});

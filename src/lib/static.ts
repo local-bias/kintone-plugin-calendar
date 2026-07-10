@@ -1,4 +1,4 @@
-import meta from 'plugin.config.mjs';
+import meta from '@/../plugin.config.mjs';
 
 const manifest = meta.manifest.base;
 

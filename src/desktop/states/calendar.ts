@@ -1,4 +1,6 @@
+import { applyRecurrenceMetaToEventInput, RecurrenceMeta } from '@/desktop/recurrence';
 import { GUEST_SPACE_ID, isDev } from '@/lib/global';
+import { t } from '@/lib/i18n-plugin';
 import { DateSelectArg, EventInput } from '@fullcalendar/core';
 import { deleteAllRecords, getAppId, getYuruChara } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
@@ -11,7 +13,8 @@ import {
   getDefaultStartDate,
 } from '../actions';
 import { dialogPropsAtom, dialogShownAtom } from './dialog';
-import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from './kintone';
+import { appPropertiesAtom, loadingAtom, loginUserAtom, pluginConditionAtom } from './kintone';
+import { isTimeSupportedAtom } from './plugin';
 import { displayingCategoriesAtom } from './sidebar';
 import { ComponentRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
@@ -21,6 +24,9 @@ export type PluginCalendarEvent = EventInput & {
   note?: string;
   category?: string;
   __quickSearch?: string;
+  extendedProps?: {
+    recurrence?: RecurrenceMeta;
+  };
 };
 
 export const fullcalendarRefAtom = atom<ComponentRef<typeof FullCalendar> | null>(null);
@@ -68,25 +74,42 @@ export const textFilteredCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) 
   });
 });
 
+/**
+ * FullCalendarに直接渡すためのイベント一覧。
+ *
+ * `calendarEventsAtom`(および通常のダイアログ編集ロジック)はマスターレコードでも常に
+ * `start`/`end`(=シリーズ第1回の日時)を保持する「ドメイン表現」だが、FullCalendarの
+ * rruleプラグインは`start`/`end`ではなく`rrule`/`duration`からオカレンスを算出するため、
+ * 描画直前のこの一段でのみマスターを変換する。
+ */
+export const renderableCalendarEventsAtom = atom<PluginCalendarEvent[]>((get) => {
+  const events = get(textFilteredCalendarEventsAtom);
+  const { timezone } = get(loginUserAtom);
+
+  return events.map((event) => {
+    if (event.extendedProps?.recurrence?.kind !== 'master' || !event.start || !event.end) {
+      return event;
+    }
+    const recurrenceFields = applyRecurrenceMetaToEventInput({
+      meta: event.extendedProps.recurrence,
+      start: event.start,
+      end: event.end,
+      zone: timezone,
+    });
+    return { ...event, start: undefined, end: undefined, ...recurrenceFields };
+  });
+});
+
 export const handleCalendarDateSelectAtom = atom(null, (_, set, props: DateSelectArg) => {
   isDev && console.info('📅 日付が選択されました', props);
 
   const temporaryKey = Math.random().toString();
 
-  // 全日イベントの場合、FullCalendarは終了日を次の日の0時0分として扱うため、
-  // 実際の選択範囲に合わせて終了日を1日前にする
-  let adjustedEnd = props.end;
-  if (props.allDay && props.end) {
-    const endDate = new Date(props.end);
-    endDate.setDate(endDate.getDate() - 1);
-    adjustedEnd = endDate;
-  }
-
   const completed = completeCalendarEvent({
     id: temporaryKey,
     allDay: props.allDay,
-    start: props.start,
-    end: adjustedEnd,
+    start: props.startStr,
+    end: props.endStr,
     __quickSearch: '',
   });
 
@@ -102,12 +125,14 @@ export const handleCalendarEventAddAtom = atom(null, (get, set, props: EventInpu
   console.info('📅 イベントが追加されました', props);
 });
 
-export const handleTemporaryEventAddAtom = atom(null, (_, set) => {
+export const handleTemporaryEventAddAtom = atom(null, (get, set) => {
   const temporaryKey = Math.random().toString();
+  // フィールド設定がDATE型なら常に全日イベントになる(actions.tsの強制ルールと同じ)
+  const isTimeSupported = get(isTimeSupportedAtom);
 
   const completed = completeCalendarEvent({
     id: temporaryKey,
-    allDay: false,
+    allDay: !isTimeSupported,
     title: '',
     start: getDefaultStartDate(),
     end: getDefaultEndDate(),
@@ -128,7 +153,7 @@ export const handleCalendarEventCopyAtom = atom(null, async (get, set) => {
 
     const currentProps = get(dialogPropsAtom);
     if (!currentProps.event.id) {
-      throw new Error('新規イベントをコピーすることはできません');
+      throw new Error(t('desktop.error.cannotCopyNewEvent'));
     }
 
     const condition = get(pluginConditionAtom);
@@ -137,14 +162,14 @@ export const handleCalendarEventCopyAtom = atom(null, async (get, set) => {
       calendarEvent: completeCalendarEvent({
         ...currentProps.event,
         id: undefined,
-        title: `${currentProps.event.title} (コピー)`,
+        title: `${currentProps.event.title}${t('desktop.error.eventCopySuffix')}`,
       }),
       condition: condition!,
       properties,
     });
     set(calendarEventsAtom, (current) => [...current, newEvent]);
     set(dialogShownAtom, false);
-    enqueueSnackbar('イベントのコピーしました', { variant: 'success' });
+    enqueueSnackbar(t('desktop.toast.eventCopied'), { variant: 'success' });
   } finally {
     set(loadingAtom, false);
   }
@@ -156,7 +181,7 @@ export const handleCalendarEventDeleteAtom = atom(null, async (get, set) => {
     const currentProps = await get(dialogPropsAtom);
     const eventId = currentProps.event.id;
     if (!eventId) {
-      throw '対象イベントに紐づくレコード情報の取得に失敗しました、一覧を再表示した上で再度お試しください';
+      throw t('desktop.error.eventRecordNotFound');
     }
 
     set(calendarEventsAtom, (current) => current.filter((event) => event.id !== eventId));
@@ -169,10 +194,10 @@ export const handleCalendarEventDeleteAtom = atom(null, async (get, set) => {
       guestSpaceId: GUEST_SPACE_ID,
       debug: process.env.NODE_ENV === 'development',
     });
-    enqueueSnackbar('レコードの削除が完了しました', { variant: 'success' });
+    enqueueSnackbar(t('desktop.toast.recordDeleted'), { variant: 'success' });
   } catch (error) {
     console.error(error);
-    enqueueSnackbar(`レコードの削除に失敗しました: ${extractErrorMessage(error)}`, {
+    enqueueSnackbar(t('desktop.error.recordDeleteFailed', extractErrorMessage(error)), {
       variant: 'error',
     });
   } finally {

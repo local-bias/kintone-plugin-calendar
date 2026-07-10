@@ -1,5 +1,5 @@
 import { JotaiSwitch } from '@/components/jotai/switch';
-import { enablesAllDayState, enablesNoteState } from '@/config/states/plugin';
+import { enablesAllDayState, enablesNoteState, enablesRecurrenceState } from '@/config/states/plugin';
 import { t } from '@/lib/i18n-plugin';
 import {
   PluginFormDescription,
@@ -15,6 +15,7 @@ import FormColors from './form-colors';
 import DaysOfWeekForm from './form-days-of-week';
 import FormInitialView from './form-initial-view';
 import FormNote from './form-note';
+import FormRecurrence from './form-recurrence';
 import FormScheduleEnd from './form-schedule-end';
 import FormScheduleStart from './form-schedule-start';
 import FormScheduleTitle from './form-schedule-title';
@@ -78,6 +79,18 @@ const Component: FC = () => (
       </PluginFormDescription>
       <JotaiSwitch atom={enablesNoteState} label={t('config.section.note.enableLabel')} />
       <FormNote />
+    </PluginFormSection>
+    <PluginFormSection>
+      <PluginFormTitle>{t('config.section.recurrence.title')}</PluginFormTitle>
+      <PluginFormDescription>{t('config.section.recurrence.description')}</PluginFormDescription>
+      <PluginFormDescription last>
+        {t('config.section.recurrence.description2')}
+      </PluginFormDescription>
+      <JotaiSwitch
+        atom={enablesRecurrenceState}
+        label={t('config.section.recurrence.enableLabel')}
+      />
+      <FormRecurrence />
     </PluginFormSection>
     <details className='mt-8'>
       <summary className='font-bold text-lg mb-4 cursor-pointer'>{t('config.section.advanced')}</summary>

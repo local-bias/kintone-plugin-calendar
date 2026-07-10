@@ -2,36 +2,55 @@ import { useCalendar } from '@/desktop/hooks/use-calendar';
 import { getSlotTime } from '@/lib/calendar';
 import { t } from '@/lib/i18n-plugin';
 import allLocales from '@fullcalendar/core/locales-all';
-import jaJP from '@fullcalendar/core/locales/ja';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
+import rrulePlugin from '@fullcalendar/rrule';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useRef } from 'react';
 import {
+  fullcalendarApiAtom,
   fullcalendarRefAtom,
   handleCalendarDateSelectAtom,
   handleCalendarEventAddAtom,
-  textFilteredCalendarEventsAtom,
+  renderableCalendarEventsAtom,
 } from '../../states/calendar';
-import { pluginConditionAtom } from '../../states/kintone';
+import { loginUserAtom, pluginConditionAtom } from '../../states/kintone';
 import DayHeader from './day-header';
 import CalendarEvent from './event';
 
 function FullCalendarRoot() {
   const setFullcalendarRef = useSetAtom(fullcalendarRefAtom);
-  const calendarEvents = useAtomValue(textFilteredCalendarEventsAtom);
+  const calendarEvents = useAtomValue(renderableCalendarEventsAtom);
   const pluginCondition = useAtomValue(pluginConditionAtom);
   const onCalendarDateSelect = useSetAtom(handleCalendarDateSelectAtom);
   const onCalendarEventAdd = useSetAtom(handleCalendarEventAddAtom);
   const { onCalendarEventClick, onCalendarEventChange, onCalendarEventRemove } = useCalendar();
+  const loginUser = useAtomValue(loginUserAtom);
+
+  const locale = (() => {
+    switch (loginUser.language) {
+      case 'ja':
+        return 'ja';
+      case 'zh':
+        return 'zh-cn';
+      case 'zh-TW':
+        return 'zh-tw';
+      case 'es':
+        return 'es';
+      default:
+        return 'en';
+    }
+  })();
 
   return (
     <FullCalendar
       ref={setFullcalendarRef}
-      locale={jaJP}
+      locale={locale}
+      timeZone={loginUser.timezone}
       locales={allLocales}
-      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin]}
       initialView={pluginCondition?.initialView ?? 'timeGridWeek'}
       businessHours={{
         daysOfWeek: pluginCondition?.daysOfWeek,
@@ -85,8 +104,28 @@ function FullCalendarRoot() {
 }
 
 export default function FullCalendarContainer() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const fullcalendarApi = useAtomValue(fullcalendarApiAtom);
+
+  // サイドバーの開閉アニメーションなど、window自体はリサイズされないがコンテナ幅が
+  // 変化するケースをFullCalendarの`handleWindowResize`は検知できないため、
+  // コンテナのサイズ変化を直接監視して再計算させる
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !fullcalendarApi) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      fullcalendarApi.updateSize();
+    });
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [fullcalendarApi]);
+
   return (
-    <div className='p-2 md:p-4'>
+    <div ref={containerRef} className='p-2 md:p-4'>
       <FullCalendarRoot />
     </div>
   );

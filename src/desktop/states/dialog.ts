@@ -1,11 +1,12 @@
+import { extractErrorMessage } from '@/lib/error';
+import { t } from '@/lib/i18n-plugin';
 import { produce } from 'immer';
 import { atom } from 'jotai';
+import { enqueueSnackbar } from 'notistack';
 import { SetStateAction } from 'react';
-import { addNewRecord, reschedule, dateInputToDateTime, dateTimeToDateInput } from '../actions';
+import { addNewRecord, getEventColors, patchMasterException, reschedule } from '../actions';
 import { calendarEventsAtom, PluginCalendarEvent } from './calendar';
 import { appPropertiesAtom, loadingAtom, pluginConditionAtom } from './kintone';
-import { enqueueSnackbar } from 'notistack';
-import { extractErrorMessage } from '@/lib/error';
 
 export const dialogShownAtom = atom<boolean>(false);
 
@@ -78,18 +79,11 @@ export const handleDialogSubmitAtom = atom(null, async (get, set) => {
     const condition = await get(pluginConditionAtom);
     const properties = await get(appPropertiesAtom);
 
-    // 全日イベントの場合、FullCalendarが期待する形式（終了日が翌日の0時0分）に調整
-    const adjustedEvent = produce(currentProps.event, (draft) => {
-      if (draft.allDay && draft.end) {
-        const endDateTime = dateInputToDateTime(draft.end);
-        const adjustedEndDateTime = endDateTime.plus({ days: 1 });
-        draft.end = dateTimeToDateInput(adjustedEndDateTime);
-      }
-    });
+    const calendarEvent = currentProps.event;
 
     if (currentProps.new) {
       const newEvent = await addNewRecord({
-        calendarEvent: adjustedEvent,
+        calendarEvent,
         condition: condition!,
         properties,
       });
@@ -104,16 +98,41 @@ export const handleDialogSubmitAtom = atom(null, async (get, set) => {
           draft[index] = newEvent;
         })
       );
+
+      // 「この回のみ編集」で分離したオカレンスの場合、マスター側の除外リストにも追記して
+      // 元の(仮想の)オカレンスがこの新規レコードと重複表示されないようにする。
+      if (newEvent.extendedProps?.recurrence?.kind === 'override') {
+        const { masterId, originalStart } = newEvent.extendedProps.recurrence;
+        const updatedMaster = await patchMasterException({
+          calendarEvents: get(calendarEventsAtom),
+          masterId,
+          occurrenceStart: originalStart,
+          condition: condition!,
+          properties,
+        });
+        set(calendarEventsAtom, (current) =>
+          produce(current, (draft) => {
+            const index = draft.findIndex((event) => event.id === updatedMaster.id);
+            if (index !== -1) draft[index] = updatedMaster;
+          })
+        );
+      }
     } else {
       await reschedule({
-        calendarEvent: adjustedEvent,
+        calendarEvent,
         condition: condition!,
         properties,
       });
+      // getCalendarEventFromKintoneRecord(読み込み時の変換)でしか色は計算されないため、
+      // ここで明示的に計算しないとカテゴリー変更が次のリロードまで書式に反映されない。
+      const updatedEvent = {
+        ...calendarEvent,
+        ...getEventColors({ value: calendarEvent.category, condition: condition!, properties }),
+      };
       set(calendarEventsAtom, (current) =>
         produce(current, (draft) => {
           const index = draft.findIndex((event) => event.id === currentProps.event.id);
-          draft[index] = adjustedEvent;
+          draft[index] = updatedEvent;
         })
       );
     }
@@ -122,7 +141,7 @@ export const handleDialogSubmitAtom = atom(null, async (get, set) => {
     set(dialogPropsAtom, { new: false, event: {} });
   } catch (error) {
     console.error(error);
-    enqueueSnackbar(`レコードの保存に失敗しました: ${extractErrorMessage(error)}`, {
+    enqueueSnackbar(t('desktop.error.recordSaveFailed', extractErrorMessage(error)), {
       variant: 'error',
     });
   } finally {

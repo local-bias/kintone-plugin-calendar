@@ -53,6 +53,20 @@ export const stringFieldsAtom = eagerAtom((get) => {
   return fields.filter((field) => types.includes(field.type)) as TextFieldProperty[];
 });
 
+/**
+ * 繰り返し予定の情報(JSON)を保存できるフィールド。
+ * RICH_TEXTはHTMLエディタでJSON文字列が壊れる可能性があるため除外する。
+ */
+export const recurrenceFieldsAtom = eagerAtom((get) => {
+  const fields = get(appFieldsAtom);
+  const types: kintoneAPI.FieldPropertyType[] = ['SINGLE_LINE_TEXT', 'MULTI_LINE_TEXT'];
+
+  return fields.filter((field) => types.includes(field.type)) as (
+    | kintoneAPI.property.SingleLineText
+    | kintoneAPI.property.MultiLineText
+  )[];
+});
+
 export const checkboxFieldsAtom = eagerAtom((get) => {
   const fields = get(appFieldsAtom);
   return fields.filter((field) => field.type === 'CHECK_BOX') as kintoneAPI.property.CheckBox[];

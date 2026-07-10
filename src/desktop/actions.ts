@@ -1,9 +1,24 @@
+import {
+  calendarDateInputToDateTime,
+  calendarEventDatesToKintone,
+  CalendarFieldType,
+  dateTimeToCalendarValue,
+  getDefaultEndDate as getDefaultEndDateInZone,
+  getDefaultStartDate as getDefaultStartDateInZone,
+  getLoginUserTimezone,
+  kintoneRecordDatesToCalendar,
+} from '@/desktop/date-conversion';
+import {
+  applyRecurrenceMetaToEventInput,
+  parseRecurrenceMeta,
+  RecurrenceMasterMeta,
+  serializeRecurrenceMeta,
+} from '@/desktop/recurrence';
 import { GUEST_SPACE_ID } from '@/lib/global';
 import { htmlToMarkdown, markdownToHtml } from '@/lib/html-markdown-converter';
 import { t } from '@/lib/i18n-plugin';
 import { getSortedOptions } from '@/lib/utils';
 import { PluginCondition } from '@/schema/plugin-config';
-import { DateInput } from '@fullcalendar/core';
 import {
   addRecord,
   AddRecordParams,
@@ -13,39 +28,28 @@ import {
   updateRecord,
 } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
-import { DateTime } from 'luxon';
 import { PluginCalendarEvent } from './states/calendar';
 
-export const getDefaultStartDate = (): Date => {
-  const now = DateTime.local();
-  const { minute } = now;
-
-  if ([0, 30].includes(minute)) {
-    return now.toJSDate();
-  } else if (minute < 30) {
-    return now.set({ minute: 30 }).toJSDate();
-  }
-  return now.plus({ hours: 1 }).set({ minute: 0 }).toJSDate();
+const toCalendarFieldType = (property: kintoneAPI.FieldProperty | undefined): CalendarFieldType | undefined => {
+  if (!property) return undefined;
+  return property.type === 'DATE' ? 'DATE' : 'DATETIME';
 };
 
-export const getDefaultEndDate = (): Date => {
-  const now = DateTime.local();
-  const { minute } = now;
-
-  if (minute === 0) {
-    return now.set({ minute: 30 }).toJSDate();
-  } else if (minute === 30) {
-    return now.plus({ hours: 1 }).set({ minute: 0 }).toJSDate();
-  } else if (minute < 30) {
-    return now.plus({ hours: 1 }).set({ minute: 30 }).toJSDate();
-  }
-  return now.plus({ hours: 2 }).set({ minute: 0 }).toJSDate();
-};
+export const getDefaultStartDate = (): string => getDefaultStartDateInZone(getLoginUserTimezone());
+export const getDefaultEndDate = (): string => getDefaultEndDateInZone(getLoginUserTimezone());
 
 export const completeCalendarEvent = (eventInput: PluginCalendarEvent) => {
   return produce(eventInput, (draft) => {
     if (!draft.start) draft.start = draft.end;
-    if (!draft.end) draft.end = draft.start;
+    if (!draft.end) {
+      if (draft.allDay && draft.start) {
+        const zone = getLoginUserTimezone();
+        const startOfNextDay = calendarDateInputToDateTime(draft.start, zone).plus({ days: 1 });
+        draft.end = dateTimeToCalendarValue(startOfNextDay, true);
+      } else {
+        draft.end = draft.start;
+      }
+    }
   });
 };
 
@@ -56,18 +60,23 @@ export const getKintoneRecordFromCalendarEvent = async (params: {
 }): Promise<AddRecordParams['record']> => {
   const { calendarEvent, condition, properties } = params;
   const { calendarEvent: calendarConfig } = condition;
-  let start = calendarEvent.start ? convertCalendarDateIntoKintoneDate(calendarEvent.start) : null;
-  let end = calendarEvent.end ? convertCalendarDateIntoKintoneDate(calendarEvent.end) : null;
 
   const startProperty = properties[calendarConfig.startField];
   const endProperty = properties[calendarConfig.endField];
 
-  if (startProperty.type === 'DATE') {
-    start = start?.split('T')[0] ?? null;
-  }
-  if (endProperty.type === 'DATE') {
-    end = end?.split('T')[0] ?? null;
-  }
+  // DATE型フィールドが使用されている場合、フィールド型に関わらず全日イベントとして扱う
+  // (読み込み側 getCalendarEventFromKintoneRecord と同じ強制ルール)
+  const allDay =
+    startProperty.type === 'DATE' || endProperty?.type === 'DATE' || !!calendarEvent.allDay;
+
+  const { start, end } = calendarEventDatesToKintone({
+    start: calendarEvent.start,
+    end: calendarEvent.end,
+    allDay,
+    startFieldType: toCalendarFieldType(startProperty)!,
+    endFieldType: toCalendarFieldType(endProperty),
+    zone: getLoginUserTimezone(),
+  });
 
   const record: AddRecordParams['record'] = {};
 
@@ -83,6 +92,13 @@ export const getKintoneRecordFromCalendarEvent = async (params: {
   if (condition.enablesAllDay && condition.allDayOption && calendarConfig.allDayField) {
     record[calendarConfig.allDayField] = {
       value: calendarEvent.allDay ? [condition.allDayOption] : [],
+    };
+  }
+  if (condition.enablesRecurrence && calendarConfig.recurrenceField) {
+    record[calendarConfig.recurrenceField] = {
+      value: calendarEvent.extendedProps?.recurrence
+        ? serializeRecurrenceMeta(calendarEvent.extendedProps.recurrence)
+        : '',
     };
   }
   if (condition.enablesNote && calendarConfig.noteField) {
@@ -128,10 +144,37 @@ export const getCalendarEventFromKintoneRecord = async (params: {
   const rawNote = record[condition.calendarEvent.noteField]?.value as string | undefined;
   const noteValue = rawNote && isRichText ? await htmlToMarkdown(rawNote) : rawNote;
 
+  // 日付フィールドが使用されている場合、フィールド型に関わらず全日イベントとして扱う
+  let allDay: boolean;
+  if (startProperty.type === 'DATE' || endProperty?.type === 'DATE') {
+    allDay = true;
+  } else if (condition.enablesAllDay && condition.allDayOption) {
+    const options = record[condition.calendarEvent.allDayField]?.value as string[] | undefined;
+    allDay = !!options?.includes(condition.allDayOption);
+  } else {
+    allDay = false;
+  }
+
+  const { start, end } = kintoneRecordDatesToCalendar({
+    startValue: record[condition.calendarEvent.startField]?.value as string | undefined,
+    endValue: record[condition.calendarEvent.endField]?.value as string | undefined,
+    allDay,
+    zone: getLoginUserTimezone(),
+  });
+
+  // 生の(未加工の)繰り返しメタ情報。start/endは常にこのレコード自身の値(マスターの場合は
+  // 第1回の日時)を保持し、FullCalendar描画用のrrule/duration変換はレンダリング直前の
+  // renderableCalendarEventsAtom(states/calendar.ts)でのみ行う。
+  const recurrenceMeta = condition.calendarEvent.recurrenceField
+    ? parseRecurrenceMeta(record[condition.calendarEvent.recurrenceField]?.value as string | undefined)
+    : null;
+
   const calendarEvent: PluginCalendarEvent = {
     id: record.$id.value as string | undefined,
-    start: record[condition.calendarEvent.startField]?.value as string | undefined,
-    end: record[condition.calendarEvent.endField]?.value as string | undefined,
+    start,
+    end,
+    allDay,
+    ...(recurrenceMeta ? { extendedProps: { recurrence: recurrenceMeta } } : {}),
     title: record[condition.calendarEvent.inputTitleField]?.value as string | undefined,
     note: noteValue,
     category: record[condition.calendarEvent.categoryField]?.value as string | undefined,
@@ -146,14 +189,6 @@ export const getCalendarEventFromKintoneRecord = async (params: {
     ),
     ...colors,
   };
-
-  // 日付フィールドが使用されている場合、自動的に全日イベントとする
-  if (startProperty.type === 'DATE' || endProperty.type === 'DATE') {
-    calendarEvent.allDay = true;
-  } else if (condition.enablesAllDay && condition.allDayOption) {
-    const options = record[condition.calendarEvent.allDayField].value as string[];
-    calendarEvent.allDay = options.includes(condition.allDayOption);
-  }
 
   process.env.NODE_ENV === 'development' &&
     console.info('♻ kintoneレコードがカレンダーイベントに変換されました', {
@@ -174,6 +209,9 @@ export const addNewRecord = async (params: {
   const newEvent = {
     ...calendarEvent,
     title: calendarEvent.title || t('desktop.calendar.noTitle'),
+    // getCalendarEventFromKintoneRecord(読み込み時の変換)でしか色は計算されないため、
+    // ここで明示的に計算しないと次のリロードまで書式(背景色等)が反映されない。
+    ...getEventColors({ value: calendarEvent.category, condition, properties }),
   };
 
   const record = await getKintoneRecordFromCalendarEvent({
@@ -215,6 +253,65 @@ export const reschedule = async (params: {
     guestSpaceId: GUEST_SPACE_ID,
     debug: process.env.NODE_ENV === 'development',
   });
+};
+
+/**
+ * 繰り返し予定の「この回のみ」を編集するためのkintone未登録の下書きイベントを生成します。
+ *
+ * マスターの各項目(タイトル・備考・カテゴリー等)を複製しつつ、日時だけをクリックされた
+ * オカレンス自身の日時に差し替えます。ここではkintoneへの書き込みは一切行わず(キャンセル時に
+ * 何も後始末が要らないようにするため)、ダイアログ保存時に他の新規イベントと同じ
+ * `addNewRecord`経路でレコード化されます。
+ */
+export const buildOverrideDraftEvent = (params: {
+  master: PluginCalendarEvent;
+  occurrenceStart: string;
+  occurrenceEnd: string;
+}): PluginCalendarEvent => {
+  const { master, occurrenceStart, occurrenceEnd } = params;
+  if (!master.id) {
+    throw t('desktop.error.recurrenceMasterNotFound');
+  }
+
+  return {
+    ...master,
+    id: undefined,
+    start: occurrenceStart,
+    end: occurrenceEnd,
+    extendedProps: {
+      recurrence: { kind: 'override', masterId: master.id, originalStart: occurrenceStart },
+    },
+  };
+};
+
+/**
+ * マスターの`exceptions`(除外/分離済みオカレンス一覧)に1件追加してkintoneへ保存します。
+ * 「この回のみ編集」の保存確定時、および「この回のみ削除」で呼び出されます。
+ */
+export const patchMasterException = async (params: {
+  calendarEvents: PluginCalendarEvent[];
+  masterId: string;
+  occurrenceStart: string;
+  condition: PluginCondition;
+  properties: kintoneAPI.FieldProperties;
+}): Promise<PluginCalendarEvent> => {
+  const { calendarEvents, masterId, occurrenceStart, condition, properties } = params;
+
+  const master = calendarEvents.find((event) => event.id === masterId);
+  if (!master || master.extendedProps?.recurrence?.kind !== 'master') {
+    throw t('desktop.error.recurrenceMasterNotFound');
+  }
+
+  const updatedMaster = produce(master, (draft) => {
+    const recurrence = draft.extendedProps!.recurrence as RecurrenceMasterMeta;
+    if (!recurrence.exceptions.includes(occurrenceStart)) {
+      recurrence.exceptions.push(occurrenceStart);
+    }
+  });
+
+  await reschedule({ calendarEvent: updatedMaster, condition, properties });
+
+  return updatedMaster;
 };
 
 const getForegroundColor = (backgroundColor: string) => {
@@ -280,32 +377,3 @@ export const getEventColors = (params: {
   };
 };
 
-const convertCalendarDateIntoKintoneDate = (eventDate: DateInput): string | null => {
-  if (typeof eventDate === 'string') {
-    return eventDate;
-  } else if (typeof eventDate === 'number') {
-    return DateTime.fromSeconds(eventDate).toISO();
-  } else if (Array.isArray(eventDate)) {
-    return DateTime.local(eventDate[0], eventDate[1], eventDate[2]).toISO();
-  } else if (typeof eventDate === 'object') {
-    return DateTime.fromJSDate(eventDate).toISO();
-  }
-  return eventDate;
-};
-
-export const dateInputToDateTime = (dateInput: DateInput): DateTime => {
-  if (typeof dateInput === 'string') {
-    return DateTime.fromISO(dateInput);
-  } else if (typeof dateInput === 'number') {
-    return DateTime.fromSeconds(dateInput);
-  } else if (Array.isArray(dateInput)) {
-    return DateTime.local(dateInput[0], dateInput[1], dateInput[2]);
-  } else if (typeof dateInput === 'object') {
-    return DateTime.fromJSDate(dateInput);
-  }
-  return dateInput;
-};
-
-export const dateTimeToDateInput = (dateTime: DateTime): DateInput => {
-  return dateTime.toJSDate();
-};

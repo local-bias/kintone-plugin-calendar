@@ -1,10 +1,19 @@
+import { calendarDateInputToDateTime, getLoginUserTimezone } from '@/desktop/date-conversion';
 import { EventContentArg } from '@fullcalendar/core';
-import { DateTime } from 'luxon';
 
 export default function CalendarEvent(props: EventContentArg) {
   const { allDay, backgroundColor, title } = props.event;
-  const start = props.event.start ? DateTime.fromJSDate(props.event.start).setLocale('ja') : null;
-  const end = props.event.end ? DateTime.fromJSDate(props.event.end).setLocale('ja') : null;
+  // FullCalendar invokes eventContent renderers via its own internal (preact-based)
+  // ContentInjector, not through @fullcalendar/react's hook-aware bridge — React hooks
+  // (e.g. useAtomValue) throw "Invalid hook call" here, so read the timezone directly.
+  const timezone = getLoginUserTimezone();
+  // props.event.start/end are FullCalendar's UTC-coerced marker Dates (see date-conversion.ts).
+  const start = props.event.start
+    ? calendarDateInputToDateTime(props.event.start, timezone).setLocale('ja')
+    : null;
+  const end = props.event.end
+    ? calendarDateInputToDateTime(props.event.end, timezone).setLocale('ja')
+    : null;
   const isDayGridMonth = props.view.type === 'dayGridMonth';
 
   return (

@@ -102,6 +102,7 @@ export const slotMaxTimeState = getConditionPropertyAtom('slotMaxTime');
 export const colorsAtom = getConditionPropertyAtom('colors');
 export const daysOfWeekAtom = getConditionPropertyAtom('daysOfWeek');
 export const firstDayAtom = getConditionPropertyAtom('firstDay');
+export const enablesRecurrenceState = getConditionPropertyAtom('enablesRecurrence');
 
 export const calendarTitleState = getCalendarEventAtom('inputTitleField');
 export const calendarStartState = getCalendarEventAtom('startField');
@@ -109,3 +110,4 @@ export const calendarEndState = getCalendarEventAtom('endField');
 export const calendarAllDayState = getCalendarEventAtom('allDayField');
 export const calendarNoteState = getCalendarEventAtom('noteField');
 export const calendarCategoryState = getCalendarEventAtom('categoryField');
+export const calendarRecurrenceState = getCalendarEventAtom('recurrenceField');

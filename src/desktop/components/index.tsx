@@ -13,6 +13,7 @@ import { useInitialize } from '../hooks/use-initialize';
 import { useIsMobile } from '../hooks/use-mobile';
 import Calendar from './calendar';
 import Dialog from './dialog';
+import OccurrenceScopeDialog from './dialog/occurrence-scope-dialog';
 import Fab from './fab';
 import Sidebar from './sidebar';
 
@@ -23,6 +24,7 @@ function DesktopLayout({ className }: { className?: string; }) {
   return (
     <>
       <Dialog />
+      <OccurrenceScopeDialog />
       <div className='🐸'>
         <div
           className={cn(`grid grid-cols-[auto_1fr] ${className}`, {
@@ -131,6 +133,47 @@ const StyledDesktopLayout = styled(DesktopLayout)`
   .fc-event-time,
   .fc-event-title-container {
     padding: 0.1rem 0.25rem;
+  }
+
+  /*
+   * MUI DateCalendar (sidebar mini calendar) resets.
+   * kintone's own page styles bleed into the plugin DOM (no shadow root),
+   * and its default rules for "button"/"span" width & line-height can
+   * override MUI's own fixed sizing on individual axes, which breaks the
+   * header label (wraps) and the day cells (circle becomes an ellipse).
+   * These are re-asserted with !important to win that cascade regardless
+   * of the kintone theme in use.
+   */
+  .MuiPickersCalendarHeader-root {
+    padding-left: 8px !important;
+    padding-right: 4px !important;
+  }
+
+  .MuiPickersCalendarHeader-labelContainer {
+    overflow: visible !important;
+  }
+
+  .MuiPickersCalendarHeader-label {
+    white-space: nowrap !important;
+  }
+
+  .MuiDayCalendar-weekDayLabel,
+  .MuiPickersDay-root {
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    line-height: 28px !important;
+    padding: 0 !important;
+    margin: 0 2px !important;
+  }
+
+  .MuiPickersDay-root {
+    border-radius: 50% !important;
   }
 `;
 

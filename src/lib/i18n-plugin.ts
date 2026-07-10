@@ -18,6 +18,8 @@ const ui = mergeDeep(commonUi, {
     // Desktop - Sidebar
     'desktop.sidebar.filterSchedule': '予定を絞り込む',
     'desktop.sidebar.category': 'カテゴリー',
+    'desktop.sidebar.collapse': 'サイドバーを閉じる',
+    'desktop.sidebar.expand': 'サイドバーを開く',
 
     // Desktop - Fab
     'desktop.fab.addSchedule': 'スケジュールを追加する',
@@ -31,6 +33,28 @@ const ui = mergeDeep(commonUi, {
     'desktop.dialog.endDateTime': '終了日時',
     'desktop.dialog.category': 'カテゴリー',
     'desktop.dialog.allDay': '終日',
+
+    // Desktop - Recurrence input
+    'desktop.dialog.recurrence.enable': '繰り返す',
+    'desktop.dialog.recurrence.frequency': '頻度',
+    'desktop.dialog.recurrence.frequency.daily': '毎日',
+    'desktop.dialog.recurrence.frequency.weekly': '毎週',
+    'desktop.dialog.recurrence.frequency.monthly': '毎月',
+    'desktop.dialog.recurrence.frequency.yearly': '毎年',
+    'desktop.dialog.recurrence.interval': '間隔',
+    'desktop.dialog.recurrence.monthlyMode.dayOfMonth': '同じ日付',
+    'desktop.dialog.recurrence.monthlyMode.weekdayOfMonth': '同じ週・曜日',
+    'desktop.dialog.recurrence.end.never': '終了しない',
+    'desktop.dialog.recurrence.end.onDate': '終了日を指定',
+    'desktop.dialog.recurrence.end.afterCount': '回数を指定',
+
+    // Desktop - Occurrence scope dialog (recurring events)
+    'desktop.dialog.occurrenceScope.title': 'この予定は繰り返し予定です',
+    'desktop.dialog.occurrenceScope.editThis': 'この回のみ編集',
+    'desktop.dialog.occurrenceScope.deleteThis': 'この回のみ削除',
+    'desktop.dialog.occurrenceScope.editSeries': 'シリーズ全体を編集',
+    'desktop.dialog.occurrenceScope.deleteSeries': 'シリーズ全体を削除',
+    'desktop.dialog.occurrenceScope.cancel': 'キャンセル',
 
     // Desktop - Toast messages
     'desktop.toast.eventCopied': 'イベントのコピーしました',
@@ -47,6 +71,8 @@ const ui = mergeDeep(commonUi, {
       '対象イベントに紐づくレコード情報の取得に失敗しました、一覧を再表示した上で再度お試しください',
     'desktop.error.scheduleRecordNotFound':
       'スケジュールに紐づくレコードが存在しません、一覧を更新し、再度お試しください',
+    'desktop.error.recurrenceMasterNotFound':
+      '繰り返し予定の元となるレコードが見つかりませんでした、一覧を更新し、再度お試しください',
     'desktop.error.eventCopySuffix': ' (コピー)',
 
     // Config - Loading
@@ -107,6 +133,12 @@ const ui = mergeDeep(commonUi, {
     'config.section.note.description2':
       '使用できるフィールドタイプは、文字列１行フィールド、文字列複数行フィールド、リッチテキストです',
     'config.section.note.enableLabel': 'スケジュールの備考を有効にする',
+    'config.section.recurrence.title': '繰り返し予定',
+    'config.section.recurrence.description':
+      'カレンダーから毎週・毎月などの繰り返し予定を作成できるようにします',
+    'config.section.recurrence.description2':
+      '使用できるフィールドタイプは、文字列1行フィールド、文字列複数行フィールドです。このフィールドにはプラグイン内部用のデータが保存されるため、レコード一覧などで直接編集しないでください',
+    'config.section.recurrence.enableLabel': '繰り返し予定を有効にする',
     'config.section.advanced': '高度な設定',
     'config.section.initialView.title': '初期表示するカレンダーの種類',
     'config.section.initialView.description': '初期表示するカレンダーの種類を選択してください',
@@ -190,6 +222,8 @@ const ui = mergeDeep(commonUi, {
     // Desktop - Sidebar
     'desktop.sidebar.filterSchedule': 'Filter schedules',
     'desktop.sidebar.category': 'Category',
+    'desktop.sidebar.collapse': 'Collapse sidebar',
+    'desktop.sidebar.expand': 'Expand sidebar',
 
     // Desktop - Fab
     'desktop.fab.addSchedule': 'Add schedule',
@@ -203,6 +237,28 @@ const ui = mergeDeep(commonUi, {
     'desktop.dialog.endDateTime': 'End date/time',
     'desktop.dialog.category': 'Category',
     'desktop.dialog.allDay': 'All day',
+
+    // Desktop - Recurrence input
+    'desktop.dialog.recurrence.enable': 'Repeat',
+    'desktop.dialog.recurrence.frequency': 'Frequency',
+    'desktop.dialog.recurrence.frequency.daily': 'Daily',
+    'desktop.dialog.recurrence.frequency.weekly': 'Weekly',
+    'desktop.dialog.recurrence.frequency.monthly': 'Monthly',
+    'desktop.dialog.recurrence.frequency.yearly': 'Yearly',
+    'desktop.dialog.recurrence.interval': 'Interval',
+    'desktop.dialog.recurrence.monthlyMode.dayOfMonth': 'Same day of month',
+    'desktop.dialog.recurrence.monthlyMode.weekdayOfMonth': 'Same week & weekday',
+    'desktop.dialog.recurrence.end.never': 'Never ends',
+    'desktop.dialog.recurrence.end.onDate': 'Ends on date',
+    'desktop.dialog.recurrence.end.afterCount': 'Ends after N occurrences',
+
+    // Desktop - Occurrence scope dialog (recurring events)
+    'desktop.dialog.occurrenceScope.title': 'This is a recurring event',
+    'desktop.dialog.occurrenceScope.editThis': 'Edit this occurrence',
+    'desktop.dialog.occurrenceScope.deleteThis': 'Delete this occurrence',
+    'desktop.dialog.occurrenceScope.editSeries': 'Edit the entire series',
+    'desktop.dialog.occurrenceScope.deleteSeries': 'Delete the entire series',
+    'desktop.dialog.occurrenceScope.cancel': 'Cancel',
 
     // Desktop - Toast messages
     'desktop.toast.eventCopied': 'Event copied',
@@ -219,6 +275,8 @@ const ui = mergeDeep(commonUi, {
       'Failed to get record information for the target event. Please refresh the list and try again.',
     'desktop.error.scheduleRecordNotFound':
       'No record exists for this schedule. Please refresh the list and try again.',
+    'desktop.error.recurrenceMasterNotFound':
+      'The source record for this recurring event was not found. Please refresh the list and try again.',
     'desktop.error.eventCopySuffix': ' (Copy)',
 
     // Config - Loading
@@ -276,6 +334,12 @@ const ui = mergeDeep(commonUi, {
     'config.section.note.description2':
       'Available field types: Single line text, Multi-line text, Rich text',
     'config.section.note.enableLabel': 'Enable schedule notes',
+    'config.section.recurrence.title': 'Recurring events',
+    'config.section.recurrence.description':
+      'Allow creating recurring events (weekly, monthly, etc.) from the calendar',
+    'config.section.recurrence.description2':
+      'Available field types: Single line text, Multi-line text. This field stores internal plugin data — do not edit it directly from the record list',
+    'config.section.recurrence.enableLabel': 'Enable recurring events',
     'config.section.advanced': 'Advanced settings',
     'config.section.initialView.title': 'Initial calendar view type',
     'config.section.initialView.description': 'Select the initial calendar view type',
@@ -359,6 +423,8 @@ const ui = mergeDeep(commonUi, {
     // Desktop - Sidebar
     'desktop.sidebar.filterSchedule': 'Filtrar horarios',
     'desktop.sidebar.category': 'Categoría',
+    'desktop.sidebar.collapse': 'Contraer barra lateral',
+    'desktop.sidebar.expand': 'Expandir barra lateral',
 
     // Desktop - Fab
     'desktop.fab.addSchedule': 'Agregar horario',
@@ -372,6 +438,28 @@ const ui = mergeDeep(commonUi, {
     'desktop.dialog.endDateTime': 'Fecha/hora de fin',
     'desktop.dialog.category': 'Categoría',
     'desktop.dialog.allDay': 'Todo el día',
+
+    // Desktop - Recurrence input
+    'desktop.dialog.recurrence.enable': 'Repetir',
+    'desktop.dialog.recurrence.frequency': 'Frecuencia',
+    'desktop.dialog.recurrence.frequency.daily': 'Diariamente',
+    'desktop.dialog.recurrence.frequency.weekly': 'Semanalmente',
+    'desktop.dialog.recurrence.frequency.monthly': 'Mensualmente',
+    'desktop.dialog.recurrence.frequency.yearly': 'Anualmente',
+    'desktop.dialog.recurrence.interval': 'Intervalo',
+    'desktop.dialog.recurrence.monthlyMode.dayOfMonth': 'Mismo día del mes',
+    'desktop.dialog.recurrence.monthlyMode.weekdayOfMonth': 'Misma semana y día',
+    'desktop.dialog.recurrence.end.never': 'Nunca termina',
+    'desktop.dialog.recurrence.end.onDate': 'Termina en una fecha',
+    'desktop.dialog.recurrence.end.afterCount': 'Termina después de N repeticiones',
+
+    // Desktop - Occurrence scope dialog (recurring events)
+    'desktop.dialog.occurrenceScope.title': 'Este es un evento recurrente',
+    'desktop.dialog.occurrenceScope.editThis': 'Editar solo esta ocurrencia',
+    'desktop.dialog.occurrenceScope.deleteThis': 'Eliminar solo esta ocurrencia',
+    'desktop.dialog.occurrenceScope.editSeries': 'Editar toda la serie',
+    'desktop.dialog.occurrenceScope.deleteSeries': 'Eliminar toda la serie',
+    'desktop.dialog.occurrenceScope.cancel': 'Cancelar',
 
     // Desktop - Toast messages
     'desktop.toast.eventCopied': 'Evento copiado',
@@ -388,6 +476,8 @@ const ui = mergeDeep(commonUi, {
       'Error al obtener información del registro. Por favor actualice la lista e intente de nuevo.',
     'desktop.error.scheduleRecordNotFound':
       'No existe un registro para este horario. Por favor actualice la lista e intente de nuevo.',
+    'desktop.error.recurrenceMasterNotFound':
+      'No se encontró el registro de origen de este evento recurrente. Por favor actualice la lista e intente de nuevo.',
     'desktop.error.eventCopySuffix': ' (Copia)',
 
     // Config - Loading
@@ -446,6 +536,12 @@ const ui = mergeDeep(commonUi, {
     'config.section.note.description2':
       'Tipos de campo disponibles: Texto de una línea, Texto multilínea, Texto enriquecido',
     'config.section.note.enableLabel': 'Habilitar notas del horario',
+    'config.section.recurrence.title': 'Eventos recurrentes',
+    'config.section.recurrence.description':
+      'Permite crear eventos recurrentes (semanales, mensuales, etc.) desde el calendario',
+    'config.section.recurrence.description2':
+      'Tipos de campo disponibles: Texto de una línea, Texto multilínea. Este campo almacena datos internos del plugin — no lo edite directamente desde la lista de registros',
+    'config.section.recurrence.enableLabel': 'Habilitar eventos recurrentes',
     'config.section.advanced': 'Configuración avanzada',
     'config.section.initialView.title': 'Tipo de vista inicial del calendario',
     'config.section.initialView.description': 'Seleccione el tipo de vista inicial del calendario',
@@ -530,6 +626,8 @@ const ui = mergeDeep(commonUi, {
     // Desktop - Sidebar
     'desktop.sidebar.filterSchedule': '筛选日程',
     'desktop.sidebar.category': '类别',
+    'desktop.sidebar.collapse': '收起侧边栏',
+    'desktop.sidebar.expand': '展开侧边栏',
 
     // Desktop - Fab
     'desktop.fab.addSchedule': '添加日程',
@@ -544,6 +642,28 @@ const ui = mergeDeep(commonUi, {
     'desktop.dialog.category': '类别',
     'desktop.dialog.allDay': '全天',
 
+    // Desktop - Recurrence input
+    'desktop.dialog.recurrence.enable': '重复',
+    'desktop.dialog.recurrence.frequency': '频率',
+    'desktop.dialog.recurrence.frequency.daily': '每天',
+    'desktop.dialog.recurrence.frequency.weekly': '每周',
+    'desktop.dialog.recurrence.frequency.monthly': '每月',
+    'desktop.dialog.recurrence.frequency.yearly': '每年',
+    'desktop.dialog.recurrence.interval': '间隔',
+    'desktop.dialog.recurrence.monthlyMode.dayOfMonth': '每月同一天',
+    'desktop.dialog.recurrence.monthlyMode.weekdayOfMonth': '每月同一周同一天',
+    'desktop.dialog.recurrence.end.never': '永不结束',
+    'desktop.dialog.recurrence.end.onDate': '指定结束日期',
+    'desktop.dialog.recurrence.end.afterCount': '指定重复次数',
+
+    // Desktop - Occurrence scope dialog (recurring events)
+    'desktop.dialog.occurrenceScope.title': '这是一个重复日程',
+    'desktop.dialog.occurrenceScope.editThis': '仅编辑此次',
+    'desktop.dialog.occurrenceScope.deleteThis': '仅删除此次',
+    'desktop.dialog.occurrenceScope.editSeries': '编辑整个系列',
+    'desktop.dialog.occurrenceScope.deleteSeries': '删除整个系列',
+    'desktop.dialog.occurrenceScope.cancel': '取消',
+
     // Desktop - Toast messages
     'desktop.toast.eventCopied': '事件已复制',
     'desktop.toast.recordDeleted': '记录删除成功',
@@ -557,6 +677,7 @@ const ui = mergeDeep(commonUi, {
     'desktop.error.cannotCopyNewEvent': '无法复制新事件',
     'desktop.error.eventRecordNotFound': '获取事件记录信息失败，请刷新列表后重试。',
     'desktop.error.scheduleRecordNotFound': '此日程无对应记录，请刷新列表后重试。',
+    'desktop.error.recurrenceMasterNotFound': '未找到此重复日程的源记录，请刷新列表后重试。',
     'desktop.error.eventCopySuffix': '（副本）',
 
     // Config - Loading
@@ -607,6 +728,11 @@ const ui = mergeDeep(commonUi, {
     'config.section.note.description': '启用可从日历编辑的日程备注',
     'config.section.note.description2': '可用字段类型：单行文本、多行文本、富文本',
     'config.section.note.enableLabel': '启用日程备注',
+    'config.section.recurrence.title': '重复日程',
+    'config.section.recurrence.description': '允许从日历创建每周、每月等重复日程',
+    'config.section.recurrence.description2':
+      '可用字段类型：单行文本、多行文本。此字段保存插件内部数据，请勿在记录列表中直接编辑',
+    'config.section.recurrence.enableLabel': '启用重复日程',
     'config.section.advanced': '高级设置',
     'config.section.initialView.title': '初始日历视图类型',
     'config.section.initialView.description': '选择初始日历视图类型',
@@ -685,6 +811,8 @@ const ui = mergeDeep(commonUi, {
     // Desktop - Sidebar
     'desktop.sidebar.filterSchedule': '篩選行程',
     'desktop.sidebar.category': '類別',
+    'desktop.sidebar.collapse': '收合側邊欄',
+    'desktop.sidebar.expand': '展開側邊欄',
 
     // Desktop - Fab
     'desktop.fab.addSchedule': '新增行程',
@@ -699,6 +827,28 @@ const ui = mergeDeep(commonUi, {
     'desktop.dialog.category': '類別',
     'desktop.dialog.allDay': '整天',
 
+    // Desktop - Recurrence input
+    'desktop.dialog.recurrence.enable': '重複',
+    'desktop.dialog.recurrence.frequency': '頻率',
+    'desktop.dialog.recurrence.frequency.daily': '每天',
+    'desktop.dialog.recurrence.frequency.weekly': '每週',
+    'desktop.dialog.recurrence.frequency.monthly': '每月',
+    'desktop.dialog.recurrence.frequency.yearly': '每年',
+    'desktop.dialog.recurrence.interval': '間隔',
+    'desktop.dialog.recurrence.monthlyMode.dayOfMonth': '每月同一天',
+    'desktop.dialog.recurrence.monthlyMode.weekdayOfMonth': '每月同一週同一天',
+    'desktop.dialog.recurrence.end.never': '永不結束',
+    'desktop.dialog.recurrence.end.onDate': '指定結束日期',
+    'desktop.dialog.recurrence.end.afterCount': '指定重複次數',
+
+    // Desktop - Occurrence scope dialog (recurring events)
+    'desktop.dialog.occurrenceScope.title': '這是一個重複行程',
+    'desktop.dialog.occurrenceScope.editThis': '僅編輯此次',
+    'desktop.dialog.occurrenceScope.deleteThis': '僅刪除此次',
+    'desktop.dialog.occurrenceScope.editSeries': '編輯整個系列',
+    'desktop.dialog.occurrenceScope.deleteSeries': '刪除整個系列',
+    'desktop.dialog.occurrenceScope.cancel': '取消',
+
     // Desktop - Toast messages
     'desktop.toast.eventCopied': '事件已複製',
     'desktop.toast.recordDeleted': '記錄刪除成功',
@@ -712,6 +862,7 @@ const ui = mergeDeep(commonUi, {
     'desktop.error.cannotCopyNewEvent': '無法複製新事件',
     'desktop.error.eventRecordNotFound': '取得事件記錄資訊失敗，請重新整理列表後再試。',
     'desktop.error.scheduleRecordNotFound': '此行程無對應記錄，請重新整理列表後再試。',
+    'desktop.error.recurrenceMasterNotFound': '找不到此重複行程的來源記錄，請重新整理列表後再試。',
     'desktop.error.eventCopySuffix': '（副本）',
 
     // Config - Loading
@@ -762,6 +913,11 @@ const ui = mergeDeep(commonUi, {
     'config.section.note.description': '啟用可從行事曆編輯的行程備註',
     'config.section.note.description2': '可用欄位類型：單行文字、多行文字、富文字',
     'config.section.note.enableLabel': '啟用行程備註',
+    'config.section.recurrence.title': '重複行程',
+    'config.section.recurrence.description': '允許從行事曆建立每週、每月等重複行程',
+    'config.section.recurrence.description2':
+      '可用欄位類型：單行文字、多行文字。此欄位保存外掛內部資料，請勿在記錄清單中直接編輯',
+    'config.section.recurrence.enableLabel': '啟用重複行程',
     'config.section.advanced': '進階設定',
     'config.section.initialView.title': '初始行事曆檢視類型',
     'config.section.initialView.description': '選擇初始行事曆檢視類型',

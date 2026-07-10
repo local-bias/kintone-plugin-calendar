@@ -21,11 +21,7 @@ export default function SidebarDatePicker() {
 
   return (
     <div className='!-mb-20'>
-      <DateCalendar
-        className='!w-full aspect-square [&_div[role="grid"]_[role="row"]>*]:h-7'
-        value={date}
-        onChange={onChange}
-      />
+      <DateCalendar className='!w-full aspect-square' value={date} onChange={onChange} />
     </div>
   );
 }
