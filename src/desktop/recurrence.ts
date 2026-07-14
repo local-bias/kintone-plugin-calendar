@@ -189,7 +189,7 @@ export const calendarDurationBetween = (start: DateInput, end: DateInput, zone: 
 export type RecurrenceEventFields = {
   rrule?: string;
   duration?: DurationInput;
-  exdate?: Date[];
+  exdate?: string[];
   editable?: boolean;
   extendedProps: { recurrence: RecurrenceMeta };
 };
@@ -223,7 +223,11 @@ export const applyRecurrenceMetaToEventInput = (params: {
   const storedOptions = RRule.fromString(meta.rrule).options;
   const fullRule = new RRule({ ...storedOptions, dtstart });
 
-  const exdate = meta.exceptions.map((iso) => calendarValueToUtcCoercedDate(iso, zone));
+  // @fullcalendar/rrule parses `exdate` entries with FullCalendar's plain ISO-string marker
+  // parser (not DateEnv.createMarkerMeta), which only accepts strings — a raw `Date` object
+  // silently fails to parse (returns null) and crashes later property access. `toISOString()`
+  // keeps the same UTC-coerced wall-clock numbers, just as a string instead of a Date.
+  const exdate = meta.exceptions.map((iso) => calendarValueToUtcCoercedDate(iso, zone).toISOString());
 
   return {
     rrule: fullRule.toString(),

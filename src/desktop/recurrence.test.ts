@@ -222,4 +222,28 @@ describe('applyRecurrenceMetaToEventInput', () => {
     expect(result.exdate).toHaveLength(1);
     expect(result.extendedProps.recurrence).toEqual(meta);
   });
+
+  it('regression: exdate entries are ISO strings, not Date objects', () => {
+    // @fullcalendar/rrule parses `exdate` entries with FullCalendar's plain ISO-string
+    // marker parser (not DateEnv.createMarkerMeta) — passing raw Date objects makes that
+    // parser return null, which crashes later property access ("Cannot read properties of
+    // null (reading 'marker')") as soon as a master has at least one exception.
+    const meta = {
+      kind: 'master' as const,
+      rrule: 'RRULE:FREQ=WEEKLY;BYDAY=TU',
+      exceptions: ['2026-07-21T10:00:00', '2026-07-28'],
+    };
+    const result = applyRecurrenceMetaToEventInput({
+      meta,
+      start: '2026-07-14T10:00:00',
+      end: '2026-07-14T11:00:00',
+      zone: 'Asia/Tokyo',
+    });
+
+    expect(result.exdate).toHaveLength(2);
+    for (const value of result.exdate!) {
+      expect(typeof value).toBe('string');
+      expect(Number.isNaN(Date.parse(value))).toBe(false);
+    }
+  });
 });
